@@ -1,14 +1,11 @@
 #import <Carbon/Carbon.h>
 #import "../Dialog2.h"
 #import "../TMDCommand.h"
+#import "Utilities/TextMate.h" // -positionForWindowUnderCaret
 
 // ========
 // = Menu =
 // ========
-
-@interface NSObject (OakTextView)
-- (NSPoint)positionForWindowUnderCaret;
-@end
 
 @interface TMDMenuCommand : TMDCommand
 {
