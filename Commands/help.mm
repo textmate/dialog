@@ -42,6 +42,7 @@
 	NSMutableString *help = [NSMutableString stringWithCapacity:100];
 	
 	if (TMDCommand *command = [TMDCommand objectForCommand:commandName]) {
+		[help appendFormat:@"%@\n\n",[command commandDescription]];
 		[help appendFormat:@"%@ usage:\n",commandName];
 		[help appendFormat:@"%@\n",[command usageForInvocation:[NSString stringWithFormat:@"\"$DIALOG\" %@", commandName]]];
 	} else
