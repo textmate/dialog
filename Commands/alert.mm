@@ -1,6 +1,10 @@
 #import "../Dialog2.h"
 #import "../TMDCommand.h"
 
+/*
+echo '{alertStyle = warning; buttonTitles = ('OK'); messageTitle = 'test'; informativeText = 'Testing';}' | "$DIALOG" alert
+*/
+
 // =========
 // = Alert =
 // =========
@@ -18,9 +22,10 @@
 
 - (void)handleCommand:(id)options
 {
-	NSFileHandle* fh = [options objectForKey:@"stderr"];
-	[fh writeData:[@"Alerts are not implemented yet." dataUsingEncoding:NSUTF8StringEncoding]];
-#if 0
+	// NSFileHandle* fh = [options objectForKey:@"stderr"];
+
+#if 1
+	NSDictionary *parameters = [TMDCommand readPropertyList:[options objectForKey:@"stdin"]];
 	NSAlertStyle		alertStyle = NSInformationalAlertStyle;
 	NSAlert*			alert;
 	NSDictionary*		resultDict = nil;
@@ -62,6 +67,8 @@
 			[alert addButtonWithTitle:buttonTitle];
 		}
 	}
+	
+	BOOL modal = YES;
 	
 	// Show the alert
 	if(not modal)
@@ -118,7 +125,8 @@
 		
 		resultDict = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:alertResult] forKey:@"buttonClicked"];
 	}
-	return resultDict;
+
+	[TMDCommand writePropertyList:resultDict toFileHandle:[options objectForKey:@"stdout"]];
 #endif
 }
 @end
