@@ -32,7 +32,8 @@
 		if ([connection registerName:DialogServerConnectionName] == NO)
 			NSLog(@"couldn't setup dialog server."), NSBeep();
 		else if (NSString* path = [[NSBundle bundleForClass:[self class]] pathForResource:@"tm_dialog2" ofType:nil]) {
-			setenv("DIALOG_1", getenv("DIALOG"), 1);
+			if (!getenv("DIALOG_1"))
+				setenv("DIALOG_1", getenv("DIALOG"), 1);
 			setenv("DIALOG", [path UTF8String], 1);
 		}
 	}
