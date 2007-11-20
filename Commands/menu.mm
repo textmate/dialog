@@ -7,6 +7,10 @@
 // = Menu =
 // ========
 
+/*
+echo '{ menuItems = ({title = "foo";}); }' | "$DIALOG" menu
+*/
+
 @interface TMDMenuCommand : TMDCommand
 {
 }
@@ -16,6 +20,17 @@
 + (void)load
 {
 	[TMDCommand registerObject:[self new] forCommand:@"menu"];
+}
+
+- (NSString *)commandDescription
+{
+	return @"Presents a menu using the given structure and returns the option chosen by the user";
+}
+
+- (NSString *)usageForInvocation:(NSString *)invocation;
+{
+	return [NSString stringWithFormat:@"The menu structure should be given as a property list on STDIN, e.g.\n"
+	       @"echo '{ menuItems = ({title = \"foo\";}); }' | %@",invocation];
 }
 
 - (void)handleCommand:(id)options
