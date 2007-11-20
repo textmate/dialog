@@ -13,8 +13,8 @@
 @interface TMDHTMLTips : NSWindowController
 {
 	WebPreferences * webPreferences;
-
-    IBOutlet WebView *webView;
+	IBOutlet WebView *webView;
+	NSString *content;
 }
 - (id)init;
 - (void)setHTML:(NSString *)html;

@@ -26,6 +26,7 @@
 		91D6F9710CF2C803000F8170 /* htmltips.mm in Sources */ = {isa = PBXBuildFile; fileRef = 91D6F96E0CF2C803000F8170 /* htmltips.mm */; };
 		91D6F9720CF2C803000F8170 /* HTMLTip.nib in Resources */ = {isa = PBXBuildFile; fileRef = 91D6F96F0CF2C803000F8170 /* HTMLTip.nib */; };
 		91D6F9730CF2C803000F8170 /* TMDHTMLTips.mm in Sources */ = {isa = PBXBuildFile; fileRef = 91D6F9700CF2C803000F8170 /* TMDHTMLTips.mm */; };
+		91D6F97E0CF2C8EF000F8170 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91D6F97D0CF2C8EF000F8170 /* WebKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,6 +70,7 @@
 		91D6F96E0CF2C803000F8170 /* htmltips.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = htmltips.mm; path = Commands/HTMLTips/htmltips.mm; sourceTree = "<group>"; };
 		91D6F96F0CF2C803000F8170 /* HTMLTip.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = HTMLTip.nib; path = Commands/HTMLTips/HTMLTip.nib; sourceTree = "<group>"; };
 		91D6F9700CF2C803000F8170 /* TMDHTMLTips.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = TMDHTMLTips.mm; path = Commands/HTMLTips/TMDHTMLTips.mm; sourceTree = "<group>"; };
+		91D6F97D0CF2C8EF000F8170 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = /System/Library/Frameworks/WebKit.framework; sourceTree = "<absolute>"; };
 		D2F7E65807B2D6F200F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
@@ -79,6 +81,7 @@
 			files = (
 				8D5B49B4048680CD000E48DA /* Cocoa.framework in Frameworks */,
 				91D6F90B0CF23EAE000F8170 /* Carbon.framework in Frameworks */,
+				91D6F97E0CF2C8EF000F8170 /* WebKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -145,6 +148,7 @@
 		1058C7AEFEA557BF11CA2CBB /* Other Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				91D6F97D0CF2C8EF000F8170 /* WebKit.framework */,
 				089C167FFE841241C02AAC07 /* AppKit.framework */,
 				D2F7E65807B2D6F200F64583 /* CoreData.framework */,
 				089C1672FE841209C02AAC07 /* Foundation.framework */,

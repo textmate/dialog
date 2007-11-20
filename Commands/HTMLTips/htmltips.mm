@@ -3,25 +3,7 @@
 #import "../../TMDCommand.h"
 #import "../../Dialog2.h"
 #import "TMDHTMLTips.h"
-
-@interface NSObject (OakTextView)
-- (NSPoint)positionForWindowUnderCaret;
-@end
-
-@interface NSData (UTF8String)
-- (NSString *)UTF8String;
-@end
-
-@implementation NSData (UTF8String)
-- (NSString *)UTF8String
-{
-	char *string = new char[[self length] + 1];
-	strcpy(string, (const char*)[self bytes]);
-	string[[self length]] = '\0';
-	NSString *result = [NSString stringWithUTF8String:string];
-	return result;
-}
-@end
+#import "../Utilities/TextMate.h" // -positionForWindowUnderCaret
 
 @interface TMDHTMLTipsCommand : TMDCommand
 @end
@@ -32,6 +14,16 @@
 	[TMDCommand registerObject:[self new] forCommand:@"html-tip"];
 }
 
+- (NSString *)commandDescription
+{
+	return @"Shows a tooltip at the caret with the provided content rendered as HTML.";
+}
+
+- (NSString *)usageForInvocation:(NSString *)invocation;
+{
+	return [NSString stringWithFormat:@"Tooltip content is taken from STDIN, e.g.:\n\n\t%@ <<< '<some>html</some>'", invocation];
+}
+
 - (void)handleCommand:(NSDictionary *)options
 {
 	NSFileHandle *stdinFP = (NSFileHandle *)[options objectForKey:@"stdin"];
@@ -39,25 +31,24 @@
 	
 	if ([data length] == 0)
 		return;
-	
-	NSString *content = [data UTF8String];
-	
-	NSPoint pos = NSZeroPoint;
 
-	if(id textView = [NSApp targetForAction:@selector(positionForWindowUnderCaret)])
-		pos = [textView positionForWindowUnderCaret];
+	NSString *content = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+	{
+		NSPoint pos = NSZeroPoint;
 
-	TMDHTMLTips* tooltip = [[TMDHTMLTips alloc] init];
-	[tooltip setHTML:content];
-	NSLog(@"%s point: %@", __PRETTY_FUNCTION__, NSStringFromPoint(pos));
-	// pos.y = 900;
-	// pos.x = 0;
-	[[tooltip window] setFrameTopLeftPoint:pos];
-	NSLog(@"%s point: %@", __PRETTY_FUNCTION__, NSStringFromPoint([[tooltip window] frame].origin));
+		if(id textView = [NSApp targetForAction:@selector(positionForWindowUnderCaret)])
+			pos = [textView positionForWindowUnderCaret];
 
-	[self performSelector: @selector(eventHandlingForHTMLTip:)
-				withObject: tooltip
-				afterDelay: 0.1];
+		TMDHTMLTips* tooltip = [[TMDHTMLTips alloc] init];
+		[tooltip setHTML:content];
+
+		[[tooltip window] setFrameTopLeftPoint:pos];
+
+		[self performSelector: @selector(eventHandlingForHTMLTip:)
+	              withObject: tooltip
+	              afterDelay: 0.1];
+	}
+	[content release];
 }
 
 -(void) eventHandlingForHTMLTip:(TMDHTMLTips *)tooltip
