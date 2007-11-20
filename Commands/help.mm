@@ -20,9 +20,8 @@
 	return @"Gives a brief list of available commands";
 }
 
-- (void)handleCommand:(id)options
+- (NSString *)commandSummaryText
 {
-	NSFileHandle* fh = [options objectForKey:@"stderr"];
 	NSDictionary *commands = [TMDCommand registeredCommands];
 	
 	NSMutableString *help = [NSMutableString stringWithCapacity:100];
@@ -34,11 +33,37 @@
 		NSString *description = [command commandDescription];
 		[help appendFormat:@"\t%@: %@\n", commandName, description];
 	}
+	
+	return help;
+}
 
-	// [fh writeData:[@"Help is not yet implemented.\n" dataUsingEncoding:NSUTF8StringEncoding]];
-	[fh writeData:[help dataUsingEncoding:NSUTF8StringEncoding]];
+- (NSString *)helpForCommand:(NSString *)commandName
+{
+	NSMutableString *help = [NSMutableString stringWithCapacity:100];
+	
+	if (TMDCommand *command = [TMDCommand objectForCommand:commandName]) {
+		[help appendFormat:@"%@ usage:\n",commandName];
+		[help appendFormat:@"%@\n",[command usageForInvocation:[NSString stringWithFormat:@"\"$DIALOG\" %@", commandName]]];
+	} else
+		[help appendFormat:@"Unknown command '%@'\n", commandName];
+
+	return help;
+}
+
+- (void)handleCommand:(id)options
+{
+	NSLog(@"[%@ handleCommand:%@]", [self class], options);
+	NSFileHandle* fh = [options objectForKey:@"stderr"];
+	NSString *text = @"";
+	
+	if ([[options objectForKey:@"arguments"] count] < 3)
+		text = [self commandSummaryText];
+	else
+		text = [self helpForCommand:[[options objectForKey:@"arguments"] objectAtIndex:2]];
+
+	[fh writeData:[text dataUsingEncoding:NSUTF8StringEncoding]];
 }
 @end
 /*
-"$DIALOG" help
+"$DIALOG" help html-tip
 */

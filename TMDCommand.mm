@@ -55,6 +55,11 @@ static NSMutableDictionary* Commands = nil;
 
 - (NSString *)commandDescription
 {
-	return @"No information available";
+	return @"No information available for this command";
+}
+
+- (NSString *)usageForInvocation:(NSString *)invocation;
+{
+	return @"No usage information available for this command";
 }
 @end
