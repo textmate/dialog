@@ -18,37 +18,10 @@
 {
 	self = [super initWithContentRect:contentRect styleMask:NSBorderlessWindowMask backing:bufferingType defer:NO];
 
-// [result setBackgroundColor:[NSColor clearColor]];
 	[self setAlphaValue:0];
 	[self setHasShadow:YES];
 	[self setOpaque:NO];
-//[self makeKeyWindow];
+
 	return self;
 }
-
-- (BOOL)canBecomeMainWindow
-{
-	return YES;
-}
-
-- (BOOL) canBecomeKeyWindow
-{
-   return YES;
-}
-
--(BOOL)acceptsFirstResponder
-{
-	return YES;
-}
-
-- (BOOL)showsResizeIndicator
-{
-	return NO;
-}
-
--(BOOL)resignFirstResponder
-{
-	return NO;
-}
-
 @end

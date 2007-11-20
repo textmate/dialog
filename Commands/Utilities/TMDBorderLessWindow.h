@@ -12,5 +12,4 @@
 @interface TMDBorderLessWindow : NSWindow {
 
 }
-- (BOOL)canBecomeMainWindow;
 @end
