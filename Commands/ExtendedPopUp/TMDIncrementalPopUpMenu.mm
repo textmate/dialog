@@ -6,24 +6,19 @@
 //
 
 #import "TMDIncrementalPopUpMenu.h"
-@interface NSObject (OakTextView)
-- (id)insertSnippetWithOptions:(NSDictionary*)options;
-@end
+#import "../Utilities/TextMate.h" // -insertSnippetWithOptions
 
 @implementation TMDIncrementalPopUpMenu
 - (id)initWithDictionary:(NSDictionary*)aDictionary andEditor:(id)editor
 {
-////NSLog(@"%@", aDictionary);
-    if(self = [super initWithWindowNibName:@"IncrementalPopUpMenu"])
-    //if(self = [super init])
-	{
-        mutablePrefix = [[NSMutableString alloc] init];
+	if(self = [self initWithWindowNibName:@"IncrementalPopUpMenu"]) {
+		mutablePrefix = [[NSMutableString alloc] init];
 
-        ed = [editor retain];
-        suggestions = [NSArray arrayWithArray:[aDictionary objectForKey:@"suggestions"]];
+		ed = [editor retain];
+		suggestions = [NSArray arrayWithArray:[aDictionary objectForKey:@"suggestions"]];
 
-        [mutablePrefix setString:[NSString stringWithString:[aDictionary objectForKey:@"currentWord"]]];
-        if([aDictionary objectForKey:@"staticPrefix"]){
+		[mutablePrefix setString:[NSString stringWithString:[aDictionary objectForKey:@"currentWord"]]];
+		if([aDictionary objectForKey:@"staticPrefix"]) {
 			staticPrefix = [NSString stringWithString:[aDictionary objectForKey:@"staticPrefix"]];
 			[staticPrefix retain];
 		}
@@ -32,18 +27,19 @@
 			staticPrefix = @"";
 		}
 		shell = nil;
-		if([aDictionary objectForKey:@"shell"]){
+		if([aDictionary objectForKey:@"shell"]) {
 			shell = [NSString stringWithString:[aDictionary objectForKey:@"shell"]];
 			[shell retain];
 		}
 		//NSPredicate* predicate = [NSPredicate predicateWithFormat:@"filterOn beginswith %@", [staticPrefix stringByAppendingString:mutablePrefix]];
 		suggestions = [suggestions retain];
-        //[self setFiltered:[suggestions filteredArrayUsingPredicate:predicate]];
+		//[self setFiltered:[suggestions filteredArrayUsingPredicate:predicate]];
 		attrString = [[NSMutableAttributedString alloc] initWithString:@"No completion found"];
 		[self filter];
 		closeMe = NO;
-    }
-    return self;
+	}
+
+	return self;
 }
 - (NSMutableString*)mutablePrefix;
 {

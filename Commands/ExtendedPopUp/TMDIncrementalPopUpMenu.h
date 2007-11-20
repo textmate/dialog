@@ -10,11 +10,11 @@
 
 @interface TMDIncrementalPopUpMenu : NSWindowController
 {
-    IBOutlet NSArrayController* anArrayController;
-    NSArray* suggestions;
-    NSMutableString* mutablePrefix;
-    NSString* staticPrefix;
-    NSArray* filtered;
+	IBOutlet NSArrayController* anArrayController;
+	NSArray* suggestions;
+	NSMutableString* mutablePrefix;
+	NSString* staticPrefix;
+	NSArray* filtered;
 	NSString* shell;
 	NSMutableAttributedString* attrString;
 	IBOutlet id theTableView;
@@ -23,8 +23,8 @@
 	BOOL isAbove;
 	NSRect mainScreen;
 	BOOL closeMe;
-    id ed;
-    id controllerObject;
+	id ed;
+	id controllerObject;
 }
 - (id)initWithDictionary:(NSDictionary*)aDictionary
                andEditor:(id)editor;

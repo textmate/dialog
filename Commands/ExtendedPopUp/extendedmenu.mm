@@ -1,14 +1,15 @@
 #import "../../TMDCommand.h"
 #import "../../Dialog2.h"
 #import "TMDIncrementalPopUpMenu.h"
+#import "../Utilities/TextMate.h" // -positionForWindowUnderCaret
+
+/*
+echo '{suggestions = ({title = "**law**";filterOn = "law";},{title = "**laws**";filterOn = "laws";snippet = "(${1:hello}, ${2:again})";}); mutablePrefix = ""; currentWord = "la";shell = "ruby -e \"puts STDIN.read\""; }' |"$DIALOG" extended-popup
+*/
 
 // ==================
 // = Extended Popup =
 // ==================
-@interface NSObject (OakTextView)
-- (NSPoint)positionForWindowUnderCaret;
-@end
-
 @interface TMDXPopUp : TMDCommand
 {
 }
@@ -23,7 +24,6 @@
 - (void)handleCommand:(id)options
 {
 	NSDictionary* initialValues = [TMDCommand readPropertyList:[options objectForKey:@"stdin"]];
-	NSLog(@"initialValues: %@", initialValues);
     
 	NSPoint pos = NSZeroPoint;
 	if(id textView = [NSApp targetForAction:@selector(positionForWindowUnderCaret)])
@@ -37,7 +37,8 @@
 	}
 
 	pos = NSMakePoint(pos.x,  pos.y);
-    TMDIncrementalPopUpMenu* xPopUp = [[TMDIncrementalPopUpMenu alloc] initWithDictionary:initialValues andEditor:nil];
+	NSLog(@"%s initWithDictionary: %@", _cmd, initialValues);
+	TMDIncrementalPopUpMenu* xPopUp = [[TMDIncrementalPopUpMenu alloc] initWithDictionary:initialValues andEditor:nil];
 	NSLog(@"%d xpop",[xPopUp retainCount]);
 	[xPopUp setCaretPos:pos];
 	[xPopUp setMainScreen:mainScreen];
