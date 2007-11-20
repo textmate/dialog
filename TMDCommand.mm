@@ -52,4 +52,9 @@ static NSMutableDictionary* Commands = nil;
 		fprintf(stderr, "%s\n", [[aPlist description] UTF8String]);
 	}
 }
+
+- (NSString *)commandDescription
+{
+	return @"No information available";
+}
 @end

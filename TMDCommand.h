@@ -6,4 +6,6 @@
 
 + (id)readPropertyList:(NSFileHandle*)aFileHandle;
 + (void)writePropertyList:(id)aPlist toFileHandle:(NSFileHandle*)aFileHandle;
+
+- (NSString *)commandDescription;
 @end

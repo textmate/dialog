@@ -70,5 +70,5 @@
 }
 @end
 /*
-echo '{ menuItems = ({title = 'foo';});}' | "$DIALOG2" menu
+echo '{ menuItems = ({title = 'foo';});}' | "$DIALOG" menu
 */

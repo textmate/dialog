@@ -26,7 +26,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 91D6F8E90CF23C23000F8170 /* tm_dialog2 */;
+			remoteGlobalIDString = 91D6F8E90CF23C23000F8170;
 			remoteInfo = tm_dialog2;
 		};
 /* End PBXContainerItemProxy section */
