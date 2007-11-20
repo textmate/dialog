@@ -8,7 +8,6 @@
 
 #import "TMDBorderLessWindow.h"
 
-
 @implementation TMDBorderLessWindow
 
 - (id)initWithContentRect:(NSRect)contentRect
@@ -18,9 +17,7 @@
 {
 	self = [super initWithContentRect:contentRect styleMask:NSBorderlessWindowMask backing:bufferingType defer:NO];
 
-	[self setAlphaValue:0];
 	[self setHasShadow:YES];
-	[self setOpaque:NO];
 
 	return self;
 }
