@@ -20,6 +20,7 @@ static NSMutableDictionary* Nibs = [NSMutableDictionary new];
 	NSMutableArray* fileHandles;
 	unsigned int token;
 	BOOL autoCloses;
+	BOOL isRunningModal;
 }
 - (NSWindow*)window;
 - (void)setWindow:(NSWindow*)aValue;
@@ -74,6 +75,7 @@ static NSMutableDictionary* Nibs = [NSMutableDictionary new];
 - (void)instantiateNib:(NSNib*)aNib
 {
 	BOOL didInstantiate = NO;
+	isRunningModal      = NO;
 	@try {
 	 	didInstantiate = [aNib instantiateNibWithOwner:self topLevelObjects:&topLevelObjects];
 	}
@@ -115,6 +117,12 @@ static NSMutableDictionary* Nibs = [NSMutableDictionary new];
 	// // can go away altogether.
 	// if(isModal)
 	// 	[NSApp runModalForWindow:window];
+}
+
+- (void)runModal
+{
+	isRunningModal = YES;
+	[NSApp runModalForWindow:window];
 }
 
 - (id)initWithNibName:(NSString*)aName
@@ -159,6 +167,9 @@ static NSMutableDictionary* Nibs = [NSMutableDictionary new];
 
 - (void)tearDown
 {
+	if (isRunningModal)
+		[NSApp stopModal];
+
 	[[self retain] autorelease];
 
 	[parameters removeObjectForKey:@"controller"];
@@ -176,11 +187,9 @@ static NSMutableDictionary* Nibs = [NSMutableDictionary new];
 
 - (void)dealloc
 {
-	NSLog(@"%s TMDNibController", _cmd);
 	[self setWindow:nil];
 	[self setParameters:nil];
 
-	NSLog(@"%s %@", _cmd, topLevelObjects);
 	enumerate(topLevelObjects, id object)
 		[object release];
 	[topLevelObjects release];
@@ -191,7 +200,6 @@ static NSMutableDictionary* Nibs = [NSMutableDictionary new];
 
 - (void)windowWillClose:(NSNotification*)aNotification
 {
-	NSLog(@"%s", _cmd);
 	[self tearDown];
 }
 
@@ -326,10 +334,17 @@ std::string find_nib (std::string nibName, std::string currentDirectory)
 	[super registerObject:[self new] forCommand:@"window"];
 }
 
+/*
+"$DIALOG" -cmp '{title = "title"; prompt = "prompt"; }' "RequestString"
+
+"$DIALOG" window show -cmp '{title = "title"; prompt = "prompt"; }' "RequestString"
+"$DIALOG" window create -cp '{title = "title"; prompt = "prompt"; }' "RequestString"
+"$DIALOG" window close 5
+echo '{title = "updated title"; prompt = "updated prompt"; }' | "$DIALOG" window update 4
+*/
+
 - (void)handleCommand:(id)options
 {
-	NSLog(@"%s TMDNib %@", _cmd, options);
-
 	NSArray* args = [options objectForKey:@"arguments"];
 
 	static option_t const expectedOptions[] =
@@ -343,7 +358,6 @@ std::string find_nib (std::string nibName, std::string currentDirectory)
 	};
 
 	NSDictionary* res = ParseOptions(args, expectedOptions);
-	NSLog(@"%s %@", _cmd, res);
 
 	NSString* command = [args objectAtIndex:2];
 	if([command isEqualToString:@"create"] || [command isEqualToString:@"show"])
@@ -353,6 +367,8 @@ std::string find_nib (std::string nibName, std::string currentDirectory)
 		NSString* nib = [NSString stringWithUTF8String:find_nib(nibName ?: "", nibPath ?: "").c_str()];
 
 		TMDNibController* nibController = [[[TMDNibController alloc] initWithNibName:nib] autorelease];
+		NSDictionary *windowOptions = [res objectForKey:@"options"];
+		[nibController setParameters:[windowOptions objectForKey:@"parameters"]];
 		[Nibs setObject:nibController forKey:[nibController token]];
 
 		NSFileHandle* fh = [options objectForKey:@"stdout"];
@@ -365,6 +381,9 @@ std::string find_nib (std::string nibName, std::string currentDirectory)
 		{
 			[fh writeData:[[nibController token] dataUsingEncoding:NSUTF8StringEncoding]];
 		}
+		
+		if ([[windowOptions objectForKey:@"modal"] boolValue])
+			[nibController runModal];
 	}
 	else if([command isEqualToString:@"wait"])
 	{
