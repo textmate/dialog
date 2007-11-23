@@ -47,6 +47,11 @@ echo '{ menuItems = ({title = "foo";}); }' | "$DIALOG" menu
 		{
 			AppendMenuItemTextWithCFString(menu_ref, CFSTR(""), kMenuItemAttrSeparator, item_index++, NULL);
 		}
+		else if([[menuItem objectForKey:@"header"] intValue])
+		{
+			AppendMenuItemTextWithCFString(menu_ref, (CFStringRef)[menuItem objectForKey:@"title"], kMenuItemAttrSectionHeader, item_index++, NULL);
+			in_section = true;
+		}
 		else
 		{
 			MenuItemIndex index;
@@ -56,7 +61,8 @@ echo '{ menuItems = ({title = "foo";}); }' | "$DIALOG" menu
 				SetMenuItemCommandKey(menu_ref, index, NO, item_id == 10 ? '0' : '1' + (item_id-1));
 				SetMenuItemModifiers(menu_ref, index, kMenuNoCommandModifier);
 			}
-			// SetMenuItemIndent(menu_ref, index, 1);
+			if (in_section)
+				SetMenuItemIndent(menu_ref, index, 1);
 		}
 		// AppendMenuItemTextWithCFString(menu_ref, NULL, kMenuItemAttrSectionHeader, 0, NULL);
 	}
