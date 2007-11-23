@@ -8,7 +8,7 @@
 // ========
 
 /*
-echo '{ menuItems = ({title = "foo";}); }' | "$DIALOG" menu
+echo '{ menuItems = ({title = "foo"; header = 1;},{title = "bar";}); }' | "$DIALOG" menu
 */
 
 @interface TMDMenuCommand : TMDCommand
@@ -40,6 +40,7 @@ echo '{ menuItems = ({title = "foo";}); }' | "$DIALOG" menu
 	SetMenuFont(menu_ref, 0, [[NSUserDefaults standardUserDefaults] integerForKey:@"OakBundleManagerDisambiguateMenuFontSize"] ?: 12);
 
 	int item_id = 0, item_index = 0;
+	bool in_section = false;
 	NSArray* menuItems = [[TMDCommand readPropertyList:[options objectForKey:@"stdin"]] objectForKey:@"menuItems"];
 	enumerate(menuItems, NSDictionary* menuItem)
 	{
