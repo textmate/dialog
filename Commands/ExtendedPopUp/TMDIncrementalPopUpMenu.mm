@@ -225,15 +225,23 @@
 		closeMe = YES;
 	}
 }
+
+
+- (void)selectRow:(int)row
+{
+	[anArrayController setSelectionIndex:row];
+	[[self theTableView] scrollRowToVisible:row];
+}
+
 - (void)scrollLineUp:(id)sender
 {
 	int row = [anArrayController selectionIndex];
-	if (--row >= 0) [anArrayController setSelectionIndex:row];
+	if (--row >= 0) [self selectRow:row];
 }
 -(void)scrollLineDown:(id)sender
 {
 	int row = [anArrayController selectionIndex];
-	if (++row < [filtered count]) [anArrayController setSelectionIndex:row];
+	if (++row < [filtered count]) [self selectRow:row];
 }
 - (void)moveToBeginningOfDocument:(id)sender 
 {

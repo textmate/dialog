@@ -7,6 +7,12 @@
 echo '{suggestions = ({title = "**law**";filterOn = "law";},{title = "**laws**";filterOn = "laws";snippet = "(${1:hello}, ${2:again})";}); mutablePrefix = ""; currentWord = "la";shell = "ruby -e \"puts STDIN.read\""; }' |"$DIALOG" extended-popup
 */
 
+
+@interface NSEvent (DeviceDelta)
+- (float)deviceDeltaX;
+- (float)deviceDeltaY;
+@end
+
 // ==================
 // = Extended Popup =
 // ==================
@@ -180,7 +186,7 @@ echo '{suggestions = ({title = "**law**";filterOn = "law";},{title = "**laws**";
 			
 			}
  			else if(t == NSScrollWheel){
- 				if([event deltaY] >= 0.0)
+ 				if([event deviceDeltaY] >= 0.0)
  					[xPopUp scrollLineUp:self];
 				else
 					[xPopUp scrollLineDown:self];
