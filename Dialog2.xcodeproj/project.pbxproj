@@ -18,7 +18,6 @@
 		91D6F8F90CF23D6E000F8170 /* tm_dialog2 in Resources */ = {isa = PBXBuildFile; fileRef = 91D6F8EA0CF23C23000F8170 /* tm_dialog2 */; };
 		91D6F8FE0CF23E51000F8170 /* alert.mm in Sources */ = {isa = PBXBuildFile; fileRef = 91D6F8FD0CF23E51000F8170 /* alert.mm */; };
 		91D6F9020CF23E79000F8170 /* help.mm in Sources */ = {isa = PBXBuildFile; fileRef = 91D6F9010CF23E79000F8170 /* help.mm */; };
-		91D6F9050CF23E7F000F8170 /* quit.mm in Sources */ = {isa = PBXBuildFile; fileRef = 91D6F9030CF23E7F000F8170 /* quit.mm */; };
 		91D6F9060CF23E7F000F8170 /* menu.mm in Sources */ = {isa = PBXBuildFile; fileRef = 91D6F9040CF23E7F000F8170 /* menu.mm */; };
 		91D6F90B0CF23EAE000F8170 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91D6F90A0CF23EAE000F8170 /* Carbon.framework */; };
 		91D6F95A0CF2BD16000F8170 /* extendedmenu.mm in Sources */ = {isa = PBXBuildFile; fileRef = 91D6F9560CF2BD16000F8170 /* extendedmenu.mm */; };
@@ -65,7 +64,6 @@
 		91D6F8EA0CF23C23000F8170 /* tm_dialog2 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = tm_dialog2; sourceTree = BUILT_PRODUCTS_DIR; };
 		91D6F8FD0CF23E51000F8170 /* alert.mm */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.objcpp; name = alert.mm; path = Commands/alert.mm; sourceTree = "<group>"; };
 		91D6F9010CF23E79000F8170 /* help.mm */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.objcpp; name = help.mm; path = Commands/help.mm; sourceTree = "<group>"; };
-		91D6F9030CF23E7F000F8170 /* quit.mm */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.objcpp; name = quit.mm; path = Commands/quit.mm; sourceTree = "<group>"; };
 		91D6F9040CF23E7F000F8170 /* menu.mm */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.objcpp; name = menu.mm; path = Commands/menu.mm; sourceTree = "<group>"; };
 		91D6F90A0CF23EAE000F8170 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		91D6F9560CF2BD16000F8170 /* extendedmenu.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = extendedmenu.mm; path = Commands/ExtendedPopUp/extendedmenu.mm; sourceTree = "<group>"; };
@@ -204,7 +202,6 @@
 				91D6F9930CF33A7A000F8170 /* window.mm */,
 				91D6F94E0CF2BCEC000F8170 /* ExtendedPopUp */,
 				91D6F9680CF2C7E5000F8170 /* HTMLTips */,
-				91D6F9030CF23E7F000F8170 /* quit.mm */,
 				91D6F9040CF23E7F000F8170 /* menu.mm */,
 				91D6F9010CF23E79000F8170 /* help.mm */,
 				91D6F8FD0CF23E51000F8170 /* alert.mm */,
@@ -350,7 +347,6 @@
 				91D6F8A40CF23B71000F8170 /* OptionParser.mm in Sources */,
 				91D6F8FE0CF23E51000F8170 /* alert.mm in Sources */,
 				91D6F9020CF23E79000F8170 /* help.mm in Sources */,
-				91D6F9050CF23E7F000F8170 /* quit.mm in Sources */,
 				91D6F9060CF23E7F000F8170 /* menu.mm in Sources */,
 				91D6F95A0CF2BD16000F8170 /* extendedmenu.mm in Sources */,
 				91D6F95C0CF2BD16000F8170 /* TMDIncrementalPopUpMenu.mm in Sources */,
