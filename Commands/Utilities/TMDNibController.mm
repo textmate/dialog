@@ -11,6 +11,10 @@
 #import "../../TMDCommand.h"
 #import "TMDNibController.h"
 
+@interface NSMethodSignature (Private)
++ (NSMethodSignature *)signatureWithObjCTypes:(const char *)types;
+@end
+
 @implementation TMDNibController
 static NSMutableDictionary* Nibs = [NSMutableDictionary new];
 static unsigned int NibTokenCount = 0;
