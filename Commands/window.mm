@@ -7,6 +7,7 @@
 #import "Utilities/TMDChameleon.h"
 #import "Utilities/TMDNibController.h"
 
+
 // ==========
 // = Window =
 // ==========
@@ -68,7 +69,8 @@ std::string find_nib (std::string nibName, std::string currentDirectory)
 "$DIALOG" window show -cmp '{title = "title"; prompt = "prompt"; string = "foo"; }' "RequestString"
 "$DIALOG" window create -cp '{title = "title"; prompt = "prompt"; }' "RequestString"
 "$DIALOG" window close 5
-echo '{title = "updated title"; prompt = "updated prompt"; }' | "$DIALOG" window update 4
+echo '{title = "updated title"; prompt = "updated prompt"; }' | "$DIALOG" window update 2
+"$DIALOG" window list
 
 "$DIALOG" window show "/Library/Application Support/TextMate/Bundles/SQL.tmbundle/Support/nibs/connections.nib" -q -d"{'SQL Connections' = ( { title = untitled; serverType = MySQL; hostName = localhost; userName = '$LOGNAME'; } ); }" -n"{ SQL_New_Connection = { title = untitled; serverType = MySQL; hostName = localhost; userName = '$LOGNAME'; }; }" -p'{}' &
 */
@@ -103,7 +105,6 @@ echo '{title = "updated title"; prompt = "updated prompt"; }' | "$DIALOG" window
 		TMDNibController* nibController = [[[TMDNibController alloc] initWithNibName:nib] autorelease];
 		NSDictionary *windowOptions = [res objectForKey:@"options"];
 		[nibController setParameters:[windowOptions objectForKey:@"parameters"]];
-		[Nibs setObject:nibController forKey:[nibController token]];
 
 		NSFileHandle* fh = [options objectForKey:@"stdout"];
 		if([command isEqualToString:@"show"])
@@ -124,29 +125,31 @@ echo '{title = "updated title"; prompt = "updated prompt"; }' | "$DIALOG" window
 	else if([command isEqualToString:@"wait"])
 	{
 		NSString* token = [args lastObject];
-		TMDNibController* nibController = [Nibs objectForKey:token];
+		TMDNibController* nibController = [TMDNibController controllerForToken:token];// [Nibs objectForKey:token];
 		[nibController notifyFileHandle:[options objectForKey:@"stdout"]];
 	}
 	else if([command isEqualToString:@"update"])
 	{
 		NSString* token = [args lastObject];
-		TMDNibController* nibController = [Nibs objectForKey:token];
+		TMDNibController* nibController = [TMDNibController controllerForToken:token];// [Nibs objectForKey:token];
 		id newParameters = [TMDCommand readPropertyList:[options objectForKey:@"stdin"]];
 		[nibController updateParametersWith:newParameters];
 	}
 	else if([command isEqualToString:@"list"])
 	{
 		NSFileHandle* fh = [options objectForKey:@"stdout"];
-		enumerate([Nibs allKeys], NSString* token)
+		NSDictionary *controllers = [TMDNibController controllers];
+
+		enumerate([controllers allKeys], NSString* token)
 		{
-			TMDNibController* nibController = [Nibs objectForKey:token];
+			TMDNibController* nibController = [controllers objectForKey:token];
 			[fh writeData:[[NSString stringWithFormat:@"%@ (%@)\n", token, [[nibController window] title]] dataUsingEncoding:NSUTF8StringEncoding]];
 		}
 	}
 	else if([command isEqualToString:@"close"])
 	{
 		NSString* token = [args lastObject];
-		[[Nibs objectForKey:token] tearDown];
+		[[TMDNibController controllerForToken:token] tearDown];
 	}
 }
 @end

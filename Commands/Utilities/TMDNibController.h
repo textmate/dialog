@@ -6,8 +6,6 @@
 //  Copyright 2007 __MyCompanyName__. All rights reserved.
 //
 
-static NSMutableDictionary* Nibs = [NSMutableDictionary new];
-
 @interface TMDNibController : NSObject
 {
 	NSArray* topLevelObjects;
@@ -18,6 +16,9 @@ static NSMutableDictionary* Nibs = [NSMutableDictionary new];
 	BOOL autoCloses;
 	BOOL isRunningModal;
 }
++ (TMDNibController *)controllerForToken:(NSString*)token;
++ (NSDictionary *)controllers;
+
 - (id)initWithNibName:(NSString*)aName;
 - (NSWindow*)window;
 - (void)runModal;

@@ -11,9 +11,30 @@
 #import "../../TMDCommand.h"
 #import "TMDNibController.h"
 
+@implementation TMDNibController
+static NSMutableDictionary* Nibs = [NSMutableDictionary new];
 static unsigned int NibTokenCount = 0;
 
-@implementation TMDNibController
++ (TMDNibController *)controllerForToken:(NSString*)token;
+{
+	return [Nibs objectForKey:token];
+}
+
++ (void)addController:(TMDNibController *)controller
+{
+	[Nibs setObject:controller forKey:[controller token]];
+}
+
++ (void)removeControllerForToken:(NSString *)token
+{
+	[Nibs removeObjectForKey:token];
+}
+
++ (NSDictionary *)controllers;
+{
+	return [[Nibs copy] autorelease];
+}
+
 - (NSWindow*)window					{ return window; }
 - (id)parameters						{ return parameters; }
 - (NSString*)token					{ return [NSString stringWithFormat:@"%u", token]; }
@@ -103,7 +124,7 @@ static unsigned int NibTokenCount = 0;
 
 - (id)initWithNibName:(NSString*)aName
 {
-	if(self = [super init])
+	if(self = [self init])
 	{
 		if(![[NSFileManager defaultManager] fileExistsAtPath:aName])
 		{
@@ -125,6 +146,7 @@ static unsigned int NibTokenCount = 0;
 		}
 
 		token = ++NibTokenCount;
+		[TMDNibController addController:self];
 		[self instantiateNib:nib];
 	}
 	return self;
@@ -159,7 +181,7 @@ static unsigned int NibTokenCount = 0;
 			[object unbind:@"contentObject"];
 	}
 
-	[Nibs removeObjectForKey:[self token]];
+	[TMDNibController removeControllerForToken:[self token]];
 }
 
 - (void)dealloc
