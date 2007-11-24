@@ -106,7 +106,7 @@ echo '{title = "updated title"; prompt = "updated prompt"; }' | "$DIALOG" window
 
 		TMDNibController* nibController = [[[TMDNibController alloc] initWithNibName:nib] autorelease];
 		NSDictionary *windowOptions = [res objectForKey:@"options"];
-		[nibController setParameters:[windowOptions objectForKey:@"parameters"]];
+		[nibController updateParametersWith:[windowOptions objectForKey:@"parameters"]];
 
 		NSDictionary *initialValues = [windowOptions objectForKey:@"defaults"];
 		if (initialValues && [initialValues count])
