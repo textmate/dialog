@@ -1,7 +1,7 @@
 #ifndef _DIALOG_H_
 #define _DIALOG_H_
 
-static NSString *DialogServerConnectionName = @"com.macromates.dialog";
+#define DialogServerConnectionName @"com.macromates.dialog"
 
 @protocol DialogServerProtocol
 - (void)hello:(id)anArgument;
