@@ -1,9 +1,9 @@
 #import <string>
 #import <vector>
 #import <sys/stat.h>
-#import "../../Dialog2.h"
-#import "../../TMDCommand.h"
-#import "../../OptionParser.h"
+#import "../Dialog2.h"
+#import "../TMDCommand.h"
+#import "../OptionParser.h"
 
 // ==========
 // = Window =
