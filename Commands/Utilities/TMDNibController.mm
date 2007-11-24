@@ -11,6 +11,8 @@
 #import "../../TMDCommand.h"
 #import "TMDNibController.h"
 
+static unsigned int NibTokenCount = 0;
+
 @implementation TMDNibController
 - (NSWindow*)window					{ return window; }
 - (id)parameters						{ return parameters; }
@@ -71,30 +73,30 @@
 		NSLog(@"%s didn't find a window in nib", _cmd);
 		return;
 	}
-	
-	// if(center)
-	// {
-	// 	if(NSWindow* keyWindow = [NSApp keyWindow])
-	// 	{
-	// 		NSRect frame = [window frame], parentFrame = [keyWindow frame];
-	// 		[window setFrame:NSMakeRect(NSMidX(parentFrame) - 0.5 * NSWidth(frame), NSMidY(parentFrame) - 0.5 * NSHeight(frame), NSWidth(frame), NSHeight(frame)) display:NO];
-	// 	}
-	// 	else
-	// 	{
-	// 		[window center];
-	// 	}
-	// }
+}
+
+- (void)showWindowAndCenter:(BOOL)shouldCenter
+{
+	if (shouldCenter)
+	{
+		if(NSWindow* keyWindow = [NSApp keyWindow])
+		{
+			NSRect frame = [window frame], parentFrame = [keyWindow frame];
+			[window setFrame:NSMakeRect(NSMidX(parentFrame) - 0.5 * NSWidth(frame), NSMidY(parentFrame) - 0.5 * NSHeight(frame), NSWidth(frame), NSHeight(frame)) display:NO];
+		}
+		else
+		{
+			[window center];
+		}
+	}
 
 	[window makeKeyAndOrderFront:self];
-
-	// // TODO: When TextMate is capable of running script I/O in it's own thread(s), modal blocking
-	// // can go away altogether.
-	// if(isModal)
-	// 	[NSApp runModalForWindow:window];
 }
 
 - (void)runModal
 {
+	// TODO: When TextMate is capable of running script I/O in it's own thread(s), modal blocking
+	// can go away altogether.
 	isRunningModal = YES;
 	[NSApp runModalForWindow:window];
 }
@@ -141,6 +143,7 @@
 
 - (void)tearDown
 {
+	NSLog(@"%s isRunningModal: %d", _cmd, isRunningModal);
 	if (isRunningModal)
 		[NSApp stopModal];
 
@@ -174,6 +177,7 @@
 
 - (void)windowWillClose:(NSNotification*)aNotification
 {
+	NSLog(@"[%@ windowWillClose:%@]", [self class], aNotification);
 	[self tearDown];
 }
 
@@ -207,6 +211,7 @@
 // returnArgument: implementation. See <http://lists.macromates.com/pipermail/textmate/2006-November/015321.html>
 - (NSMethodSignature*)methodSignatureForSelector:(SEL)aSelector
 {
+	NSLog(@"[%@ methodSignatureForSelector:%@]", [self class], NSStringFromSelector(aSelector));
 	NSString* str = NSStringFromSelector(aSelector);
 	if([str hasPrefix:@"returnArgument:"])
 	{
@@ -226,6 +231,7 @@
 
 - (void)forwardInvocation:(NSInvocation*)invocation
 {
+	NSLog(@"[%@ forwardInvocation:%@]", [self class], invocation);
 	NSString* str = NSStringFromSelector([invocation selector]);
 	if([str hasPrefix:@"returnArgument:"])
 	{

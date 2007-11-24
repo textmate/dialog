@@ -6,7 +6,6 @@
 //  Copyright 2007 __MyCompanyName__. All rights reserved.
 //
 
-static unsigned int NibTokenCount = 0;
 static NSMutableDictionary* Nibs = [NSMutableDictionary new];
 
 @interface TMDNibController : NSObject
@@ -23,6 +22,7 @@ static NSMutableDictionary* Nibs = [NSMutableDictionary new];
 - (NSWindow*)window;
 - (void)runModal;
 - (void)tearDown;
+- (void)showWindowAndCenter:(BOOL)shouldCenter;
 - (void)setParameters:(id)someParameters;
 - (void)notifyFileHandle:(NSFileHandle*)aFileHandle;
 - (void)setAutoCloses:(BOOL)flag;

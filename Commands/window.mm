@@ -61,9 +61,11 @@ std::string find_nib (std::string nibName, std::string currentDirectory)
 }
 
 /*
-"$DIALOG" -cmp '{title = "title"; prompt = "prompt"; }' "RequestString"
+"$DIALOG" -cmp '{title = "title"; prompt = "prompt"; string = "foo"; }' "RequestString"
 
-"$DIALOG" window show -cmp '{title = "title"; prompt = "prompt"; }' "RequestString"
+"$DIALOG" window show -mp '' '/Library/Application Support/TextMate/Bundles/Latex.tmbundle/Support/nibs/tex_prefs.nib'
+
+"$DIALOG" window show -cmp '{title = "title"; prompt = "prompt"; string = "foo"; }' "RequestString"
 "$DIALOG" window create -cp '{title = "title"; prompt = "prompt"; }' "RequestString"
 "$DIALOG" window close 5
 echo '{title = "updated title"; prompt = "updated prompt"; }' | "$DIALOG" window update 4
@@ -113,6 +115,8 @@ echo '{title = "updated title"; prompt = "updated prompt"; }' | "$DIALOG" window
 		{
 			[fh writeData:[[nibController token] dataUsingEncoding:NSUTF8StringEncoding]];
 		}
+		
+		[nibController showWindowAndCenter:[[windowOptions objectForKey:@"center"] boolValue]];
 		
 		if ([[windowOptions objectForKey:@"modal"] boolValue])
 			[nibController runModal];
