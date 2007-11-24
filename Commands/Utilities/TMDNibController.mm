@@ -165,7 +165,6 @@ static unsigned int NibTokenCount = 0;
 
 - (void)tearDown
 {
-	NSLog(@"%s isRunningModal: %d", _cmd, isRunningModal);
 	if (isRunningModal)
 		[NSApp stopModal];
 
@@ -199,7 +198,6 @@ static unsigned int NibTokenCount = 0;
 
 - (void)windowWillClose:(NSNotification*)aNotification
 {
-	NSLog(@"[%@ windowWillClose:%@]", [self class], aNotification);
 	[self tearDown];
 }
 

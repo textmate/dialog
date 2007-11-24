@@ -64,7 +64,9 @@ std::string find_nib (std::string nibName, std::string currentDirectory)
 /*
 "$DIALOG" -cmp '{title = "title"; prompt = "prompt"; string = "foo"; }' "RequestString"
 
-"$DIALOG" window show -mp '' '/Library/Application Support/TextMate/Bundles/Latex.tmbundle/Support/nibs/tex_prefs.nib'
+"$DIALOG" window show -mp '' -d '{ latexEngineOptions = "bar"; }' '/Library/Application Support/TextMate/Bundles/Latex.tmbundle/Support/nibs/tex_prefs.nib'
+
+"$DIALOG" -mp '' -d '{latexEngineOptions = "bar"; }' '/Library/Application Support/TextMate/Bundles/Latex.tmbundle/Support/nibs/tex_prefs.nib'
 
 "$DIALOG" window show -cmp '{title = "title"; prompt = "prompt"; string = "foo"; }' "RequestString"
 "$DIALOG" window create -cp '{title = "title"; prompt = "prompt"; }' "RequestString"
@@ -105,6 +107,10 @@ echo '{title = "updated title"; prompt = "updated prompt"; }' | "$DIALOG" window
 		TMDNibController* nibController = [[[TMDNibController alloc] initWithNibName:nib] autorelease];
 		NSDictionary *windowOptions = [res objectForKey:@"options"];
 		[nibController setParameters:[windowOptions objectForKey:@"parameters"]];
+
+		NSDictionary *initialValues = [windowOptions objectForKey:@"defaults"];
+		if (initialValues && [initialValues count])
+			[[NSUserDefaults standardUserDefaults] registerDefaults:initialValues];
 
 		NSFileHandle* fh = [options objectForKey:@"stdout"];
 		if([command isEqualToString:@"show"])
