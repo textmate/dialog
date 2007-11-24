@@ -4,6 +4,7 @@
 #import "../Dialog2.h"
 #import "../TMDCommand.h"
 #import "../OptionParser.h"
+#import "Utilities/TMDChameleon.h"
 
 // ==========
 // = Window =
@@ -341,6 +342,8 @@ std::string find_nib (std::string nibName, std::string currentDirectory)
 "$DIALOG" window create -cp '{title = "title"; prompt = "prompt"; }' "RequestString"
 "$DIALOG" window close 5
 echo '{title = "updated title"; prompt = "updated prompt"; }' | "$DIALOG" window update 4
+
+"$DIALOG" window show "/Library/Application Support/TextMate/Bundles/SQL.tmbundle/Support/nibs/connections.nib" -q -d"{'SQL Connections' = ( { title = untitled; serverType = MySQL; hostName = localhost; userName = '$LOGNAME'; } ); }" -n"{ SQL_New_Connection = { title = untitled; serverType = MySQL; hostName = localhost; userName = '$LOGNAME'; }; }" -p'{}' &
 */
 
 - (void)handleCommand:(id)options
@@ -365,6 +368,10 @@ echo '{title = "updated title"; prompt = "updated prompt"; }' | "$DIALOG" window
 		char const* nibName = [[args lastObject] UTF8String];
 		char const* nibPath = [[options objectForKey:@"cwd"] UTF8String];
 		NSString* nib = [NSString stringWithUTF8String:find_nib(nibName ?: "", nibPath ?: "").c_str()];
+
+		id dynamicClasses = [[res objectForKey:@"options"] objectForKey:@"new-items"];
+		enumerate([dynamicClasses allKeys], id key)
+			[TMDChameleon createSubclassNamed:key withValues:[dynamicClasses objectForKey:key]];
 
 		TMDNibController* nibController = [[[TMDNibController alloc] initWithNibName:nib] autorelease];
 		NSDictionary *windowOptions = [res objectForKey:@"options"];
