@@ -142,6 +142,6 @@ static option_t const expectedOptions[] =
 
 - (NSString *)usageForInvocation:(NSString *)invocation;
 {
-	return [NSString stringWithFormat:@"%@ «options» [nib]\n\nOptions:\n%@", invocation, GetOptionList(expectedOptions)];
+	return [NSString stringWithFormat:@"%@ «options»\n\nOptions:\n%@", invocation, GetOptionList(expectedOptions)];
 }
 @end
