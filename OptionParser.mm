@@ -235,25 +235,25 @@ NSDictionary* ParseOptions (NSArray* arguments, option_t const* available, size_
 
 NSString *GetOptionList (option_t const *options, size_t optionCount)
 {
-   size_t longestOption = 0;
-   for(size_t i = 0; i < optionCount; ++i)
-      longestOption = std::max(options[i].long_option.size(), longestOption);
+	size_t longestOption = 0;
+	for(size_t i = 0; i < optionCount; ++i)
+		longestOption = std::max(options[i].long_option.size(), longestOption);
 
-   std::string res;
-   for(size_t i = 0; i < optionCount; ++i)
-   {
-      bool hasShort = options[i].short_option.size();
-      bool hasLong  = options[i].long_option.size();
+	std::string res;
+	for(size_t i = 0; i < optionCount; ++i)
+	{
+		bool hasShort = options[i].short_option.size();
+		bool hasLong  = options[i].long_option.size();
 
-      res += " ";
-      res += (hasShort            ? "-" + options[i].short_option  : "  ");
-      res += (hasShort && hasLong ? ", "                           : "  ");
-      res += (hasLong             ? "--" + options[i].long_option  : "  ");
-      res += std::string(longestOption - options[i].long_option.size(), ' ');
-      res += "     ";
-      res += options[i].description;
-      res += "\n";
-   }
+		res += " ";
+		res += (hasShort            ? "-" + options[i].short_option  : "  ");
+		res += (hasShort && hasLong ? ", "                           : "  ");
+		res += (hasLong             ? "--" + options[i].long_option  : "  ");
+		res += std::string(longestOption - options[i].long_option.size(), ' ');
+		res += "     ";
+		res += options[i].description;
+		res += "\n";
+	}
 
-   return [NSString stringWithUTF8String:res.c_str()];
+	return [NSString stringWithUTF8String:res.c_str()];
 }
