@@ -217,10 +217,19 @@ static unsigned int NibTokenCount = 0;
 
 - (void)return:(id)res
 {
+	id result = res;
+	
+	// Async dialogs return just the result, other dialogs return parameters too
+	if ([self autoCloses]) {
+		result = [parameters mutableCopy];
+		[result setObject:res forKey:@"result"];
+		[result removeObjectForKey:@"controller"];
+	}
+	
 	[self makeControllersCommitEditing];
 
 	enumerate(fileHandles, NSFileHandle* fileHandle)
-		[TMDCommand writePropertyList:res toFileHandle:fileHandle];
+		[TMDCommand writePropertyList:result toFileHandle:fileHandle];
 
 	[fileHandles release];
 	fileHandles = nil;
