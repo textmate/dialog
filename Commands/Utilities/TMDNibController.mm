@@ -58,6 +58,15 @@ static unsigned int NibTokenCount = 0;
 	}
 }
 
+- (void)setParameters:(id)someParameters
+{
+	if(parameters != someParameters)
+	{
+		[parameters release];
+		parameters = [someParameters retain];
+	}
+}
+
 - (void)updateParametersWith:(id)plist
 {
 	enumerate([plist allKeys], id key)
@@ -181,7 +190,7 @@ static unsigned int NibTokenCount = 0;
 - (void)dealloc
 {
 	[self setWindow:nil];
-	[parameters release];
+	[self setParameters:nil];
 
 	enumerate(topLevelObjects, id object)
 		[object release];
