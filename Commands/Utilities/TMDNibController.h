@@ -24,7 +24,6 @@
 - (void)runModal;
 - (void)tearDown;
 - (void)showWindowAndCenter:(BOOL)shouldCenter;
-- (void)setParameters:(id)someParameters;
 - (void)notifyFileHandle:(NSFileHandle*)aFileHandle;
 - (void)setAutoCloses:(BOOL)flag;
 - (void)setWindow:(NSWindow*)aValue;

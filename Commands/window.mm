@@ -63,12 +63,13 @@ std::string find_nib (std::string nibName, std::string currentDirectory)
 
 /*
 "$DIALOG" -cmp '{title = "title"; prompt = "prompt"; string = "foo"; }' "RequestString"
+"$DIALOG" window show -cmp '{title = "title"; prompt = "prompt"; string = "foo"; }' "RequestString"
 
 "$DIALOG" window show -mp '' -d '{ latexEngineOptions = "bar"; }' '/Library/Application Support/TextMate/Bundles/Latex.tmbundle/Support/nibs/tex_prefs.nib'
 
 "$DIALOG" -mp '' -d '{latexEngineOptions = "bar"; }' '/Library/Application Support/TextMate/Bundles/Latex.tmbundle/Support/nibs/tex_prefs.nib'
 
-"$DIALOG" window show -cmp '{title = "title"; prompt = "prompt"; string = "foo"; }' "RequestString"
+
 "$DIALOG" window create -cp '{title = "title"; prompt = "prompt"; }' "RequestString"
 "$DIALOG" window close 5
 echo '{title = "updated title"; prompt = "updated prompt"; }' | "$DIALOG" window update 2
