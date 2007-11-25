@@ -7,7 +7,6 @@
 #import "Utilities/TMDChameleon.h"
 #import "Utilities/TMDNibController.h"
 
-
 // ==========
 // = Window =
 // ==========
@@ -76,21 +75,23 @@ echo '{title = "updated title"; prompt = "updated prompt"; }' | "$DIALOG" window
 "$DIALOG" window list
 
 "$DIALOG" window show "/Library/Application Support/TextMate/Bundles/SQL.tmbundle/Support/nibs/connections.nib" -q -d"{'SQL Connections' = ( { title = untitled; serverType = MySQL; hostName = localhost; userName = '$LOGNAME'; } ); }" -n"{ SQL_New_Connection = { title = untitled; serverType = MySQL; hostName = localhost; userName = '$LOGNAME'; }; }" -p'{}' &
+
+"$DIALOG" help window
 */
+
+static option_t const expectedOptions[] =
+{
+	{ "c", "center",		option_t::no_argument,	option_t::none,				"Centers the new window to the parent window/screen."},
+	{ "d", "defaults",	option_t::required_argument, option_t::plist,		"Register initial values for user defaults."},
+	{ "m", "modal",		option_t::no_argument,	option_t::none,				"Show window as modal (other windows will be inaccessible)."},
+	{ "n", "new-items",	option_t::required_argument, option_t::plist,		"A key/value list of classes (the key) which should dynamically be created at run-time for use as the NSArrayController’s object class. The value (a dictionary) is how instances of this class should be initialized (the actual instance will be an NSMutableDictionary with these values)."},
+	{ "p", "parameters",	option_t::required_argument, option_t::plist,		"Provide parameters as a plist."},
+	{ "q", "quiet",		option_t::no_argument,option_t::none,					"Do not write result to stdout."},
+};
 
 - (void)handleCommand:(id)options
 {
 	NSArray* args = [options objectForKey:@"arguments"];
-
-	static option_t const expectedOptions[] =
-	{
-		{ "c", "center",		option_t::no_argument										},
-		{ "d", "defaults",	option_t::required_argument, option_t::plist			},
-		{ "m", "modal",		option_t::no_argument										},
-		{ "n", "new-items",	option_t::required_argument, option_t::plist			},
-		{ "p", "parameters",	option_t::required_argument, option_t::plist			},
-		{ "q", "quiet",		option_t::no_argument										},
-	};
 
 	NSDictionary* res = ParseOptions(args, expectedOptions);
 
@@ -132,13 +133,13 @@ echo '{title = "updated title"; prompt = "updated prompt"; }' | "$DIALOG" window
 	else if([command isEqualToString:@"wait"])
 	{
 		NSString* token = [args lastObject];
-		TMDNibController* nibController = [TMDNibController controllerForToken:token];// [Nibs objectForKey:token];
+		TMDNibController* nibController = [TMDNibController controllerForToken:token];
 		[nibController notifyFileHandle:[options objectForKey:@"stdout"]];
 	}
 	else if([command isEqualToString:@"update"])
 	{
 		NSString* token = [args lastObject];
-		TMDNibController* nibController = [TMDNibController controllerForToken:token];// [Nibs objectForKey:token];
+		TMDNibController* nibController = [TMDNibController controllerForToken:token];
 		id newParameters = [TMDCommand readPropertyList:[options objectForKey:@"stdin"]];
 		[nibController updateParametersWith:newParameters];
 	}
@@ -158,5 +159,15 @@ echo '{title = "updated title"; prompt = "updated prompt"; }' | "$DIALOG" window
 		NSString* token = [args lastObject];
 		[[TMDNibController controllerForToken:token] tearDown];
 	}
+}
+
+- (NSString *)commandDescription
+{
+	return @"Displays custom dialogs from NIBs.";
+}
+
+- (NSString *)usageForInvocation:(NSString *)invocation;
+{
+	return [NSString stringWithFormat:@"%@ «options» [nib]\n\nOptions:\n%@", invocation, GetOptionList(expectedOptions)];
 }
 @end
