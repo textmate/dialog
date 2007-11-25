@@ -17,7 +17,12 @@
 
 - (NSString *)commandDescription
 {
-	return @"Gives a brief list of available commands";
+	return @"Gives a brief list of available commands, or usage details for a specific command.";
+}
+
+- (NSString *)usageForInvocation:(NSString *)invocation;
+{
+	return [NSString stringWithFormat:@"%@ help [command]", invocation];
 }
 
 - (NSString *)commandSummaryText
@@ -66,5 +71,6 @@
 }
 @end
 /*
-"$DIALOG" help html-tip
+"$DIALOG" help
+"$DIALOG" help help
 */
