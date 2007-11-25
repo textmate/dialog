@@ -15,6 +15,10 @@
 + (NSMethodSignature *)signatureWithObjCTypes:(const char *)types;
 @end
 
+@interface TMDNibController (Private)
+- (void)return:(id)res;
+@end
+
 @implementation TMDNibController
 static NSMutableDictionary* Nibs = [NSMutableDictionary new];
 static unsigned int NibTokenCount = 0;
@@ -202,7 +206,7 @@ static unsigned int NibTokenCount = 0;
 
 - (void)windowWillClose:(NSNotification*)aNotification
 {
-	[self tearDown];
+	[self return:nil];
 }
 
 // ==================================
@@ -222,7 +226,8 @@ static unsigned int NibTokenCount = 0;
 	// Async dialogs return just the result, other dialogs return parameters too
 	if ([self autoCloses]) {
 		result = [parameters mutableCopy];
-		[result setObject:res forKey:@"result"];
+		if (res)
+			[result setObject:res forKey:@"result"];
 		[result removeObjectForKey:@"controller"];
 	}
 	
