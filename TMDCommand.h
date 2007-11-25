@@ -12,5 +12,5 @@
 @end
 
 @interface NSFileHandle (WriteString)
-- (void)writeUTF8String:(NSString *)string;
+- (void)writeString:(NSString *)string;
 @end

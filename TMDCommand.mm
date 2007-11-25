@@ -65,7 +65,7 @@ static NSMutableDictionary* Commands = nil;
 @end
 
 @implementation NSFileHandle (WriteString)
-- (void)writeUTF8String:(NSString *)string;
+- (void)writeString:(NSString *)string;
 {
 	[self writeData:[string dataUsingEncoding:NSUTF8StringEncoding]];
 }

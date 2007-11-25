@@ -67,7 +67,7 @@
 	else
 		text = [self helpForCommand:[[options objectForKey:@"arguments"] objectAtIndex:2]];
 
-	[fh writeUTF8String:text];
+	[fh writeString:text];
 }
 @end
 /*
