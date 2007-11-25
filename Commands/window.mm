@@ -122,7 +122,7 @@ static option_t const expectedOptions[] =
 		}
 		else
 		{
-			[fh writeData:[[nibController token] dataUsingEncoding:NSUTF8StringEncoding]];
+			[fh writeUTF8String:[nibController token]];
 		}
 		
 		[nibController showWindowAndCenter:[[windowOptions objectForKey:@"center"] boolValue]];
@@ -151,7 +151,7 @@ static option_t const expectedOptions[] =
 		enumerate([controllers allKeys], NSString* token)
 		{
 			TMDNibController* nibController = [controllers objectForKey:token];
-			[fh writeData:[[NSString stringWithFormat:@"%@ (%@)\n", token, [[nibController window] title]] dataUsingEncoding:NSUTF8StringEncoding]];
+			[fh writeUTF8String:[NSString stringWithFormat:@"%@ (%@)\n", token, [[nibController window] title]]];
 		}
 	}
 	else if([command isEqualToString:@"close"])

@@ -10,3 +10,7 @@
 - (NSString *)commandDescription;
 - (NSString *)usageForInvocation:(NSString *)invocation;
 @end
+
+@interface NSFileHandle (WriteString)
+- (void)writeUTF8String:(NSString *)string;
+@end

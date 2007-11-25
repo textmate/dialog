@@ -61,7 +61,7 @@
 	if(id target = [TMDCommand objectForCommand:command])
 		[target performSelector:@selector(handleCommand:) withObject:newOptions];
 	else
-		[stderr_fh writeData:[@"unknown command, try help.\n" dataUsingEncoding:NSUTF8StringEncoding]];
+		[stderr_fh writeUTF8String:@"unknown command, try help.\n"];
 }
 
 - (void)hello:(id)options

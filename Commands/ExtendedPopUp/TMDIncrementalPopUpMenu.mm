@@ -339,7 +339,7 @@
 
 	//const char* cStringToSendToTask = [ stdIn UTF8String ];
 
-	[taskInput writeData: [stdIn dataUsingEncoding:NSUTF8StringEncoding]];
+	[taskInput writeUTF8String:stdIn];
 	[taskInput closeFile];
 
     NSFileHandle* taskOutput;

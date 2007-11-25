@@ -63,3 +63,10 @@ static NSMutableDictionary* Commands = nil;
 	return @"No usage information available for this command";
 }
 @end
+
+@implementation NSFileHandle (WriteString)
+- (void)writeUTF8String:(NSString *)string;
+{
+	[self writeData:[string dataUsingEncoding:NSUTF8StringEncoding]];
+}
+@end
