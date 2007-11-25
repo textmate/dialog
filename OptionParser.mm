@@ -245,7 +245,7 @@ NSString *GetOptionList(option_t const *options, size_t optionCount)
 			[option appendFormat:@"-%s%@", options[i].short_option.c_str(), options[i].long_option.length() > 0 ? @", " : @""];
 
 		if(options[i].long_option.length())
-			[option appendFormat:@"-%s", options[i].long_option.c_str()];
+			[option appendFormat:@"--%s", options[i].long_option.c_str()];
 
 		if([option length] > maxLength)
 			maxLength = [option length];

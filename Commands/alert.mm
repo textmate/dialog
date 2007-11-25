@@ -1,8 +1,12 @@
 #import "../Dialog2.h"
 #import "../TMDCommand.h"
+#import "../OptionParser.h"
 
 /*
 echo '{alertStyle = warning; buttonTitles = ('OK'); messageTitle = 'test'; informativeText = 'Testing';}' | "$DIALOG" alert
+
+"$DIALOG" help alert
+"$DIALOG" alert -s critical -m "FOOL!" -t "test" -1 foo -2 bar -3 baz
 */
 
 // =========
@@ -20,19 +24,27 @@ echo '{alertStyle = warning; buttonTitles = ('OK'); messageTitle = 'test'; infor
 	[super registerObject:[self new] forCommand:@"alert"];
 }
 
+static option_t const expectedOptions[] =
+{
+	{ "m", "message",			option_t::required_argument,	option_t::string,		"Message title."},
+	{ "t", "text",				option_t::required_argument,	option_t::string,		"Informative text for the alert."},
+	{ "s", "alert-style",	option_t::required_argument,	option_t::string,		"One of warning, critical or informational (the default)."},
+	{ "1", "button1",			option_t::required_argument,	option_t::string,		"Button 1 label."},
+	{ "2", "button2",			option_t::required_argument,	option_t::string,		"Button 2 label."},
+	{ "3", "button3",			option_t::required_argument,	option_t::string,		"Button 3 label."},
+};
+
 - (void)handleCommand:(id)options
 {
 	// NSFileHandle* fh = [options objectForKey:@"stderr"];
 
 #if 1
-	NSDictionary *parameters = [TMDCommand readPropertyList:[options objectForKey:@"stdin"]];
-	NSAlertStyle		alertStyle = NSInformationalAlertStyle;
-	NSAlert*			alert;
-	NSDictionary*		resultDict = nil;
-	NSArray*			buttonTitles = [parameters objectForKey:@"buttonTitles"];
-	NSString*			alertStyleString = [parameters objectForKey:@"alertStyle"];
+	NSDictionary	*parameters       = [ParseOptions([options objectForKey:@"arguments"], expectedOptions) objectForKey:@"options"];
+	NSAlertStyle	alertStyle        = NSInformationalAlertStyle;
+	NSString			*alertStyleString = [parameters objectForKey:@"alert-style"];
+	NSDictionary	*resultDict       = nil;
 		
-	alert = [[[NSAlert alloc] init] autorelease];
+	NSAlert *alert = [[[NSAlert alloc] init] autorelease];
 	
 	if([alertStyleString isEqualToString:@"warning"])
 	{
@@ -48,25 +60,18 @@ echo '{alertStyle = warning; buttonTitles = ('OK'); messageTitle = 'test'; infor
 	}
 	
 	[alert setAlertStyle:alertStyle];
-	[alert setMessageText:[parameters objectForKey:@"messageTitle"]];
-	[alert setInformativeText:[parameters objectForKey:@"informativeText"]];
+	if([parameters objectForKey:@"message"])
+		[alert setMessageText:[parameters objectForKey:@"message"]];
+	if([parameters objectForKey:@"text"])
+		[alert setInformativeText:[parameters objectForKey:@"text"]];
 	
 	// Setup buttons
-	if(buttonTitles != nil && [buttonTitles count] > 0)
-	{
-		unsigned int	buttonCount = [buttonTitles count];
-
-		// NSAlert always preallocates the OK button.
-		// No -- docs are not entirely correct.
-//		[[[alert buttons] objectAtIndex:0] setTitle:[buttonTitles objectAtIndex:0]];
-
-		for(unsigned int index = 0; index < buttonCount; index += 1)
-		{
-			NSString *	buttonTitle = [buttonTitles objectAtIndex:index];
-
-			[alert addButtonWithTitle:buttonTitle];
-		}
-	}
+	if ([parameters objectForKey:@"button1"])
+		[alert addButtonWithTitle:[parameters objectForKey:@"button1"]];
+	if ([parameters objectForKey:@"button2"])
+		[alert addButtonWithTitle:[parameters objectForKey:@"button2"]];
+	if ([parameters objectForKey:@"button3"])
+		[alert addButtonWithTitle:[parameters objectForKey:@"button3"]];
 	
 	BOOL modal = YES;
 	
@@ -128,5 +133,15 @@ echo '{alertStyle = warning; buttonTitles = ('OK'); messageTitle = 'test'; infor
 
 	[TMDCommand writePropertyList:resultDict toFileHandle:[options objectForKey:@"stdout"]];
 #endif
+}
+
+- (NSString *)commandDescription
+{
+	return @"Show an alert box.";
+}
+
+- (NSString *)usageForInvocation:(NSString *)invocation;
+{
+	return [NSString stringWithFormat:@"%@ «options» [nib]\n\nOptions:\n%@", invocation, GetOptionList(expectedOptions)];
 }
 @end
