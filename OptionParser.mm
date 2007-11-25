@@ -232,3 +232,38 @@ NSDictionary* ParseOptions (NSArray* arguments, option_t const* available, size_
 		errString,	@"error",
 		nil];
 }
+
+NSString *GetOptionList(option_t const *options, size_t optionCount)
+{
+	NSMutableArray *list = [NSMutableArray arrayWithCapacity:optionCount];
+	int maxLength = 0;
+
+	for(size_t i = 0; i < optionCount; ++i)
+	{
+		NSMutableString *option = [NSMutableString stringWithCapacity:20];
+		if(options[i].short_option.length())
+			[option appendFormat:@"-%s%@", options[i].short_option.c_str(), options[i].long_option.length() > 0 ? @", " : @""];
+
+		if(options[i].long_option.length())
+			[option appendFormat:@"-%s", options[i].long_option.c_str()];
+
+		if([option length] > maxLength)
+			maxLength = [option length];
+
+		[list addObject:option];
+	}
+
+	for(size_t i = 0; i < optionCount; ++i)
+	{
+		if(options[i].description == NULL)
+			continue;
+
+		NSString *option       = [list objectAtIndex:i];
+		NSString *paddedOption = [option stringByPaddingToLength:maxLength + 5 withString:@" " startingAtIndex:0];
+		paddedOption           = [paddedOption stringByAppendingString:[NSString stringWithUTF8String:options[i].description]];
+
+		[list replaceObjectAtIndex:i withObject:paddedOption];
+	}
+
+	return [list componentsJoinedByString:@"\n"];
+}
