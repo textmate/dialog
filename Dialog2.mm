@@ -25,14 +25,16 @@
 - (id)initWithPlugInController:(id <TMPlugInController>)aController
 {
 	NSApp = [NSApplication sharedApplication];
-	if (self = [self init]) {
+	if(self = [self init])
+	{
 		NSConnection *connection = [NSConnection new];
 		[connection setRootObject:self];
 
-		if ([connection registerName:DialogServerConnectionName] == NO)
+		if([connection registerName:DialogServerConnectionName] == NO)
 			NSLog(@"couldn't setup dialog server."), NSBeep();
-		else if (NSString* path = [[NSBundle bundleForClass:[self class]] pathForResource:@"tm_dialog2" ofType:nil]) {
-			if (char* old_dialog = getenv("DIALOG_1"))
+		else if(NSString* path = [[NSBundle bundleForClass:[self class]] pathForResource:@"tm_dialog2" ofType:nil])
+		{
+			if(char* old_dialog = getenv("DIALOG"))
 				setenv("DIALOG_1", old_dialog, 1);
 			setenv("DIALOG", [path UTF8String], 1);
 		}
