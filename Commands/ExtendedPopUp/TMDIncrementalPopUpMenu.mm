@@ -7,6 +7,7 @@
 
 #import "TMDIncrementalPopUpMenu.h"
 #import "../Utilities/TextMate.h" // -insertSnippetWithOptions
+#import "../../TMDCommand.h" // -writeString:
 
 @implementation TMDIncrementalPopUpMenu
 - (id)initWithDictionary:(NSDictionary*)aDictionary andEditor:(id)editor
@@ -339,7 +340,7 @@
 
 	//const char* cStringToSendToTask = [ stdIn UTF8String ];
 
-	[taskInput writeUTF8String:stdIn];
+	[taskInput writeString:stdIn];
 	[taskInput closeFile];
 
     NSFileHandle* taskOutput;
