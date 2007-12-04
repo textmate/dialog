@@ -138,16 +138,24 @@ static option_t const expectedOptions[] =
 	{
 		NSString* token = [args lastObject];
 		TMDNibController* nibController = [TMDNibController controllerForToken:token];
-		[nibController notifyFileHandle:[options objectForKey:@"stdout"]];
+		if(nibController)
+			[nibController notifyFileHandle:[options objectForKey:@"stdout"]];
+		else
+			[[options objectForKey:@"stderr"] writeString:@"There is no window with that token"];
 	}
 	else if([command isEqualToString:@"update"])
 	{
 		NSString* token = [args lastObject];
 		TMDNibController* nibController = [TMDNibController controllerForToken:token];
-		id newParameters = [[res objectForKey:@"options"] objectForKey:@"parameters"];
-		if(! newParameters)
-			newParameters = [TMDCommand readPropertyList:[options objectForKey:@"stdin"]];
-		[nibController updateParametersWith:newParameters];
+		if(nibController)
+		{
+			id newParameters = [[res objectForKey:@"options"] objectForKey:@"parameters"];
+			if(! newParameters)
+				newParameters = [TMDCommand readPropertyList:[options objectForKey:@"stdin"]];
+			[nibController updateParametersWith:newParameters];
+		}
+		else
+			[[options objectForKey:@"stderr"] writeString:@"There is no window with that token"];
 	}
 	else if([command isEqualToString:@"list"])
 	{
@@ -163,7 +171,10 @@ static option_t const expectedOptions[] =
 	else if([command isEqualToString:@"close"])
 	{
 		NSString* token = [args lastObject];
-		[[TMDNibController controllerForToken:token] tearDown];
+		if([TMDNibController controllerForToken:token])
+			[[TMDNibController controllerForToken:token] tearDown];
+		else
+			[[options objectForKey:@"stderr"] writeString:@"There is no window with that token"];
 	}
 }
 
