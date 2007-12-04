@@ -71,7 +71,8 @@ std::string find_nib (std::string nibName, std::string currentDirectory)
 
 "$DIALOG" window create -cp '{title = "title"; prompt = "prompt"; }' "RequestString"
 "$DIALOG" window close 5
-echo '{title = "updated title"; prompt = "updated prompt"; }' | "$DIALOG" window update 2
+echo '{title = "updated title"; prompt = "updated prompt"; }' | "$DIALOG" window update 1
+"$DIALOG" window update -p '{title = "updated title"; prompt = "updated prompt"; }' 2
 "$DIALOG" window list
 
 "$DIALOG" window show "/Library/Application Support/TextMate/Bundles/SQL.tmbundle/Support/nibs/connections.nib" -q -d"{'SQL Connections' = ( { title = untitled; serverType = MySQL; hostName = localhost; userName = '$LOGNAME'; } ); }" -n"{ SQL_New_Connection = { title = untitled; serverType = MySQL; hostName = localhost; userName = '$LOGNAME'; }; }" -p'{}' &
@@ -108,7 +109,10 @@ static option_t const expectedOptions[] =
 
 		TMDNibController* nibController = [[[TMDNibController alloc] initWithNibName:nib] autorelease];
 		NSDictionary *windowOptions = [res objectForKey:@"options"];
-		[nibController updateParametersWith:[windowOptions objectForKey:@"parameters"]];
+		id parameters = [windowOptions objectForKey:@"parameters"];
+		if(! parameters)
+			parameters = [TMDCommand readPropertyList:[options objectForKey:@"stdin"]];
+		[nibController updateParametersWith:parameters];
 
 		NSDictionary *initialValues = [windowOptions objectForKey:@"defaults"];
 		if (initialValues && [initialValues count])
@@ -140,7 +144,9 @@ static option_t const expectedOptions[] =
 	{
 		NSString* token = [args lastObject];
 		TMDNibController* nibController = [TMDNibController controllerForToken:token];
-		id newParameters = [TMDCommand readPropertyList:[options objectForKey:@"stdin"]];
+		id newParameters = [[res objectForKey:@"options"] objectForKey:@"parameters"];
+		if(! newParameters)
+			newParameters = [TMDCommand readPropertyList:[options objectForKey:@"stdin"]];
 		[nibController updateParametersWith:newParameters];
 	}
 	else if([command isEqualToString:@"list"])
