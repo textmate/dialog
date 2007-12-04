@@ -185,6 +185,12 @@ static option_t const expectedOptions[] =
 
 - (NSString *)usageForInvocation:(NSString *)invocation;
 {
-	return [NSString stringWithFormat:@"%@ «options» [nib]\n\nOptions:\n%@", invocation, GetOptionList(expectedOptions)];
+	return [NSString stringWithFormat:
+		@"%@ show/create «options» «nib path»\n"
+		@"%@ update/ [-p «parameters»] «window token»\n"
+		@"%@ update wait/close «window token»\n"
+		@"\nParameters should be provided as a propertly list.\n"
+		@"\nOptions:\n%@",
+		invocation, invocation, invocation, GetOptionList(expectedOptions)];
 }
 @end
