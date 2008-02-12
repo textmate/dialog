@@ -38,7 +38,9 @@
 		NSString *description = [command commandDescription];
 		[help appendFormat:@"\t%@: %@\n", commandName, description];
 	}
-	
+
+	[help appendString:@"Use `\"$DIALOG\" help command` for detailed help\n"];
+
 	return help;
 }
 
@@ -58,7 +60,6 @@
 
 - (void)handleCommand:(id)options
 {
-	NSLog(@"[%@ handleCommand:%@]", [self class], options);
 	NSFileHandle* fh = [options objectForKey:@"stderr"];
 	NSString *text = @"";
 	
