@@ -30,7 +30,7 @@ echo '{ menuItems = ({title = "foo"; header = 1;},{title = "bar";}); }' | "$DIAL
 - (NSString *)usageForInvocation:(NSString *)invocation;
 {
 	return [NSString stringWithFormat:@"The menu structure should be given as a property list on STDIN, e.g.\n"
-	       @"echo '{ menuItems = ({title = \"foo\";}); }' | %@",invocation];
+	       @"echo '{ menuItems = ({title = \"foo\";}, {separator = 1;}, {header=1; title=\"bar\";}, {title = \"baz\";}); }' | %@",invocation];
 }
 
 - (void)handleCommand:(id)options
