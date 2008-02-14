@@ -72,11 +72,6 @@ echo '{suggestions = ({title = "**law**";filterOn = "law";},{title = "**laws**";
 		extraChars = [NSNull null];
 	[[xPopUp window] setFrameTopLeftPoint:pos];
     [xPopUp showWindow:self];
-	int i;
-	for(i=0;i<=1000;i++)
-	{
-		[[xPopUp window] setAlphaValue:i*0.001];
-	}
 	NSLog(@"%d xpop before",[xPopUp retainCount]);
 	[self performSelector: @selector(eventHandlingForExtendedPopupMenu:)
                withObject: [NSDictionary dictionaryWithObjectsAndKeys:xPopUp,@"xPopUp",extraChars,@"extraChars",nil]
