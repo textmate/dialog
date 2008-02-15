@@ -224,7 +224,8 @@ static unsigned int NibTokenCount = 0;
 	id result = res;
 	
 	// Async dialogs return just the result, other dialogs return parameters too
-	if ([self autoCloses]) {
+	if([self autoCloses])
+	{
 		result = [parameters mutableCopy];
 		if (res)
 			[result setObject:res forKey:@"result"];

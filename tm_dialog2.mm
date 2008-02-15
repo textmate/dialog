@@ -60,7 +60,7 @@ int main (int argc, char const* argv[])
 {
 	// If the argument list starts with a switch then assume it’s meant for trunk dialog
 	// and pass it off
-	if (argc > 1 && *argv[1] == '-')
+	if(argc > 1 && *argv[1] == '-')
 		execv(getenv("DIALOG_1"), (char* const*)argv);
 
 	NSAutoreleasePool* pool = [NSAutoreleasePool new];

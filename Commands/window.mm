@@ -24,7 +24,7 @@ std::string find_nib (std::string nibName, std::string currentDirectory)
 {
 	std::vector<std::string> candidates;
 
-	if (nibName.find(".nib") == std::string::npos && nibName.find(".xib") == std::string::npos)
+	if(nibName.find(".nib") == std::string::npos && nibName.find(".xib") == std::string::npos)
 		nibName += ".nib";
 
 	if(nibName.size() && nibName[0] != '/') // relative path
@@ -115,7 +115,7 @@ static option_t const expectedOptions[] =
 		[nibController updateParametersWith:parameters];
 
 		NSDictionary *initialValues = [windowOptions objectForKey:@"defaults"];
-		if (initialValues && [initialValues count])
+		if(initialValues && [initialValues count])
 			[[NSUserDefaults standardUserDefaults] registerDefaults:initialValues];
 
 		NSFileHandle* fh = [options objectForKey:@"stdout"];
@@ -131,7 +131,7 @@ static option_t const expectedOptions[] =
 		
 		[nibController showWindowAndCenter:[[windowOptions objectForKey:@"center"] boolValue]];
 		
-		if ([[windowOptions objectForKey:@"modal"] boolValue])
+		if([[windowOptions objectForKey:@"modal"] boolValue])
 			[nibController runModal];
 	}
 	else if([command isEqualToString:@"wait"])

@@ -33,7 +33,8 @@
 	[help appendFormat:@"%d commands registered:\n", [commands count]];
 
 	NSEnumerator *enumerator = [commands keyEnumerator];
-	while (NSString *commandName = [enumerator nextObject]) {
+	while(NSString *commandName = [enumerator nextObject])
+	{
 		TMDCommand *command = [commands objectForKey:commandName];
 		NSString *description = [command commandDescription];
 		[help appendFormat:@"\t%@: %@\n", commandName, description];
@@ -48,11 +49,13 @@
 {
 	NSMutableString *help = [NSMutableString stringWithCapacity:100];
 	
-	if (TMDCommand *command = [TMDCommand objectForCommand:commandName]) {
+	if(TMDCommand *command = [TMDCommand objectForCommand:commandName])
+	{
 		[help appendFormat:@"%@\n\n",[command commandDescription]];
 		[help appendFormat:@"%@ usage:\n",commandName];
 		[help appendFormat:@"%@\n",[command usageForInvocation:[NSString stringWithFormat:@"\"$DIALOG\" %@", commandName]]];
-	} else
+	}
+	else
 		[help appendFormat:@"Unknown command '%@'\n", commandName];
 
 	return help;
@@ -63,7 +66,7 @@
 	NSFileHandle* fh = [options objectForKey:@"stderr"];
 	NSString *text = @"";
 	
-	if ([[options objectForKey:@"arguments"] count] < 3)
+	if([[options objectForKey:@"arguments"] count] < 3)
 		text = [self commandSummaryText];
 	else
 		text = [self helpForCommand:[[options objectForKey:@"arguments"] objectAtIndex:2]];
