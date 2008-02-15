@@ -134,8 +134,9 @@ int main (int argc, char const* argv[])
 
 			if(FD_ISSET(it->first, &errorfds))
 			{
-				// anyone knows how to query the fd for what is wrong?
-				fprintf(stderr, "error condition on %d\n", it->first);
+				// only report a problem when owner is not -1 since there is a bug (<rdar://5745680>) where errors are reported for file descriptors with -1 as owner (which is the case when using here-docs/here-strings for stdin)
+				if(fcntl(STDIN_FILENO, F_GETOWN) != -1)
+					fprintf(stderr, "error condition on %d\n", it->first);
 			}
 		}
 
