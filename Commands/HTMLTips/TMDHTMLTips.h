@@ -8,16 +8,15 @@
 #import <Cocoa/Cocoa.h>
 #import <WebKit/WebKit.h>
 
-#define TMD_TOOLTIP_PREFERENCES_IDENTIFIER @"TM Tooltip"
-
-@interface TMDHTMLTips : NSWindowController
+@interface TMDHTMLTip : NSWindow
 {
-	WebPreferences * webPreferences;
-	IBOutlet WebView *webView;
-	NSString *content;
+	WebView*	webView;
+	WebPreferences*	webPreferences;
+	NSTimer* animationTimer;
+	NSDate* animationStart;
+
+	NSDate* didOpenAtDate; // ignore mouse moves for the next second
+	NSPoint mousePositionWhenOpened;
 }
-- (id)init;
-- (void)setHTML:(NSString *)html;
-- (void)sizeToContent;
-- (void)fade;
++ (void)showWithHTML:(NSString*)content atLocation:(NSPoint)point forScreen:(NSScreen*)screen;
 @end

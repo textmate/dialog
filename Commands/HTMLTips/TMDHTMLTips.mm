@@ -6,48 +6,85 @@
 //
 
 #import "TMDHTMLTips.h"
+#import <algorithm>
 
 /*
-echo '‘foobarbaz’' | "$DIALOG" html-tip
+echo '‘foobar’' | "$DIALOG" html-tip
 */
 
-@implementation TMDHTMLTips
+static float slow_in_out (float t)
+{
+	if(t < 1.0f)
+		t = 1.0f / (1.0f + exp((-t*12.0f)+6.0f));
+	return std::min(t, 1.0f);
+}
+
+const NSString* TMDTooltipPreferencesIdentifier = @"TM Tooltip";
+
+@interface TMDHTMLTip (Private)
+- (void)setHTML:(NSString *)html;
+- (void)runUntilUserActivity;
+- (void)stopAnimation:(id)sender;
+@end
+
+@implementation TMDHTMLTip
+// ==================
+// = Setup/teardown =
+// ==================
++ (void)showWithHTML:(NSString*)content atLocation:(NSPoint)point forScreen:(NSScreen*)screen;
+{
+	TMDHTMLTip* tip = [TMDHTMLTip new];
+	[tip setFrameTopLeftPoint:point];
+	[tip setHTML:content]; // The tooltip will show itself automatically when the HTML is loaded
+}
+
 - (id)init
 {
-	if (self = [self initWithWindowNibName:@"HTMLTip"]) {
-		content = nil;
+	if(self = [super initWithContentRect:NSZeroRect styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO])
+	{
+		[self setReleasedWhenClosed:YES];
+		[self setAlphaValue:0.97f];
+		[self setOpaque:NO];
+		[self setBackgroundColor:[NSColor colorWithDeviceRed:1.0f green:0.96f blue:0.76f alpha:1.0f]];
+		[self setHasShadow:YES];
+		[self setLevel:NSStatusWindowLevel];
+		[self setHidesOnDeactivate:YES];
+		[self setIgnoresMouseEvents:YES];
 
-		webPreferences = [[WebPreferences alloc] initWithIdentifier:TMD_TOOLTIP_PREFERENCES_IDENTIFIER];
+		webPreferences = [[WebPreferences alloc] initWithIdentifier:TMDTooltipPreferencesIdentifier];
 		[webPreferences setJavaScriptEnabled:YES];
 		NSString *fontFamily = [[NSUserDefaults standardUserDefaults] stringForKey:@"OakTextViewNormalFontName"];
-		if (fontFamily == nil)
+		if(fontFamily == nil)
 			fontFamily = @"Monaco";
 		int fontSize = [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"];
-		if (fontSize == 0)
+		if(fontSize == 0)
 			fontSize = 11;
 		[webPreferences setStandardFontFamily:fontFamily];
 		[webPreferences setDefaultFontSize:fontSize];
-	}
 
+		webView = [[WebView alloc] initWithFrame:NSZeroRect];
+		[webView setPreferencesIdentifier:TMDTooltipPreferencesIdentifier];
+		[webView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
+		[webView setFrameLoadDelegate:self];
+
+		[self setContentView:webView];
+	}
 	return self;
 }
 
-- (void)awakeFromNib
+- (void)dealloc
 {
-	if (content)
-		[self setHTML:content];
-
-	[webView setPreferencesIdentifier:TMD_TOOLTIP_PREFERENCES_IDENTIFIER];
-	[webView setFrameLoadDelegate:self];
+	[didOpenAtDate release];
+	[webView release];
+	[webPreferences release];
+	[super dealloc];
 }
 
+// ===========
+// = Webview =
+// ===========
 - (void)setHTML:(NSString *)html
 {
-	content = [html retain];
-
-	if (![self isWindowLoaded])
-		return;
-
 	NSString *fullContent =	@"<html>"
 				@"<head>"
 				@"  <style type='text/css' media='screen'>"
@@ -69,43 +106,119 @@ echo '‘foobarbaz’' | "$DIALOG" html-tip
 
 - (void)sizeToContent
 {
-	NSPoint pos = NSMakePoint([[self window] frame].origin.x, [[self window] frame].origin.y + [[self window] frame].size.height);
-	id wsc     = [webView windowScriptObject];
-	int height = [[wsc evaluateWebScript:@"document.body.offsetHeight + document.body.offsetTop;"] intValue];
-	int width  = [[wsc evaluateWebScript:@"document.body.offsetWidth + document.body.offsetLeft;"] intValue];
-
-	[[self window] setContentSize:NSMakeSize(width, height)];
+ 	NSPoint pos = NSMakePoint([self frame].origin.x, [self frame].origin.y + [self frame].size.height);
+	id wsc      = [webView windowScriptObject];
+	int height  = [[wsc evaluateWebScript:@"document.body.offsetHeight + document.body.offsetTop;"] intValue];
+	int width   = [[wsc evaluateWebScript:@"document.body.offsetWidth + document.body.offsetLeft;"] intValue];
+	
+	[self setContentSize:NSMakeSize(width, height)];
 	
 	int x_overlap = (pos.x + width) - [[NSScreen mainScreen] frame].size.width;
-	if (x_overlap > 0)
+	if(x_overlap > 0)
 		pos.x = pos.x - x_overlap;
 	
 	int y_overlap = pos.y - height;
-	if (y_overlap < 0)
+	if(y_overlap < 0)
 		pos.y = pos.y - y_overlap;
-	[[self window] setFrameTopLeftPoint:pos];
+	[self setFrameTopLeftPoint:pos];
 }
 
-- (void)fade
+- (void)webView:(WebView*)sender didFinishLoadForFrame:(WebFrame*)frame;
 {
-	if ([[self window] alphaValue] == 0.0) {
-		[self close];
-	} else {
-		[[self window] setAlphaValue:[[self window] alphaValue] - 0.25];
-		[self performSelector:@selector(fade) withObject:nil afterDelay:0.1];
+	[self sizeToContent];
+	[self orderFront:self];
+	[self performSelector:@selector(runUntilUserActivity) withObject:nil afterDelay:0];
+}
+
+// ==================
+// = Event handling =
+// ==================
+- (BOOL)shouldCloseForMousePosition:(NSPoint)aPoint
+{
+	float ignorePeriod = [[NSUserDefaults standardUserDefaults] floatForKey:@"OakToolTipMouseMoveIgnorePeriod"];
+	if(-[didOpenAtDate timeIntervalSinceNow] < ignorePeriod)
+		return NO;
+
+	if(NSEqualPoints(mousePositionWhenOpened, NSZeroPoint))
+	{
+		mousePositionWhenOpened = aPoint;
+		return NO;
+	}
+
+	NSPoint const& p = mousePositionWhenOpened;
+	float deltaX = p.x - aPoint.x;
+	float deltaY = p.y - aPoint.y;
+	float dist = sqrtf(deltaX * deltaX + deltaY * deltaY);
+
+	float moveThreshold = [[NSUserDefaults standardUserDefaults] floatForKey:@"OakToolTipMouseDistanceThreshold"];
+	return dist > moveThreshold;
+}
+
+- (void)runUntilUserActivity;
+{
+	[self setValue:[NSDate date] forKey:@"didOpenAtDate"];
+	mousePositionWhenOpened = NSZeroPoint;
+
+	NSWindow* keyWindow = [[NSApp keyWindow] retain];
+	BOOL didAcceptMouseMovedEvents = [keyWindow acceptsMouseMovedEvents];
+	[keyWindow setAcceptsMouseMovedEvents:YES];
+
+	while(NSEvent* event = [NSApp nextEventMatchingMask:NSAnyEventMask untilDate:[NSDate distantFuture] inMode:NSDefaultRunLoopMode dequeue:YES])
+	{
+		[NSApp sendEvent:event];
+
+		if([event type] == NSLeftMouseDown || [event type] == NSRightMouseDown || [event type] == NSOtherMouseDown || [event type] == NSKeyDown || [event type] == NSScrollWheel)
+			break;
+
+		if([event type] == NSMouseMoved && [self shouldCloseForMousePosition:[NSEvent mouseLocation]])
+			break;
+
+		if(keyWindow != [NSApp keyWindow] || ![NSApp isActive])
+			break;
+	}
+
+	[keyWindow setAcceptsMouseMovedEvents:didAcceptMouseMovedEvents];
+	[keyWindow release];
+
+	[self orderOut:self];
+}
+
+// =============
+// = Animation =
+// =============
+- (void)orderOut:(id)sender
+{
+	if(![self isVisible] || animationTimer)
+		return;
+
+	[self stopAnimation:self];
+	[self setValue:[NSDate date] forKey:@"animationStart"];
+	[self setValue:[NSTimer scheduledTimerWithTimeInterval:0.02f target:self selector:@selector(animationTick:) userInfo:nil repeats:YES] forKey:@"animationTimer"];
+}
+
+- (void)animationTick:(id)sender
+{
+	float alpha = 0.97f * (1.0f - slow_in_out(-1.5 * [animationStart timeIntervalSinceNow]));
+	if(alpha > 0.0f)
+	{
+		[self setAlphaValue:alpha];
+	}
+	else
+	{
+		[super orderOut:self];
+		[self stopAnimation:self];
 	}
 }
 
-- (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame
+- (void)stopAnimation:(id)sender;
 {
-	[self sizeToContent];
-	[self showWindow:self];
-}
-
-- (void)dealloc
-{
-	[content release];
-	[webPreferences release];
-	[super dealloc];
+	if(animationTimer)
+	{
+		[[self retain] autorelease];
+		[animationTimer invalidate];
+		[self setValue:nil forKey:@"animationTimer"];
+		[self setValue:nil forKey:@"animationStart"];
+		[self setAlphaValue:0.97f];
+	}
 }
 @end
