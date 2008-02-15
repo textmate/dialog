@@ -207,6 +207,7 @@ const NSString* TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 	{
 		[super orderOut:self];
 		[self stopAnimation:self];
+		[self close];
 	}
 }
 
