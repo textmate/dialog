@@ -20,7 +20,7 @@
 // = Command handler =
 // ===================
 
-std::string find_nib (std::string nibName, std::string currentDirectory)
+std::string find_nib (std::string nibName, std::string currentDirectory, NSDictionary* env)
 {
 	std::vector<std::string> candidates;
 
@@ -31,10 +31,10 @@ std::string find_nib (std::string nibName, std::string currentDirectory)
 	{
 		candidates.push_back(currentDirectory + "/" + nibName);
 
-		if(char const* bundleSupport = getenv("TM_BUNDLE_SUPPORT"))
+		if(char const* bundleSupport = [[env objectForKey:@"TM_BUNDLE_SUPPORT"] UTF8String])
 			candidates.push_back(bundleSupport + std::string("/nibs/") + nibName);
 
-		if(char const* supportPath = getenv("TM_SUPPORT_PATH"))
+		if(char const* supportPath = [[env objectForKey:@"TM_SUPPORT_PATH"] UTF8String])
 			candidates.push_back(supportPath + std::string("/nibs/") + nibName);
 	}
 	else
@@ -101,7 +101,7 @@ static option_t const expectedOptions[] =
 	{
 		char const* nibName = [[args lastObject] UTF8String];
 		char const* nibPath = [[options objectForKey:@"cwd"] UTF8String];
-		NSString* nib = [NSString stringWithUTF8String:find_nib(nibName ?: "", nibPath ?: "").c_str()];
+		NSString* nib = [NSString stringWithUTF8String:find_nib(nibName ?: "", nibPath ?: "", [options objectForKey:@"environment"]).c_str()];
 
 		id dynamicClasses = [[res objectForKey:@"options"] objectForKey:@"new-items"];
 		enumerate([dynamicClasses allKeys], id key)

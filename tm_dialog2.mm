@@ -84,6 +84,7 @@ int main (int argc, char const* argv[])
 		[NSString stringWithUTF8String:stdout_name],			@"stdout",
 		[NSString stringWithUTF8String:stderr_name],			@"stderr",
 		[NSString stringWithUTF8String:getcwd(NULL, 0)],	@"cwd",
+		[[NSProcessInfo processInfo] environment],			@"environment",
 		args,																@"arguments",
 		nil
 	];
