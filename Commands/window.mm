@@ -90,18 +90,27 @@ static option_t const expectedOptions[] =
 	{ "q", "quiet",		option_t::no_argument,option_t::none,					"Do not write result to stdout."},
 };
 
+#define ErrorAndReturn(message) while(1){[[options objectForKey:@"stderr"] writeString:@"Error: " message "\n"];return;};
+
 - (void)handleCommand:(id)options
 {
 	NSArray* args = [options objectForKey:@"arguments"];
+	if([args count] < 3)
+		ErrorAndReturn(@"no command given (see `\"$DIALOG\" help window` for usage)");
 
 	NSDictionary* res = ParseOptions(args, expectedOptions);
 
 	NSString* command = [args objectAtIndex:2];
 	if([command isEqualToString:@"create"] || [command isEqualToString:@"show"])
 	{
+		if([args count] < 4)
+			ErrorAndReturn(@"you must give at least one argument, the name of the nib to show");
+
 		char const* nibName = [[args lastObject] UTF8String];
 		char const* nibPath = [[options objectForKey:@"cwd"] UTF8String];
 		NSString* nib = [NSString stringWithUTF8String:find_nib(nibName ?: "", nibPath ?: "", [options objectForKey:@"environment"]).c_str()];
+		if(nib == nil || [nib length] == 0)
+			ErrorAndReturn(@"nib not found. The nib name must be the last argument given");
 
 		id dynamicClasses = [[res objectForKey:@"options"] objectForKey:@"new-items"];
 		enumerate([dynamicClasses allKeys], id key)
@@ -137,6 +146,8 @@ static option_t const expectedOptions[] =
 	else if([command isEqualToString:@"wait"])
 	{
 		NSString* token = [args lastObject];
+		if([args count] < 4)
+			ErrorAndReturn(@"no window token given");
 		TMDNibController* nibController = [TMDNibController controllerForToken:token];
 		if(nibController)
 			[nibController notifyFileHandle:[options objectForKey:@"stdout"]];
@@ -146,6 +157,8 @@ static option_t const expectedOptions[] =
 	else if([command isEqualToString:@"update"])
 	{
 		NSString* token = [args lastObject];
+		if([args count] < 4)
+			ErrorAndReturn(@"no window token given");
 		TMDNibController* nibController = [TMDNibController controllerForToken:token];
 		if(nibController)
 		{
@@ -162,15 +175,22 @@ static option_t const expectedOptions[] =
 		NSFileHandle* fh = [options objectForKey:@"stdout"];
 		NSDictionary *controllers = [TMDNibController controllers];
 
-		enumerate([controllers allKeys], NSString* token)
+		if([controllers count] > 0)
 		{
-			TMDNibController* nibController = [controllers objectForKey:token];
-			[fh writeString:[NSString stringWithFormat:@"%@ (%@)\n", token, [[nibController window] title]]];
+			enumerate([controllers allKeys], NSString* token)
+			{
+				TMDNibController* nibController = [controllers objectForKey:token];
+				[fh writeString:[NSString stringWithFormat:@"%@ (%@)\n", token, [[nibController window] title]]];
+			}
 		}
+		else
+			[fh writeString:@"There are no active windows\n"];
 	}
 	else if([command isEqualToString:@"close"])
 	{
 		NSString* token = [args lastObject];
+		if([args count] < 4)
+			ErrorAndReturn(@"no window token given");
 		if([TMDNibController controllerForToken:token])
 			[[TMDNibController controllerForToken:token] tearDown];
 		else
