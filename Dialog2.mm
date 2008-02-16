@@ -50,17 +50,19 @@
 - (void)dispatch:(id)options
 {
 	NSArray* args           = [options objectForKey:@"arguments"];
+	NSArray* supportPaths   = [options objectForKey:@"support"];
 	NSString* cwd           = [options objectForKey:@"cwd"];
 	NSFileHandle* stdin_fh  = [NSFileHandle fileHandleForReadingAtPath:[options objectForKey:@"stdin"]];
 	NSFileHandle* stdout_fh = [NSFileHandle fileHandleForWritingAtPath:[options objectForKey:@"stdout"]];
 	NSFileHandle* stderr_fh = [NSFileHandle fileHandleForWritingAtPath:[options objectForKey:@"stderr"]];
 
 	NSDictionary* newOptions = [NSDictionary dictionaryWithObjectsAndKeys:
-		stdin_fh,	@"stdin",
-		stdout_fh,	@"stdout",
-		stderr_fh,	@"stderr",
-		args,			@"arguments",
-		cwd,			@"cwd",
+		stdin_fh,		@"stdin",
+		stdout_fh,		@"stdout",
+		stderr_fh,		@"stderr",
+		args,				@"arguments",
+		supportPaths,	@"support",
+		cwd,				@"cwd",
 		nil];
 
 	NSString* command = [args count] <= 1 ? @"help" : [args objectAtIndex:1];
