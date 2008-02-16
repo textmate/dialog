@@ -90,8 +90,6 @@ static option_t const expectedOptions[] =
 	{ "q", "quiet",		option_t::no_argument,option_t::none,					"Do not write result to stdout."},
 };
 
-#define ErrorAndReturn(message) while(1){[[options objectForKey:@"stderr"] writeString:@"Error: " message "\n"];return;};
-
 - (void)handleCommand:(id)options
 {
 	NSArray* args = [options objectForKey:@"arguments"];

@@ -34,4 +34,7 @@ template <class T> typename T::iterator endof (T& c)						{ return c.end(); }
 #define sizeofA(a) (sizeof(a)/sizeof(a[0]))
 #endif
 
+
+#define ErrorAndReturn(message) while(1){[[options objectForKey:@"stderr"] writeString:@"Error: " message "\n"];return;};
+
 #endif /* _DIALOG_H_ */

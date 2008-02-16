@@ -26,21 +26,30 @@
 
 - (void)handleCommand:(NSDictionary *)options
 {
-	NSFileHandle *stdinFP = (NSFileHandle *)[options objectForKey:@"stdin"];
-	NSData *data = [stdinFP readDataToEndOfFile];
+	NSString* content = nil;
+	NSArray* args     = [options objectForKey:@"arguments"];
 
-	if([data length] == 0)
-		return;
-
-	NSString *content = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+	if([args count] > 2)
 	{
-		NSPoint pos = NSZeroPoint;
-
-		if(id textView = [NSApp targetForAction:@selector(positionForWindowUnderCaret)])
-			pos = [textView positionForWindowUnderCaret];
-
-		[TMDHTMLTip showWithHTML:content atLocation:pos];
+		content = [[args subarrayWithRange:NSMakeRange(2, [args count] - 2)] componentsJoinedByString:@" "];
 	}
-	[content release];
+	else
+	{
+		NSFileHandle *stdinFP = (NSFileHandle *)[options objectForKey:@"stdin"];
+		NSData *data = [stdinFP readDataToEndOfFile];
+
+		if([data length] > 0)
+			content = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
+	}
+
+	if(content == nil || [content length] == 0)
+		ErrorAndReturn(@"no content given");
+
+	NSPoint pos = NSZeroPoint;
+
+	if(id textView = [NSApp targetForAction:@selector(positionForWindowUnderCaret)])
+		pos = [textView positionForWindowUnderCaret];
+
+	[TMDHTMLTip showWithHTML:content atLocation:pos];
 }
 @end
