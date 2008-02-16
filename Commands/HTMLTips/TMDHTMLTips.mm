@@ -54,13 +54,14 @@ const NSString* TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 
 		webPreferences = [[WebPreferences alloc] initWithIdentifier:TMDTooltipPreferencesIdentifier];
 		[webPreferences setJavaScriptEnabled:YES];
-		NSString *fontFamily = [[NSUserDefaults standardUserDefaults] stringForKey:@"OakTextViewNormalFontName"];
-		if(fontFamily == nil)
-			fontFamily = @"Monaco";
+		NSString *fontName = [[NSUserDefaults standardUserDefaults] stringForKey:@"OakTextViewNormalFontName"];
+		if(fontName == nil)
+			fontName = @"Monaco";
 		int fontSize = [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"];
 		if(fontSize == 0)
 			fontSize = 11;
-		[webPreferences setStandardFontFamily:fontFamily];
+		NSFont* font = [NSFont fontWithName:fontName size:fontSize];
+		[webPreferences setStandardFontFamily:[font familyName]];
 		[webPreferences setDefaultFontSize:fontSize];
 
 		webView = [[WebView alloc] initWithFrame:NSZeroRect];
