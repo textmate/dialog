@@ -24,7 +24,7 @@ std::string find_nib (std::string nibName, std::string currentDirectory, NSArray
 {
 	std::vector<std::string> candidates;
 
-	if(nibName.find(".nib") == std::string::npos && nibName.find(".xib") == std::string::npos)
+	if(nibName.find(".nib") == std::string::npos)
 		nibName += ".nib";
 
 	if(nibName.size() && nibName[0] != '/') // relative path
