@@ -90,7 +90,6 @@ const NSString* TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 				@"  <style type='text/css' media='screen'>"
 				@"      body {"
 				@"          background-color: #F6EDC3;"
-				@"          border: 1px solid black;"
 				@"          margin: 0;"
 				@"          padding: 2px;"
 				@"          overflow: hidden;"
