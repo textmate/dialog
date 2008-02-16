@@ -9,7 +9,7 @@
 #import <algorithm>
 
 /*
-echo '‘foobar’' | "$DIALOG" html-tip
+echo '‘Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.’' | "$DIALOG" html-tip
 */
 
 static float slow_in_out (float t)
@@ -40,7 +40,7 @@ const NSString* TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 
 - (id)init
 {
-	if(self = [super initWithContentRect:NSZeroRect styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO])
+	if(self = [super initWithContentRect:[[NSScreen mainScreen] frame] styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO])
 	{
 		[self setReleasedWhenClosed:YES];
 		[self setAlphaValue:0.97f];
@@ -62,7 +62,7 @@ const NSString* TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 		[webPreferences setStandardFontFamily:fontFamily];
 		[webPreferences setDefaultFontSize:fontSize];
 
-		webView = [[WebView alloc] initWithFrame:NSZeroRect];
+		webView = [[WebView alloc] initWithFrame:[self frame]];
 		[webView setPreferencesIdentifier:TMDTooltipPreferencesIdentifier];
 		[webView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
 		[webView setFrameLoadDelegate:self];

@@ -24,7 +24,6 @@
 		91D6F95C0CF2BD16000F8170 /* TMDIncrementalPopUpMenu.mm in Sources */ = {isa = PBXBuildFile; fileRef = 91D6F9590CF2BD16000F8170 /* TMDIncrementalPopUpMenu.mm */; };
 		91D6F9650CF2BD32000F8170 /* TMDBorderLessWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 91D6F9640CF2BD32000F8170 /* TMDBorderLessWindow.m */; };
 		91D6F9710CF2C803000F8170 /* htmltips.mm in Sources */ = {isa = PBXBuildFile; fileRef = 91D6F96E0CF2C803000F8170 /* htmltips.mm */; };
-		91D6F9720CF2C803000F8170 /* HTMLTip.nib in Resources */ = {isa = PBXBuildFile; fileRef = 91D6F96F0CF2C803000F8170 /* HTMLTip.nib */; };
 		91D6F9730CF2C803000F8170 /* TMDHTMLTips.mm in Sources */ = {isa = PBXBuildFile; fileRef = 91D6F9700CF2C803000F8170 /* TMDHTMLTips.mm */; };
 		91D6F97E0CF2C8EF000F8170 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91D6F97D0CF2C8EF000F8170 /* WebKit.framework */; };
 		91D6F9940CF33A7A000F8170 /* TMDChameleon.mm in Sources */ = {isa = PBXBuildFile; fileRef = 91D6F9900CF33A7A000F8170 /* TMDChameleon.mm */; };
@@ -72,7 +71,6 @@
 		91D6F9670CF2C2B5000F8170 /* TextMate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextMate.h; path = Commands/Utilities/TextMate.h; sourceTree = "<group>"; };
 		91D6F96D0CF2C803000F8170 /* TMDHTMLTips.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TMDHTMLTips.h; path = Commands/HTMLTips/TMDHTMLTips.h; sourceTree = "<group>"; };
 		91D6F96E0CF2C803000F8170 /* htmltips.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = htmltips.mm; path = Commands/HTMLTips/htmltips.mm; sourceTree = "<group>"; };
-		91D6F96F0CF2C803000F8170 /* HTMLTip.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = HTMLTip.nib; path = Commands/HTMLTips/HTMLTip.nib; sourceTree = "<group>"; };
 		91D6F9700CF2C803000F8170 /* TMDHTMLTips.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = TMDHTMLTips.mm; path = Commands/HTMLTips/TMDHTMLTips.mm; sourceTree = "<group>"; };
 		91D6F97D0CF2C8EF000F8170 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = /System/Library/Frameworks/WebKit.framework; sourceTree = "<absolute>"; };
 		91D6F98F0CF33A7A000F8170 /* TMDChameleon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TMDChameleon.h; path = Commands/Utilities/TMDChameleon.h; sourceTree = "<group>"; };
@@ -239,7 +237,6 @@
 			children = (
 				91D6F96D0CF2C803000F8170 /* TMDHTMLTips.h */,
 				91D6F96E0CF2C803000F8170 /* htmltips.mm */,
-				91D6F96F0CF2C803000F8170 /* HTMLTip.nib */,
 				91D6F9700CF2C803000F8170 /* TMDHTMLTips.mm */,
 			);
 			name = HTMLTips;
@@ -310,7 +307,6 @@
 				91D6F8F90CF23D6E000F8170 /* tm_dialog2 in Resources */,
 				8D5B49B0048680CD000E48DA /* InfoPlist.strings in Resources */,
 				91D6F95B0CF2BD16000F8170 /* IncrementalPopUpMenu.nib in Resources */,
-				91D6F9720CF2C803000F8170 /* HTMLTip.nib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
