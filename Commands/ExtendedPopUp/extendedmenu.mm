@@ -24,7 +24,7 @@ echo '{suggestions = ({title = "**law**";filterOn = "law";},{title = "**laws**";
 @implementation TMDXPopUp
 + (void)load
 {
-	[TMDCommand registerObject:[self new] forCommand:@"extended-popup"];
+	[TMDCommand registerObject:[self new] forCommand:@"popup"];
 }
 
 - (void)handleCommand:(id)options

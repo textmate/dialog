@@ -42,7 +42,6 @@
 				setenv("DIALOG", [path UTF8String], 1);
 			}
 		}
-		NSLog(@"%s Loaded!", _cmd);
 	}
 
 	return self;

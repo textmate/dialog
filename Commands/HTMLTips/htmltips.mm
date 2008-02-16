@@ -11,7 +11,7 @@
 @implementation TMDHTMLTipsCommand
 + (void)load
 {
-	[TMDCommand registerObject:[self new] forCommand:@"html-tip"];
+	[TMDCommand registerObject:[self new] forCommand:@"tooltip"];
 }
 
 - (NSString *)commandDescription
