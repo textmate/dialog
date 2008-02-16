@@ -39,7 +39,7 @@
 		if(id textView = [NSApp targetForAction:@selector(positionForWindowUnderCaret)])
 			pos = [textView positionForWindowUnderCaret];
 
-		[TMDHTMLTip showWithHTML:content atLocation:pos forScreen:[NSScreen mainScreen]];
+		[TMDHTMLTip showWithHTML:content atLocation:pos];
 	}
 	[content release];
 }

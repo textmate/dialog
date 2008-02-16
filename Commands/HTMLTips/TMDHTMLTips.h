@@ -18,5 +18,5 @@
 	NSDate* didOpenAtDate; // ignore mouse moves for the next second
 	NSPoint mousePositionWhenOpened;
 }
-+ (void)showWithHTML:(NSString*)content atLocation:(NSPoint)point forScreen:(NSScreen*)screen;
++ (void)showWithHTML:(NSString*)content atLocation:(NSPoint)point;
 @end

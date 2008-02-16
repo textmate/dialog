@@ -6,10 +6,11 @@
 //
 
 #import "TMDHTMLTips.h"
+#import "../../Dialog2.h" // enumerate()
 #import <algorithm>
 
 /*
-echo '‘Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.’' | "$DIALOG" html-tip
+echo '‘foobar’' | "$DIALOG" tooltip
 */
 
 static float slow_in_out (float t)
@@ -31,18 +32,16 @@ const NSString* TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 // ==================
 // = Setup/teardown =
 // ==================
-+ (void)showWithHTML:(NSString*)content atLocation:(NSPoint)point forScreen:(NSScreen*)screen;
++ (void)showWithHTML:(NSString*)content atLocation:(NSPoint)point;
 {
 	TMDHTMLTip* tip = [TMDHTMLTip new];
 	[tip setFrameTopLeftPoint:point];
 	[tip setHTML:content]; // The tooltip will show itself automatically when the HTML is loaded
 }
 
-- (id)init
+- (id)init;
 {
-	NSRect frame = [[NSScreen mainScreen] frame];
-	frame.size.width -= frame.size.width / 3.0f;
-	if(self = [super initWithContentRect:frame styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO])
+	if(self = [self initWithContentRect:NSZeroRect styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO])
 	{
 		[self setReleasedWhenClosed:YES];
 		[self setAlphaValue:0.97f];
@@ -64,7 +63,7 @@ const NSString* TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 		[webPreferences setStandardFontFamily:fontFamily];
 		[webPreferences setDefaultFontSize:fontSize];
 
-		webView = [[WebView alloc] initWithFrame:[self frame]];
+		webView = [[WebView alloc] initWithFrame:NSZeroRect];
 		[webView setPreferencesIdentifier:TMDTooltipPreferencesIdentifier];
 		[webView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
 		[webView setFrameLoadDelegate:self];
@@ -107,20 +106,33 @@ const NSString* TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 
 - (void)sizeToContent
 {
- 	NSPoint pos = NSMakePoint([self frame].origin.x, [self frame].origin.y + [self frame].size.height);
-	id wsc      = [webView windowScriptObject];
-	int height  = [[wsc evaluateWebScript:@"document.body.offsetHeight + document.body.offsetTop;"] intValue];
-	int width   = [[wsc evaluateWebScript:@"document.body.offsetWidth + document.body.offsetLeft;"] intValue];
+	// Current tooltip position
+	NSPoint pos = NSMakePoint([self frame].origin.x, [self frame].origin.y + [self frame].size.height);
+
+	// Find the screen which we are displaying on
+	NSRect screenFrame = [[NSScreen mainScreen] frame];
+	enumerate([NSScreen screens], NSScreen* candidate)
+	{
+		if(NSMinX([candidate frame]) < pos.x && NSMinX([candidate frame]) > NSMinX(screenFrame))
+			screenFrame = [candidate frame];
+	}
+
+	// The webview is set to a large initial size and then sized down to fit the content
+	[webView setFrameSize:NSMakeSize(screenFrame.size.width - screenFrame.size.width / 3.0f, screenFrame.size.height)];
+
+	int height  = [[[webView windowScriptObject] evaluateWebScript:@"document.body.offsetHeight + document.body.offsetTop;"] intValue];
+	int width   = [[[webView windowScriptObject] evaluateWebScript:@"document.body.offsetWidth + document.body.offsetLeft;"] intValue];
 	
-	[self setContentSize:NSMakeSize(width, height)];
-	
-	int x_overlap = (pos.x + width) - [[NSScreen mainScreen] frame].size.width;
-	if(x_overlap > 0)
-		pos.x = pos.x - x_overlap;
-	
-	int y_overlap = pos.y - height;
-	if(y_overlap < 0)
-		pos.y = pos.y - y_overlap;
+	[webView setFrameSize:NSMakeSize(width, height)];
+
+	NSRect frame      = [self frameRectForContentRect:[webView frame]];
+	frame.size.width  = std::min(NSWidth(frame), NSWidth(screenFrame));
+	frame.size.height = std::min(NSHeight(frame), NSHeight(screenFrame));
+	[self setFrame:frame display:NO];
+
+	pos.x = std::max(NSMinX(screenFrame), std::min(pos.x, NSMaxX(screenFrame)-NSWidth(frame)));
+	pos.y = std::min(std::max(NSMinY(screenFrame)+NSHeight(frame), pos.y), NSMaxY(screenFrame));
+
 	[self setFrameTopLeftPoint:pos];
 }
 
