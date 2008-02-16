@@ -119,7 +119,7 @@ const NSString* TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 	}
 
 	// The webview is set to a large initial size and then sized down to fit the content
-	[webView setFrameSize:NSMakeSize(screenFrame.size.width - screenFrame.size.width / 3.0f, screenFrame.size.height)];
+	[self setContentSize:NSMakeSize(screenFrame.size.width - screenFrame.size.width / 3.0f, screenFrame.size.height)];
 
 	int height  = [[[webView windowScriptObject] evaluateWebScript:@"document.body.offsetHeight + document.body.offsetTop;"] intValue];
 	int width   = [[[webView windowScriptObject] evaluateWebScript:@"document.body.offsetWidth + document.body.offsetLeft;"] intValue];
