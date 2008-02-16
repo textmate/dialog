@@ -20,7 +20,7 @@
 // = Command handler =
 // ===================
 
-std::string find_nib (std::string nibName, std::string currentDirectory, NSArray* supportPaths)
+std::string find_nib (std::string nibName, std::string currentDirectory)
 {
 	std::vector<std::string> candidates;
 
@@ -31,13 +31,11 @@ std::string find_nib (std::string nibName, std::string currentDirectory, NSArray
 	{
 		candidates.push_back(currentDirectory + "/" + nibName);
 
-		unsigned int supportPathCount = [supportPaths count];
+		if(char const* bundleSupport = getenv("TM_BUNDLE_SUPPORT"))
+			candidates.push_back(bundleSupport + std::string("/nibs/") + nibName);
 
-		for(unsigned int index = 0; index < supportPathCount; index += 1)
-		{
-			NSString* supportPath = [supportPaths objectAtIndex:index];
-			candidates.push_back([supportPath UTF8String] + std::string("/nibs/") + nibName);
-		}
+		if(char const* supportPath = getenv("TM_SUPPORT_PATH"))
+			candidates.push_back(supportPath + std::string("/nibs/") + nibName);
 	}
 	else
 	{
@@ -77,8 +75,7 @@ echo '{title = "updated title"; prompt = "updated prompt"; }' | "$DIALOG" window
 "$DIALOG" window update -p '{title = "updated title"; prompt = "updated prompt"; }' 2
 "$DIALOG" window list
 
-"$DIALOG" window show -q -d"{'SQL Connections' = ( { title = untitled; serverType = MySQL; hostName = localhost; userName = '$LOGNAME'; } ); }" -n"{ SQL_New_Connection = { title = untitled; serverType = MySQL; hostName = localhost; userName = '$LOGNAME'; }; }" -p'{}' "/Library/Application Support/TextMate/Bundles/SQL.tmbundle/Support/nibs/connections.nib" &
-
+"$DIALOG" window show "/Library/Application Support/TextMate/Bundles/SQL.tmbundle/Support/nibs/connections.nib" -q -d"{'SQL Connections' = ( { title = untitled; serverType = MySQL; hostName = localhost; userName = '$LOGNAME'; } ); }" -n"{ SQL_New_Connection = { title = untitled; serverType = MySQL; hostName = localhost; userName = '$LOGNAME'; }; }" -p'{}' &
 
 "$DIALOG" help window
 */
@@ -95,8 +92,7 @@ static option_t const expectedOptions[] =
 
 - (void)handleCommand:(id)options
 {
-	NSArray* args         = [options objectForKey:@"arguments"];
-	NSArray* supportPaths = [options objectForKey:@"support"];
+	NSArray* args = [options objectForKey:@"arguments"];
 
 	NSDictionary* res = ParseOptions(args, expectedOptions);
 
@@ -105,7 +101,7 @@ static option_t const expectedOptions[] =
 	{
 		char const* nibName = [[args lastObject] UTF8String];
 		char const* nibPath = [[options objectForKey:@"cwd"] UTF8String];
-		NSString* nib = [NSString stringWithUTF8String:find_nib(nibName ?: "", nibPath ?: "", supportPaths).c_str()];
+		NSString* nib = [NSString stringWithUTF8String:find_nib(nibName ?: "", nibPath ?: "").c_str()];
 
 		id dynamicClasses = [[res objectForKey:@"options"] objectForKey:@"new-items"];
 		enumerate([dynamicClasses allKeys], id key)

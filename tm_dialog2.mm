@@ -79,18 +79,11 @@ int main (int argc, char const* argv[])
 	for(size_t i = 0; i < argc; ++i)
 		[args addObject:[NSString stringWithUTF8String:argv[i]]];
 
-	NSMutableArray* supportPaths = [NSMutableArray arrayWithCapacity:2];
-	if(getenv("TM_BUNDLE_SUPPORT"))
-		[supportPaths addObject:[NSString stringWithUTF8String:getenv("TM_BUNDLE_SUPPORT")]];
-	if(getenv("TM_SUPPORT_PATH"))
-		[supportPaths addObject:[NSString stringWithUTF8String:getenv("TM_SUPPORT_PATH")]];
-
 	NSMutableDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:
 		[NSString stringWithUTF8String:stdin_name],			@"stdin",
 		[NSString stringWithUTF8String:stdout_name],			@"stdout",
 		[NSString stringWithUTF8String:stderr_name],			@"stderr",
 		[NSString stringWithUTF8String:getcwd(NULL, 0)],	@"cwd",
-		supportPaths,													@"support",
 		args,																@"arguments",
 		nil
 	];
