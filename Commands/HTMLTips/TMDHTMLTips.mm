@@ -23,7 +23,7 @@ static float slow_in_out (float t)
 const NSString* TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 
 @interface TMDHTMLTip (Private)
-- (void)setHTML:(NSString *)html;
+- (void)setHTML:(NSString *)html transparent:(BOOL)transparent;
 - (void)runUntilUserActivity;
 - (void)stopAnimation:(id)sender;
 @end
@@ -32,11 +32,11 @@ const NSString* TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 // ==================
 // = Setup/teardown =
 // ==================
-+ (void)showWithHTML:(NSString*)content atLocation:(NSPoint)point;
++ (void)showWithHTML:(NSString*)content atLocation:(NSPoint)point transparent:(BOOL)transparent;
 {
 	TMDHTMLTip* tip = [TMDHTMLTip new];
 	[tip setFrameTopLeftPoint:point];
-	[tip setHTML:content]; // The tooltip will show itself automatically when the HTML is loaded
+	[tip setHTML:content transparent:transparent]; // The tooltip will show itself automatically when the HTML is loaded
 }
 
 - (id)init;
@@ -47,6 +47,7 @@ const NSString* TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 		[self setAlphaValue:0.97f];
 		[self setOpaque:NO];
 		[self setBackgroundColor:[NSColor colorWithDeviceRed:1.0f green:0.96f blue:0.76f alpha:1.0f]];
+		[self setBackgroundColor:[NSColor clearColor]];
 		[self setHasShadow:YES];
 		[self setLevel:NSStatusWindowLevel];
 		[self setHidesOnDeactivate:YES];
@@ -68,6 +69,8 @@ const NSString* TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 		[webView setPreferencesIdentifier:TMDTooltipPreferencesIdentifier];
 		[webView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
 		[webView setFrameLoadDelegate:self];
+		if ([webView respondsToSelector:@selector(setDrawsBackground:)])
+		    [webView setDrawsBackground:NO];
 
 		[self setContentView:webView];
 	}
@@ -85,13 +88,13 @@ const NSString* TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 // ===========
 // = Webview =
 // ===========
-- (void)setHTML:(NSString *)html
+- (void)setHTML:(NSString *)html transparent:(BOOL)transparent;
 {
 	NSString *fullContent =	@"<html>"
 				@"<head>"
 				@"  <style type='text/css' media='screen'>"
 				@"      body {"
-				@"          background-color: #F6EDC3;"
+				@"          background: %@;"
 				@"          margin: 0;"
 				@"          padding: 2px;"
 				@"          overflow: hidden;"
@@ -101,7 +104,7 @@ const NSString* TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 				@"</head>"
 				@"<body>%@</body>"
 				@"</html>";
-	fullContent = [NSString stringWithFormat:fullContent, html];
+	fullContent = [NSString stringWithFormat:fullContent, transparent ? @"transparent" : @"#F6EDC3", html];
 	[[webView mainFrame] loadHTMLString:fullContent baseURL:nil];
 }
 
