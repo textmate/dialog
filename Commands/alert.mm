@@ -34,12 +34,12 @@ static option_t const expectedOptions[] =
 	{ "3", "button3",			option_t::required_argument,	option_t::string,		"Button 3 label."},
 };
 
-- (void)handleCommand:(id)options
+- (void)handleCommand:(CLIProxy*)interface
 {
 	// NSFileHandle* fh = [options objectForKey:@"stderr"];
 
 #if 1
-	NSDictionary	*parameters       = [ParseOptions([options objectForKey:@"arguments"], expectedOptions) objectForKey:@"options"];
+	NSDictionary	*parameters       = [[interface parseOptionsWithExpectedOptions:expectedOptions] objectForKey:@"options"];
 	NSAlertStyle	alertStyle        = NSInformationalAlertStyle;
 	NSString			*alertStyleString = [parameters objectForKey:@"alert-style"];
 	NSDictionary	*resultDict       = nil;
@@ -131,7 +131,7 @@ static option_t const expectedOptions[] =
 		resultDict = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:alertResult] forKey:@"buttonClicked"];
 	}
 
-	[TMDCommand writePropertyList:resultDict toFileHandle:[options objectForKey:@"stdout"]];
+	[TMDCommand writePropertyList:resultDict toFileHandle:[interface outputHandle]];
 #endif
 }
 

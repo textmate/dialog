@@ -1,3 +1,5 @@
+#import "CLIProxy.h"
+
 @interface TMDCommand : NSObject
 + (void)registerObject:(id)anObject forCommand:(NSString*)aCommand;
 + (NSDictionary *)registeredCommands;

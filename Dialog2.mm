@@ -8,6 +8,7 @@
 
 #import "Dialog2.h"
 #import "TMDCommand.h"
+#import "CLIProxy.h"
 
 @protocol TMPlugInController
 - (float)version;
@@ -49,27 +50,14 @@
 
 - (void)dispatch:(id)options
 {
-	NSArray* args           = [options objectForKey:@"arguments"];
-	NSDictionary* env       = [options objectForKey:@"environment"];
-	NSString* cwd           = [options objectForKey:@"cwd"];
-	NSFileHandle* stdin_fh  = [NSFileHandle fileHandleForReadingAtPath:[options objectForKey:@"stdin"]];
-	NSFileHandle* stdout_fh = [NSFileHandle fileHandleForWritingAtPath:[options objectForKey:@"stdout"]];
-	NSFileHandle* stderr_fh = [NSFileHandle fileHandleForWritingAtPath:[options objectForKey:@"stderr"]];
+	CLIProxy* interface = [CLIProxy interfaceWithOptions:options];
 
-	NSDictionary* newOptions = [NSDictionary dictionaryWithObjectsAndKeys:
-		stdin_fh,	@"stdin",
-		stdout_fh,	@"stdout",
-		stderr_fh,	@"stderr",
-		args,			@"arguments",
-		cwd,			@"cwd",
-		env,			@"environment",
-		nil];
+	NSString* command = [[interface arguments] count] <= 1 ? @"help" : [[interface arguments] objectAtIndex:1];
 
-	NSString* command = [args count] <= 1 ? @"help" : [args objectAtIndex:1];
 	if(id target = [TMDCommand objectForCommand:command])
-		[target performSelector:@selector(handleCommand:) withObject:newOptions];
+		[target performSelector:@selector(handleCommand:) withObject:interface];
 	else
-		[stderr_fh writeString:@"unknown command, try help.\n"];
+		[interface writeStringToError:@"unknown command, try help.\n"];
 }
 
 - (void)hello:(id)options
@@ -77,6 +65,7 @@
 	NSLog(@"%s %@", _cmd, options);
 	[self performSelector:@selector(dispatch:) withObject:options afterDelay:0.0];
 }
+
 @end
 /*
 echo '{ menuItems = ({title = 'foo';});}' | "$DIALOG" menu

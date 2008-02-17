@@ -24,19 +24,17 @@
 	return [NSString stringWithFormat:@"Tooltip content is taken from STDIN, e.g.:\n\n\t%@ <<< '<some>html</some>'", invocation];
 }
 
-- (void)handleCommand:(NSDictionary *)options
+- (void)handleCommand:(CLIProxy*)interface
 {
 	NSString* content = nil;
-	NSArray* args     = [options objectForKey:@"arguments"];
 
-	if([args count] > 2)
+	if([[interface arguments] count] > 2)
 	{
-		content = [[args subarrayWithRange:NSMakeRange(2, [args count] - 2)] componentsJoinedByString:@" "];
+		content = [[[interface arguments] subarrayWithRange:NSMakeRange(2, [[interface arguments] count] - 2)] componentsJoinedByString:@" "];
 	}
 	else
 	{
-		NSFileHandle *stdinFP = (NSFileHandle *)[options objectForKey:@"stdin"];
-		NSData *data = [stdinFP readDataToEndOfFile];
+		NSData *data = [[interface inputHandle] readDataToEndOfFile];
 
 		if([data length] > 0)
 			content = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];

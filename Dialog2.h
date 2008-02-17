@@ -35,6 +35,6 @@ template <class T> typename T::iterator endof (T& c)						{ return c.end(); }
 #endif
 
 
-#define ErrorAndReturn(message) while(1){[[options objectForKey:@"stderr"] writeString:@"Error: " message "\n"];return;};
+#define ErrorAndReturn(message) while(1){[interface writeStringToError:@"Error: " message "\n"];return;};
 
 #endif /* _DIALOG_H_ */

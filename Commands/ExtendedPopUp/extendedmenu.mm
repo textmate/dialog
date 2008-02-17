@@ -27,9 +27,9 @@ echo '{suggestions = ({title = "**law**";filterOn = "law";},{title = "**laws**";
 	[TMDCommand registerObject:[self new] forCommand:@"popup"];
 }
 
-- (void)handleCommand:(id)options
+- (void)handleCommand:(CLIProxy*)interface
 {
-	NSDictionary* initialValues = [TMDCommand readPropertyList:[options objectForKey:@"stdin"]];
+	NSDictionary* initialValues = [interface readPropertyListFromInput];
     
 	NSPoint pos = NSZeroPoint;
 	if(id textView = [NSApp targetForAction:@selector(positionForWindowUnderCaret)])

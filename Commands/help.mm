@@ -61,17 +61,16 @@
 	return help;
 }
 
-- (void)handleCommand:(id)options
+- (void)handleCommand:(CLIProxy*)interface
 {
-	NSFileHandle* fh = [options objectForKey:@"stderr"];
 	NSString *text = @"";
 	
-	if([[options objectForKey:@"arguments"] count] < 3)
+	if([[interface arguments] count] < 3)
 		text = [self commandSummaryText];
 	else
-		text = [self helpForCommand:[[options objectForKey:@"arguments"] objectAtIndex:2]];
+		text = [self helpForCommand:[[interface arguments] objectAtIndex:2]];
 
-	[fh writeString:text];
+	[interface writeStringToError:text];
 }
 @end
 /*
