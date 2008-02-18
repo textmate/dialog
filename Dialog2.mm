@@ -50,7 +50,7 @@
 
 - (void)dispatch:(id)options
 {
-	CLIProxy* interface = [CLIProxy interfaceWithOptions:options];
+	CLIProxy* interface = [CLIProxy proxyWithOptions:options];
 
 	NSString* command = [interface numberOfArguments] <= 1 ? @"help" : [interface argumentAtIndex:1];
 

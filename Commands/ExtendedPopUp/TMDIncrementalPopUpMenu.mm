@@ -17,7 +17,6 @@
 
 		ed = [editor retain];
 		suggestions = [NSArray arrayWithArray:[aDictionary objectForKey:@"suggestions"]];
-		images = [[aDictionary objectForKey:@"images"] retain];
 
 		[mutablePrefix setString:[NSString stringWithString:[aDictionary objectForKey:@"currentWord"]]];
 		if([aDictionary objectForKey:@"staticPrefix"])
@@ -90,24 +89,6 @@
 
 	}
 	// [self close];
-}
-
-- (int)numberOfRowsInTableView:(NSTableView *)aTableView
-{
-	return [filtered count];
-}
-
-- (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex
-{
-	NSImage* image = nil;
-
-	NSString* imageName = [[filtered objectAtIndex:rowIndex] objectForKey:@"image"];
-	if(imageName)
-		image = [images objectForKey:imageName];
-
-	[[aTableColumn dataCell] setImage:image];
-
-	return [[filtered objectAtIndex:rowIndex] objectForKey:@"title"];
 }
 
 - (void)filter
@@ -425,7 +406,6 @@
 	[aValue retain];
 	[filtered release];
 	filtered = aValue;
-	[theTableView reloadData];
 	
   //  NSArray* oldFiltered = filtered;
   //  filtered = [aValue retain];

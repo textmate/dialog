@@ -12,7 +12,6 @@
 {
 	IBOutlet NSArrayController* anArrayController;
 	NSArray* suggestions;
-	NSDictionary* images;
 	NSMutableString* mutablePrefix;
 	NSString* staticPrefix;
 	NSArray* filtered;
