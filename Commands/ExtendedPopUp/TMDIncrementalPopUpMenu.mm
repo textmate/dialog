@@ -96,7 +96,7 @@
 	NSArray* myArray2;
 	if([mutablePrefix length] > 0)
 	{
-		NSPredicate* predicate = [NSPredicate predicateWithFormat:@"filterOn beginswith %@", [staticPrefix stringByAppendingString:mutablePrefix]];
+		NSPredicate* predicate = [NSPredicate predicateWithFormat:@"filterOn BEGINSWITH %@ OR (filterOn == NULL AND title BEGINSWITH %@)", [staticPrefix stringByAppendingString:mutablePrefix], [staticPrefix stringByAppendingString:mutablePrefix]];
 		myArray2 = [suggestions filteredArrayUsingPredicate:predicate];
 		//[anArrayController rearrangeObjects];
 	}
