@@ -14,7 +14,7 @@
 @end
 
 @implementation CLIProxy
-+ (id)interfaceWithOptions:(NSDictionary*)options;
++ (id)proxyWithOptions:(NSDictionary*)options;
 {
 	return [[[[self class] alloc] initWithOptions:options] autorelease];
 }

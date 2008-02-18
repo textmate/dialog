@@ -34,14 +34,14 @@ static option_t const expectedOptions[] =
 	{ "3", "button3",			option_t::required_argument,	option_t::string,		"Button 3 label."},
 };
 
-- (void)handleCommand:(CLIProxy*)interface
+- (void)handleCommand:(CLIProxy*)proxy
 {
 	// NSFileHandle* fh = [options objectForKey:@"stderr"];
 
 #if 1
-	SetOptionTemplate(interface, expectedOptions);
+	SetOptionTemplate(proxy, expectedOptions);
 	NSAlertStyle	alertStyle        = NSInformationalAlertStyle;
-	NSString			*alertStyleString = [interface valueForOption:@"alert-style"];
+	NSString			*alertStyleString = [proxy valueForOption:@"alert-style"];
 	NSDictionary	*resultDict       = nil;
 		
 	NSAlert *alert = [[[NSAlert alloc] init] autorelease];
@@ -60,18 +60,18 @@ static option_t const expectedOptions[] =
 	}
 	
 	[alert setAlertStyle:alertStyle];
-	if([interface valueForOption:@"message"])
-		[alert setMessageText:[interface valueForOption:@"message"]];
-	if([interface valueForOption:@"text"])
-		[alert setInformativeText:[interface valueForOption:@"text"]];
+	if([proxy valueForOption:@"message"])
+		[alert setMessageText:[proxy valueForOption:@"message"]];
+	if([proxy valueForOption:@"text"])
+		[alert setInformativeText:[proxy valueForOption:@"text"]];
 	
 	// Setup buttons
-	if ([interface valueForOption:@"button1"])
-		[alert addButtonWithTitle:[interface valueForOption:@"button1"]];
-	if ([interface valueForOption:@"button2"])
-		[alert addButtonWithTitle:[interface valueForOption:@"button2"]];
-	if ([interface valueForOption:@"button3"])
-		[alert addButtonWithTitle:[interface valueForOption:@"button3"]];
+	if ([proxy valueForOption:@"button1"])
+		[alert addButtonWithTitle:[proxy valueForOption:@"button1"]];
+	if ([proxy valueForOption:@"button2"])
+		[alert addButtonWithTitle:[proxy valueForOption:@"button2"]];
+	if ([proxy valueForOption:@"button3"])
+		[alert addButtonWithTitle:[proxy valueForOption:@"button3"]];
 	
 	BOOL modal = YES;
 	
@@ -131,7 +131,7 @@ static option_t const expectedOptions[] =
 		resultDict = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:alertResult] forKey:@"buttonClicked"];
 	}
 
-	[TMDCommand writePropertyList:resultDict toFileHandle:[interface outputHandle]];
+	[TMDCommand writePropertyList:resultDict toFileHandle:[proxy outputHandle]];
 #endif
 }
 

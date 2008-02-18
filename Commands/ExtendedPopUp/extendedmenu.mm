@@ -27,9 +27,9 @@ echo '{suggestions = ({title = "**law**";filterOn = "law";},{title = "**laws**";
 	[TMDCommand registerObject:[self new] forCommand:@"popup"];
 }
 
-- (void)handleCommand:(CLIProxy*)interface
+- (void)handleCommand:(CLIProxy*)proxy
 {
-	NSMutableDictionary* initialValues = [interface readPropertyListFromInput];
+	NSMutableDictionary* initialValues = [proxy readPropertyListFromInput];
 
 	[initialValues setObject:[NSDictionary dictionaryWithObject:@"/Users/ciaran/code/TableEditorTest/PrimaryKey.png" forKey:@"key"] forKey:@"images"];
 

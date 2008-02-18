@@ -90,34 +90,34 @@ static option_t const expectedOptions[] =
 	{ "q", "quiet",		option_t::no_argument,option_t::none,					"Do not write result to stdout."},
 };
 
-- (void)handleCommand:(CLIProxy*)interface
+- (void)handleCommand:(CLIProxy*)proxy
 {
-	if([interface numberOfArguments] < 3)
+	if([proxy numberOfArguments] < 3)
 		ErrorAndReturn(@"no command given (see `\"$DIALOG\" help window` for usage)");
 
-	SetOptionTemplate(interface, expectedOptions);
+	SetOptionTemplate(proxy, expectedOptions);
 
-	NSString* command = [interface argumentAtIndex:2];
+	NSString* command = [proxy argumentAtIndex:2];
 	if([command isEqualToString:@"create"] || [command isEqualToString:@"show"])
 	{
-		if([interface numberOfArguments] < 4)
+		if([proxy numberOfArguments] < 4)
 			ErrorAndReturn(@"you must give at least one argument, the name of the nib to show");
 
-		char const* nibName = [[interface argumentAtIndex:3] UTF8String];
-		char const* nibPath = [[interface workingDirectory] UTF8String];
-		NSString* nib = [NSString stringWithUTF8String:find_nib(nibName ?: "", nibPath ?: "", [interface environment]).c_str()];
+		char const* nibName = [[proxy argumentAtIndex:3] UTF8String];
+		char const* nibPath = [[proxy workingDirectory] UTF8String];
+		NSString* nib = [NSString stringWithUTF8String:find_nib(nibName ?: "", nibPath ?: "", [proxy environment]).c_str()];
 		if(nib == nil || [nib length] == 0)
 			ErrorAndReturn(@"nib not found. The nib name must be the first argument given");
 
-		id dynamicClasses = [interface valueForOption:@"new-items"];
+		id dynamicClasses = [proxy valueForOption:@"new-items"];
 		enumerate([dynamicClasses allKeys], id key)
 			[TMDChameleon createSubclassNamed:key withValues:[dynamicClasses objectForKey:key]];
 
 		TMDNibController* nibController = [[[TMDNibController alloc] initWithNibName:nib] autorelease];
-		NSDictionary *windowOptions = [interface valueForOption:@"options"];
+		NSDictionary *windowOptions = [proxy valueForOption:@"options"];
 		id parameters = [windowOptions objectForKey:@"parameters"];
 		if(! parameters)
-			parameters = [interface readPropertyListFromInput];
+			parameters = [proxy readPropertyListFromInput];
 		[nibController updateParametersWith:parameters];
 
 		NSDictionary *initialValues = [windowOptions objectForKey:@"defaults"];
@@ -126,12 +126,12 @@ static option_t const expectedOptions[] =
 
 		if([command isEqualToString:@"show"])
 		{
-			[nibController notifyFileHandle:[interface outputHandle]];
+			[nibController notifyFileHandle:[proxy outputHandle]];
 			[nibController setAutoCloses:YES];
 		}
 		else
 		{
-			[interface writeStringToOutput:[nibController token]];
+			[proxy writeStringToOutput:[nibController token]];
 		}
 		
 		[nibController showWindowAndCenter:[[windowOptions objectForKey:@"center"] boolValue]];
@@ -141,30 +141,30 @@ static option_t const expectedOptions[] =
 	}
 	else if([command isEqualToString:@"wait"])
 	{
-		if([interface numberOfArguments] < 4)
+		if([proxy numberOfArguments] < 4)
 			ErrorAndReturn(@"no window token given");
-		NSString* token = [interface argumentAtIndex:3];
+		NSString* token = [proxy argumentAtIndex:3];
 		TMDNibController* nibController = [TMDNibController controllerForToken:token];
 		if(nibController)
-			[nibController notifyFileHandle:[interface outputHandle]];
+			[nibController notifyFileHandle:[proxy outputHandle]];
 		else
-			[interface writeStringToError:@"There is no window with that token"];
+			[proxy writeStringToError:@"There is no window with that token"];
 	}
 	else if([command isEqualToString:@"update"])
 	{
-		if([interface numberOfArguments] < 4)
+		if([proxy numberOfArguments] < 4)
 			ErrorAndReturn(@"no window token given");
-		NSString* token = [interface argumentAtIndex:3];
+		NSString* token = [proxy argumentAtIndex:3];
 		TMDNibController* nibController = [TMDNibController controllerForToken:token];
 		if(nibController)
 		{
-			id newParameters = [interface valueForOption:@"parameters"];
+			id newParameters = [proxy valueForOption:@"parameters"];
 			if(! newParameters)
-				newParameters = [interface readPropertyListFromInput];
+				newParameters = [proxy readPropertyListFromInput];
 			[nibController updateParametersWith:newParameters];
 		}
 		else
-			[interface writeStringToOutput:@"There is no window with that token"];
+			[proxy writeStringToOutput:@"There is no window with that token"];
 	}
 	else if([command isEqualToString:@"list"])
 	{
@@ -175,21 +175,21 @@ static option_t const expectedOptions[] =
 			enumerate([controllers allKeys], NSString* token)
 			{
 				TMDNibController* nibController = [controllers objectForKey:token];
-				[interface writeStringToOutput:[NSString stringWithFormat:@"%@ (%@)\n", token, [[nibController window] title]]];
+				[proxy writeStringToOutput:[NSString stringWithFormat:@"%@ (%@)\n", token, [[nibController window] title]]];
 			}
 		}
 		else
-			[interface writeStringToOutput:@"There are no active windows\n"];
+			[proxy writeStringToOutput:@"There are no active windows\n"];
 	}
 	else if([command isEqualToString:@"close"])
 	{
-		if([interface numberOfArguments] != 4)
+		if([proxy numberOfArguments] != 4)
 			ErrorAndReturn(@"no window token given");
-		NSString* token = [interface argumentAtIndex:3];
+		NSString* token = [proxy argumentAtIndex:3];
 		if([TMDNibController controllerForToken:token])
 			[[TMDNibController controllerForToken:token] tearDown];
 		else
-			[interface writeStringToError:@"There is no window with that token"];
+			[proxy writeStringToError:@"There is no window with that token"];
 	}
 	else
 	{

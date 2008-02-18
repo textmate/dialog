@@ -23,7 +23,7 @@
 	NSArray* 			arguments;
 	NSDictionary*		parsedOptions;
 }
-+ (id)interfaceWithOptions:(NSDictionary*)options;
++ (id)proxyWithOptions:(NSDictionary*)options;
 - (id)initWithOptions:(NSDictionary*)options;
 
 - (void)writeStringToOutput:(NSString*)text;

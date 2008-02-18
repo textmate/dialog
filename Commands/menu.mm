@@ -33,7 +33,7 @@ echo '{ menuItems = ({title = "foo"; header = 1;},{title = "bar";}); }' | "$DIAL
 	       @"echo '{ menuItems = ({title = \"foo\";}, {separator = 1;}, {header=1; title=\"bar\";}, {title = \"baz\";}); }' | %@",invocation];
 }
 
-- (void)handleCommand:(CLIProxy*)interface
+- (void)handleCommand:(CLIProxy*)proxy
 {
 	MenuRef menu_ref;
 	CreateNewMenu(0 /* menu id */, kMenuAttrDoNotCacheImage, &menu_ref);
@@ -41,7 +41,7 @@ echo '{ menuItems = ({title = "foo"; header = 1;},{title = "bar";}); }' | "$DIAL
 
 	int item_id = 0, item_index = 0;
 	bool in_section = false;
-	NSArray* menuItems = [[interface readPropertyListFromInput] objectForKey:@"menuItems"];
+	NSArray* menuItems = [[proxy readPropertyListFromInput] objectForKey:@"menuItems"];
 	enumerate(menuItems, NSDictionary* menuItem)
 	{
 		if([[menuItem objectForKey:@"separator"] intValue])
@@ -92,7 +92,7 @@ echo '{ menuItems = ({title = "foo"; header = 1;},{title = "bar";}); }' | "$DIAL
 		[selectedItem setObject:[menuItems objectAtIndex:(unsigned)cmd] forKey:@"selectedMenuItem"];
 	}
 
-	[TMDCommand writePropertyList:selectedItem toFileHandle:[interface outputHandle]];
+	[TMDCommand writePropertyList:selectedItem toFileHandle:[proxy outputHandle]];
 
 	DisposeMenu(menu_ref);
 }

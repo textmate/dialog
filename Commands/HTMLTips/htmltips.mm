@@ -30,23 +30,23 @@ static option_t const expectedOptions[] =
 	{ "t", "transparent", option_t::no_argument, option_t::none, "Gives the tooltip window a transparent background (10.5+ only)."},
 };
 
-- (void)handleCommand:(CLIProxy*)interface
+- (void)handleCommand:(CLIProxy*)proxy
 {
 	NSString* content = nil;
 	
-	SetOptionTemplate(interface, expectedOptions);
+	SetOptionTemplate(proxy, expectedOptions);
 
-	if([interface numberOfArguments] > 3)
+	if([proxy numberOfArguments] > 3)
 	{
 		ErrorAndReturn(@"too many arguments");
 	}
-	else if([interface argumentAtIndex:2])
+	else if([proxy argumentAtIndex:2])
 	{
-		content = [interface argumentAtIndex:2];
+		content = [proxy argumentAtIndex:2];
 	}
 	else
 	{
-		NSData *data = [[interface inputHandle] readDataToEndOfFile];
+		NSData *data = [[proxy inputHandle] readDataToEndOfFile];
 
 		if([data length] > 0)
 			content = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
@@ -60,7 +60,7 @@ static option_t const expectedOptions[] =
 	if(id textView = [NSApp targetForAction:@selector(positionForWindowUnderCaret)])
 		pos = [textView positionForWindowUnderCaret];
 
-	BOOL transparent = [[interface valueForOption:@"transparent"] boolValue];
+	BOOL transparent = [[proxy valueForOption:@"transparent"] boolValue];
 	[TMDHTMLTip showWithHTML:content atLocation:pos transparent:transparent];
 }
 @end

@@ -61,16 +61,16 @@
 	return help;
 }
 
-- (void)handleCommand:(CLIProxy*)interface
+- (void)handleCommand:(CLIProxy*)proxy
 {
 	NSString *text = @"";
 	
-	if([interface numberOfArguments] < 3)
+	if([proxy numberOfArguments] < 3)
 		text = [self commandSummaryText];
 	else
-		text = [self helpForCommand:[interface argumentAtIndex:2]];
+		text = [self helpForCommand:[proxy argumentAtIndex:2]];
 
-	[interface writeStringToError:text];
+	[proxy writeStringToError:text];
 }
 @end
 /*
