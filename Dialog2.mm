@@ -52,7 +52,7 @@
 {
 	CLIProxy* interface = [CLIProxy interfaceWithOptions:options];
 
-	NSString* command = [[interface arguments] count] <= 1 ? @"help" : [[interface arguments] objectAtIndex:1];
+	NSString* command = [interface numberOfArguments] <= 1 ? @"help" : [interface argumentAtIndex:1];
 
 	if(id target = [TMDCommand objectForCommand:command])
 		[target performSelector:@selector(handleCommand:) withObject:interface];

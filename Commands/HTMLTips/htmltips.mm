@@ -21,16 +21,28 @@
 
 - (NSString *)usageForInvocation:(NSString *)invocation;
 {
-	return [NSString stringWithFormat:@"Tooltip content is taken from STDIN, e.g.:\n\n\t%@ <<< '<some>html</some>'", invocation];
+	return [NSString stringWithFormat:@"Tooltip content is taken from STDIN, e.g.:\n\n\t%@ <<< '<some>html</some>'\nUse --transparent (-t) to give the tooltip window a transparent background (10.5+ only)", invocation];
 }
+
+
+static option_t const expectedOptions[] =
+{
+	{ "t", "transparent", option_t::no_argument, option_t::none, "Gives the tooltip window a transparent background (10.5+ only)."},
+};
 
 - (void)handleCommand:(CLIProxy*)interface
 {
 	NSString* content = nil;
+	
+	SetOptionTemplate(interface, expectedOptions);
 
-	if([[interface arguments] count] > 2)
+	if([interface numberOfArguments] > 3)
 	{
-		content = [[[interface arguments] subarrayWithRange:NSMakeRange(2, [[interface arguments] count] - 2)] componentsJoinedByString:@" "];
+		ErrorAndReturn(@"too many arguments");
+	}
+	else if([interface argumentAtIndex:2])
+	{
+		content = [interface argumentAtIndex:2];
 	}
 	else
 	{
@@ -48,6 +60,7 @@
 	if(id textView = [NSApp targetForAction:@selector(positionForWindowUnderCaret)])
 		pos = [textView positionForWindowUnderCaret];
 
-	[TMDHTMLTip showWithHTML:content atLocation:pos transparent:NO];
+	BOOL transparent = [[interface valueForOption:@"transparent"] boolValue];
+	[TMDHTMLTip showWithHTML:content atLocation:pos transparent:transparent];
 }
 @end

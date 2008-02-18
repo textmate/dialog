@@ -39,9 +39,9 @@ static option_t const expectedOptions[] =
 	// NSFileHandle* fh = [options objectForKey:@"stderr"];
 
 #if 1
-	NSDictionary	*parameters       = [[interface parseOptionsWithExpectedOptions:expectedOptions] objectForKey:@"options"];
+	SetOptionTemplate(interface, expectedOptions);
 	NSAlertStyle	alertStyle        = NSInformationalAlertStyle;
-	NSString			*alertStyleString = [parameters objectForKey:@"alert-style"];
+	NSString			*alertStyleString = [interface valueForOption:@"alert-style"];
 	NSDictionary	*resultDict       = nil;
 		
 	NSAlert *alert = [[[NSAlert alloc] init] autorelease];
@@ -60,18 +60,18 @@ static option_t const expectedOptions[] =
 	}
 	
 	[alert setAlertStyle:alertStyle];
-	if([parameters objectForKey:@"message"])
-		[alert setMessageText:[parameters objectForKey:@"message"]];
-	if([parameters objectForKey:@"text"])
-		[alert setInformativeText:[parameters objectForKey:@"text"]];
+	if([interface valueForOption:@"message"])
+		[alert setMessageText:[interface valueForOption:@"message"]];
+	if([interface valueForOption:@"text"])
+		[alert setInformativeText:[interface valueForOption:@"text"]];
 	
 	// Setup buttons
-	if ([parameters objectForKey:@"button1"])
-		[alert addButtonWithTitle:[parameters objectForKey:@"button1"]];
-	if ([parameters objectForKey:@"button2"])
-		[alert addButtonWithTitle:[parameters objectForKey:@"button2"]];
-	if ([parameters objectForKey:@"button3"])
-		[alert addButtonWithTitle:[parameters objectForKey:@"button3"]];
+	if ([interface valueForOption:@"button1"])
+		[alert addButtonWithTitle:[interface valueForOption:@"button1"]];
+	if ([interface valueForOption:@"button2"])
+		[alert addButtonWithTitle:[interface valueForOption:@"button2"]];
+	if ([interface valueForOption:@"button3"])
+		[alert addButtonWithTitle:[interface valueForOption:@"button3"]];
 	
 	BOOL modal = YES;
 	

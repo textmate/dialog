@@ -65,10 +65,10 @@
 {
 	NSString *text = @"";
 	
-	if([[interface arguments] count] < 3)
+	if([interface numberOfArguments] < 3)
 		text = [self commandSummaryText];
 	else
-		text = [self helpForCommand:[[interface arguments] objectAtIndex:2]];
+		text = [self helpForCommand:[interface argumentAtIndex:2]];
 
 	[interface writeStringToError:text];
 }

@@ -29,8 +29,28 @@ echo '{suggestions = ({title = "**law**";filterOn = "law";},{title = "**laws**";
 
 - (void)handleCommand:(CLIProxy*)interface
 {
-	NSDictionary* initialValues = [interface readPropertyListFromInput];
-    
+	NSMutableDictionary* initialValues = [interface readPropertyListFromInput];
+
+	[initialValues setObject:[NSDictionary dictionaryWithObject:@"/Users/ciaran/code/TableEditorTest/PrimaryKey.png" forKey:@"key"] forKey:@"images"];
+
+	// Convert image paths to NSImages
+	NSDictionary* imagePaths    = [[[initialValues objectForKey:@"images"] retain] autorelease];
+	NSMutableDictionary* images = [NSMutableDictionary dictionaryWithCapacity:[imagePaths count]];
+	NSLog(@"%s imagePaths: %@", _cmd, imagePaths);
+
+	NSEnumerator *imageEnum = [imagePaths keyEnumerator];
+	while (NSString* imageName = [imageEnum nextObject]) {
+		NSString* imagePath = [imagePaths objectForKey:imageName];
+		NSLog(@"%s imagePath: %@", _cmd, imagePath);
+		NSImage* image = [[NSImage alloc] initByReferencingFile:imagePath];
+		NSLog(@"%s image: %@", _cmd, image);
+		if(image && [image isValid])
+			[images setObject:image forKey:imageName];
+		[image release];
+	}
+	[initialValues setObject:images forKey:@"images"];
+	NSLog(@"%s images: %@", _cmd, images);
+
 	NSPoint pos = NSZeroPoint;
 	if(id textView = [NSApp targetForAction:@selector(positionForWindowUnderCaret)])
 		pos = [textView positionForWindowUnderCaret];

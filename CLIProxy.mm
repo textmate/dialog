@@ -9,6 +9,10 @@
 #import "CLIProxy.h"
 #import "TMDCommand.h"
 
+@interface CLIProxy (Private)
+- (NSArray*)arguments;
+@end
+
 @implementation CLIProxy
 + (id)interfaceWithOptions:(NSDictionary*)options;
 {
@@ -52,12 +56,44 @@
 
 - (NSArray*)arguments
 {
-	return arguments;
+	if(!parsedOptions)
+		return arguments;
+	return [parsedOptions objectForKey:@"literals"];
 }
 
-- (NSDictionary*)parseOptionsWithExpectedOptions:(option_t const*)expectedOptions;
+- (int)numberOfArguments;
 {
-	return ParseOptions([self arguments], expectedOptions, sizeof(expectedOptions) / sizeof(typeof(expectedOptions)));
+	return [[self arguments] count];
+}
+
+- (NSString*)argumentAtIndex:(int)index;
+{
+	id argument = nil;
+	if([[self arguments] count] > index)
+		argument = [[self arguments] objectAtIndex:index];
+	return argument;
+}
+
+- (id)valueForOption:(NSString*)option;
+{
+	if(!parsedOptions)
+	{
+		NSLog(@"Error: -valueForOption: called without first setting an option template");
+		return nil;
+	}
+	return [[parsedOptions objectForKey:@"options"] objectForKey:option];
+}
+
+- (void)parseOptions
+{
+	parsedOptions = ParseOptions([self arguments], optionTemplate, optionCount);
+}
+
+- (void)setOptionTemplate:(option_t const*)options count:(size_t)count;
+{
+	optionTemplate = options;
+	optionCount = count;
+	[self parseOptions];
 }
 
 // ===================
