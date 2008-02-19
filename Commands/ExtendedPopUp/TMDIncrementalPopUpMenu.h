@@ -16,18 +16,14 @@
 	NSString* staticPrefix;
 	NSArray* filtered;
 	NSString* shell;
-	NSMutableAttributedString* attrString;
 	IBOutlet id theTableView;
 	float stringWidth;
 	NSPoint caretPos;
 	BOOL isAbove;
 	NSRect mainScreen;
 	BOOL closeMe;
-	id ed;
-	id controllerObject;
 }
-- (id)initWithDictionary:(NSDictionary*)aDictionary
-               andEditor:(id)editor;
+- (id)initWithDictionary:(NSDictionary*)aDictionary;
 - (void)filter;
 - (NSMutableString*)mutablePrefix;
 - (id)theTableView;

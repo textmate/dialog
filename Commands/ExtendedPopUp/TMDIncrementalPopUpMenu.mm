@@ -10,34 +10,26 @@
 #import "../../TMDCommand.h" // -writeString:
 
 @implementation TMDIncrementalPopUpMenu
-- (id)initWithDictionary:(NSDictionary*)aDictionary andEditor:(id)editor
+- (id)initWithDictionary:(NSDictionary*)aDictionary;
 {
 	if(self = [self initWithWindowNibName:@"IncrementalPopUpMenu"]) {
-		mutablePrefix = [[NSMutableString alloc] init];
+		mutablePrefix = [[aDictionary objectForKey:@"currentWord"] mutableCopy];
+		stringWidth   = [mutablePrefix sizeWithAttributes:[NSDictionary dictionaryWithObject:[self font] forKey:NSFontAttributeName]].width;
 
-		ed = [editor retain];
-		suggestions = [NSArray arrayWithArray:[aDictionary objectForKey:@"suggestions"]];
+		suggestions = [[aDictionary objectForKey:@"suggestions"] retain];
 
-		[mutablePrefix setString:[NSString stringWithString:[aDictionary objectForKey:@"currentWord"]]];
 		if([aDictionary objectForKey:@"staticPrefix"])
 		{
-			staticPrefix = [NSString stringWithString:[aDictionary objectForKey:@"staticPrefix"]];
-			[staticPrefix retain];
+			staticPrefix = [[aDictionary objectForKey:@"staticPrefix"] retain];
 		}
 		else
 		{
 			staticPrefix = @"";
 		}
-		shell = nil;
+
 		if([aDictionary objectForKey:@"shell"])
-		{
-			shell = [NSString stringWithString:[aDictionary objectForKey:@"shell"]];
-			[shell retain];
-		}
-		//NSPredicate* predicate = [NSPredicate predicateWithFormat:@"filterOn beginswith %@", [staticPrefix stringByAppendingString:mutablePrefix]];
-		suggestions = [suggestions retain];
-		//[self setFiltered:[suggestions filteredArrayUsingPredicate:predicate]];
-		attrString = [[NSMutableAttributedString alloc] initWithString:@"No completion found"];
+			shell = [[aDictionary objectForKey:@"shell"] retain];
+
 		[self filter];
 		closeMe = NO;
 	}
@@ -151,37 +143,11 @@
 	//NSLog(@"filtered retaincount in filter after - %d",[filtered retainCount]);
 	
 }
-- (void)windowDidLoad
-{
-    //NSLog(@"%d controller windowDidLoad",[controllerObject retainCount]);
 
-//    [self showWindow:self];
-//  [[self window] setContentView:theTableView];
-	[[self window] setDelegate:self];
-	[self filter];
-	NSMutableAttributedString* s = [[NSMutableAttributedString alloc] initWithString:mutablePrefix];
-	[s addAttribute:NSFontAttributeName
-             value:[NSFont fontWithName:[[NSUserDefaults standardUserDefaults] stringForKey:@"OakTextViewNormalFontName"] ?:[[NSFont userFixedPitchFontOfSize:12.0] fontName]
-                                   size:[[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"] ?: 12 ]
-             range:NSMakeRange(0,[mutablePrefix length])];
-	stringWidth = [s size].width;
-	[s release];
-}
-
-- (void)windowWillClose:(NSNotification*)aNotification
+- (NSFont*)font
 {
-	//NSLog(@"windowDidClose");
-	if([controllerObject isKindOfClass:[NSObjectController class]])
-		[controllerObject unbind:@"contentObject"];
-	//NSLog(@"windowDidClose self %d",[self retainCount]);
-		//NSLog(@"%d arrayControll",[anArrayController retainCount]);
-	//NSLog(@"%d theTableView",[theTableView retainCount]);
-	//NSLog(@"%d static",[staticPrefix retainCount]);
-	//NSLog(@"%d controller",[controllerObject retainCount]);
-		//NSLog(@"%d mutablePrefix",[mutablePrefix retainCount]);
-	//NSLog(@"%d filtered",[filtered retainCount]);
-	//NSLog(@"%d shell",[shell retainCount]);
-	//NSLog(@"%d controller",[controllerObject retainCount]);
+	return [NSFont fontWithName:[[NSUserDefaults standardUserDefaults] stringForKey:@"OakTextViewNormalFontName"] ?:[[NSFont userFixedPitchFontOfSize:12.0] fontName]
+                          size:[[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"] ?: 12 ];
 }
 
 - (int) stringWidth;
@@ -281,14 +247,6 @@
 			[anArrayController setSelectionIndex:oldIndex+MAX_ROWS-1];
 		[[self theTableView] scrollRowToVisible:[anArrayController selectionIndex]];
 	}
-	//NSLog(@"%d arrayControll",[anArrayController retainCount]);
-	//NSLog(@"%d theTableView",[theTableView retainCount]);
-	//NSLog(@"%d static",[staticPrefix retainCount]);
-	//NSLog(@"%d controller",[controllerObject retainCount]);
-	//NSLog(@"%d mutablePrefix",[mutablePrefix retainCount]);
-	//NSLog(@"%d filtered",[filtered retainCount]);
-	//NSLog(@"%d shell",[shell retainCount]);
-	//NSLog(@"%d controller",[controllerObject retainCount]);
 
 }
 - (void)pageUp:(id)sender 
@@ -380,20 +338,11 @@
 
 - (void)writeToTM:(NSString*)string asSnippet:(BOOL)snippet
 {
-	if(snippet)
-	{
-		if(id textView = [NSApp targetForAction:@selector(insertSnippetWithOptions:)])
-		{
-			[textView insertSnippetWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:string, @"content",nil]];
-		}
-	}
-	else
-	{
-		if(id textView = [NSApp targetForAction:@selector(insertText:)])
-		{
-			[textView insertText:string];
-		}
-	}
+	id textView = nil;
+	if(snippet && (textView = [NSApp targetForAction:@selector(insertSnippetWithOptions:)]))
+		[textView insertSnippetWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:string, @"content",nil]];
+	else if(textView = [NSApp targetForAction:@selector(insertText:)])
+		[textView insertText:string];
 }
 
 - (NSArray*)filtered
@@ -406,10 +355,6 @@
 	[aValue retain];
 	[filtered release];
 	filtered = aValue;
-	
-  //  NSArray* oldFiltered = filtered;
-  //  filtered = [aValue retain];
-  //  [oldFiltered release];
 }
 
 - (void)dealloc
@@ -419,8 +364,7 @@
 	NSLog(@"%d staticPrefix",[staticPrefix retainCount]);
 	[mutablePrefix release];
 	[suggestions release];
-	if(shell)
-		[shell release];
+	[shell release];
 	[super dealloc];
 }
 @end

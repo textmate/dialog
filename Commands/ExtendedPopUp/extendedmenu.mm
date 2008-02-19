@@ -44,7 +44,7 @@ echo '{suggestions = ({title = "**law**";filterOn = "law";},{title = "**laws**";
 
 	pos = NSMakePoint(pos.x,  pos.y);
 	NSLog(@"%s initWithDictionary: %@", _cmd, initialValues);
-	TMDIncrementalPopUpMenu* xPopUp = [[TMDIncrementalPopUpMenu alloc] initWithDictionary:initialValues andEditor:nil];
+	TMDIncrementalPopUpMenu* xPopUp = [[TMDIncrementalPopUpMenu alloc] initWithDictionary:initialValues];
 	NSLog(@"%d xpop",[xPopUp retainCount]);
 	[xPopUp setCaretPos:pos];
 	[xPopUp setMainScreen:mainScreen];
