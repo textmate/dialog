@@ -8,6 +8,7 @@
 #import "TMDIncrementalPopUpMenu.h"
 #import "../Utilities/TextMate.h" // -insertSnippetWithOptions
 #import "../../TMDCommand.h" // -writeString:
+#import "../../Dialog2.h"
 
 @interface NSEvent (DeviceDelta)
 - (float)deviceDeltaX;
@@ -16,6 +17,7 @@
 
 @interface TMDIncrementalPopUpMenu (Private)
 - (NSFont*)font;
+- (NSRect)rectOfMainScreen;
 @end
 
 @implementation TMDIncrementalPopUpMenu
@@ -237,6 +239,8 @@
 
 - (void)filter
 {
+	NSRect mainScreen = [self rectOfMainScreen];
+
 	NSArray* myArray2;
 	if([mutablePrefix length] > 0)
 	{
@@ -307,14 +311,43 @@
 	return stringWidth;
 }
 
+- (NSRect)rectOfMainScreen;
+{
+	NSRect mainScreen = [[NSScreen mainScreen] frame];
+	enumerate([NSScreen screens], NSScreen* candidate)
+	{
+		if(NSMinX([candidate frame]) == 0.0f && NSMinY([candidate frame]) == 0.0f)
+			mainScreen = [candidate frame];
+	}
+	return mainScreen;
+}
+
 - (void)setCaretPos:(NSPoint)aPos
 {
 	caretPos = aPos;
+
+	[self setAbove:NO];
+
+	NSRect mainScreen = [self rectOfMainScreen];
+
+	int offx = (caretPos.x/mainScreen.size.width) + 1;
+	if((caretPos.x + [[self window] frame].size.width) > (mainScreen.size.width*offx))
+		caretPos.x = caretPos.x - [[self window] frame].size.width;
+	caretPos.x = caretPos.x - [self stringWidth];
+
+	if(caretPos.y>=0 && caretPos.y<[[self window] frame].size.height)
+	{
+		caretPos.y = caretPos.y + ([[self window] frame].size.height + [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"]*1.5);
+		[self setAbove:YES];
+	}
+	if(caretPos.y<0 && (mainScreen.size.height-[[self window] frame].size.height)<(caretPos.y*-1))
+	{
+		caretPos.y = caretPos.y + ([[self window] frame].size.height + [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"]*1.5);
+		[self setAbove:YES];
+	}
+	[[self window] setFrameTopLeftPoint:caretPos];
 }
-- (void)setMainScreen:(NSRect)aScreen
-{
-	mainScreen = aScreen;
-}
+
 - (void)setAbove:(BOOL)aBool
 {
 	isAbove = aBool;

@@ -21,7 +21,6 @@
 	float stringWidth;
 	NSPoint caretPos;
 	BOOL isAbove;
-	NSRect mainScreen;
 	BOOL closeMe;
 }
 - (id)initWithDictionary:(NSDictionary*)aDictionary;
@@ -36,7 +35,6 @@
 - (NSArray*)filtered;
 - (void)setFiltered:(NSArray*)aValue;
 - (void)setCaretPos:(NSPoint)aPos;
-- (void)setMainScreen:(NSRect)aScreen;
 - (void)setAbove:(BOOL)aBool;
 - (void)completeAndInsertSnippet:(id)nothing;
 - (BOOL)getCloseStatus;
