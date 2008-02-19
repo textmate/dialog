@@ -9,12 +9,24 @@
 #import "../Utilities/TextMate.h" // -insertSnippetWithOptions
 #import "../../TMDCommand.h" // -writeString:
 
+@interface NSEvent (DeviceDelta)
+- (float)deviceDeltaX;
+- (float)deviceDeltaY;
+@end
+
+@interface TMDIncrementalPopUpMenu (Private)
+- (NSFont*)font;
+@end
+
 @implementation TMDIncrementalPopUpMenu
 - (id)initWithDictionary:(NSDictionary*)aDictionary;
 {
 	if(self = [self initWithWindowNibName:@"IncrementalPopUpMenu"]) {
 		mutablePrefix = [[aDictionary objectForKey:@"currentWord"] mutableCopy];
 		stringWidth   = [mutablePrefix sizeWithAttributes:[NSDictionary dictionaryWithObject:[self font] forKey:NSFontAttributeName]].width;
+
+		if([aDictionary objectForKey:@"extraChars"])
+			extraChars = [[aDictionary objectForKey:@"extraChars"] retain];
 
 		suggestions = [[aDictionary objectForKey:@"suggestions"] retain];
 
@@ -36,6 +48,141 @@
 
 	return self;
 }
+
+- (void)showWindow:(id)sender
+{
+	[super showWindow:sender];
+	[self performSelector:@selector(watchUserEvents) withObject:nil afterDelay:0.1];
+}
+
+- (void)watchUserEvents
+{
+	NSCharacterSet* whiteList = nil;
+	if(extraChars)
+		whiteList = [NSCharacterSet characterSetWithCharactersInString:extraChars];
+
+	do
+	{
+		NSEvent* event = [NSApp nextEventMatchingMask:NSAnyEventMask
+                                          untilDate:[NSDate distantFuture]
+                                             inMode:NSDefaultRunLoopMode
+                                            dequeue:YES];
+
+		if(event != nil)
+		{
+			NSEventType t = [event type];
+			if(t == NSKeyDown)
+			{
+				NSString* aString  = [event characters];
+				unsigned int flags = [event modifierFlags];
+				unichar key        = 0;
+				if((flags & NSControlKeyMask) || (flags & NSAlternateKeyMask) || (flags & NSCommandKeyMask))
+				{
+					[NSApp sendEvent:event];
+					break;
+				}
+				else if([aString length] == 1)
+				{
+					key = [aString characterAtIndex:0];
+					if(key == NSCarriageReturnCharacter)
+					{
+						[self keyDown:event];
+						break;
+					}
+					else if(key == NSBackspaceCharacter || key == NSDeleteCharacter)
+					{
+						[NSApp sendEvent:event];
+						if([[self mutablePrefix] length] > 0)
+						{
+							[self keyDown:event];
+						}
+						else
+						{
+							break;
+						}
+					}
+					else if ([event keyCode] == 53)
+					{
+						break;
+					}
+					else if(key == NSTabCharacter)
+					{
+						if([[self filtered] count] == 0)
+						{
+							[NSApp sendEvent:event];
+							break;
+						}
+						if([[self filtered] count] == 1)
+						{
+							[self keyDown:event];
+							break;
+						}
+						[self keyDown:event];
+					}   
+					else if(key == NSUpArrowFunctionKey || key == NSDownArrowFunctionKey)
+					{ 
+						[[self theTableView] keyDown:event];
+					}
+					else if(key == NSEndFunctionKey)
+					{ 
+						[self moveToEndOfDocument:self];
+					}
+					else if(key == NSHomeFunctionKey)
+					{ 
+						[self moveToBeginningOfDocument:self];
+					}
+					else if(key == NSPageDownFunctionKey)
+					{ 
+						[self pageDown:self];
+					}
+					else if(key == NSPageUpFunctionKey)
+					{ 
+						[self pageUp:self];
+					}
+					else if([[NSCharacterSet alphanumericCharacterSet] characterIsMember:key] || (whiteList && [whiteList characterIsMember:key]))
+					{
+						[NSApp sendEvent:event];
+						[self keyDown:event];
+					}
+					else
+					{
+						[NSApp sendEvent:event];
+						//[xPopUp keyDown:event];
+						break;
+					}
+				}
+				else
+				{
+						[NSApp sendEvent:event];
+						//[xPopUp keyDown:event];
+						break;
+				}
+			}
+			else if(t == NSScrollWheel)
+			{
+ 				if([event deviceDeltaY] >= 0.0)
+ 					[self scrollLineUp:self];
+				else
+					[self scrollLineDown:self];
+			}
+			else if(t == NSRightMouseDown || t == NSLeftMouseDown)
+			{
+				[NSApp sendEvent:event];
+				if(! NSPointInRect([NSEvent mouseLocation], [[self window] frame]))
+					break;
+			}
+			else
+			{ 
+				[NSApp sendEvent:event];
+			}
+		}
+	}
+	while(!closeMe);
+	[self close];
+	[self release];
+}
+
+
 - (NSMutableString*)mutablePrefix;
 {
 	return mutablePrefix;
@@ -50,12 +197,17 @@
 	if([filtered count]>1)
 	{
 		NSEnumerator *enumerator = [filtered objectEnumerator];
+		id firstObject = [enumerator nextObject];
 		id eachString;
-		id previousString = [[enumerator nextObject] objectForKey:@"filterOn"];
+		id previousString = [firstObject objectForKey:@"filterOn"];
+		if(!previousString)
+			 previousString = [firstObject objectForKey:@"title"];
 		id dict;
 		while(dict = [enumerator nextObject])
 		{
 			eachString = [dict objectForKey:@"filterOn"];
+			if(!eachString)
+				 eachString = [dict objectForKey:@"title"];
 			NSString *commonPrefix = [eachString commonPrefixWithString:previousString options:NSLiteralSearch];
 			previousString = commonPrefix;
 		}
@@ -183,13 +335,10 @@
 	{
 		id selection = [filtered objectAtIndex:[anArrayController selectionIndex]];
 		NSString* aString = [selection valueForKey:@"filterOn"];
+		if(!aString)
+			aString = [selection valueForKey:@"title"];
 		NSString* temp = [staticPrefix stringByAppendingString:mutablePrefix];
-		//[temp retain];
-		if([temp length] > [aString length])
-		{
-			;
-		}
-		else if([aString length] > [temp length])
+		if([aString length] > [temp length])
 		{
 			NSString* temp2 = [aString substringFromIndex:[temp length]];
 			[self writeToTM:temp2 asSnippet:NO];
@@ -338,6 +487,7 @@
 
 - (void)writeToTM:(NSString*)string asSnippet:(BOOL)snippet
 {
+	NSLog(@"[%@ writeToTM:%@ asSnippet:%d]", [self class], string, snippet);
 	id textView = nil;
 	if(snippet && (textView = [NSApp targetForAction:@selector(insertSnippetWithOptions:)]))
 		[textView insertSnippetWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:string, @"content",nil]];

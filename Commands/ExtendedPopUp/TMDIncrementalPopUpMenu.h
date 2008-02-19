@@ -13,6 +13,7 @@
 	IBOutlet NSArrayController* anArrayController;
 	NSArray* suggestions;
 	NSMutableString* mutablePrefix;
+	NSString* extraChars;
 	NSString* staticPrefix;
 	NSArray* filtered;
 	NSString* shell;
