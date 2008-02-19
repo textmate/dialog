@@ -54,7 +54,7 @@
 - (void)showWindow:(id)sender
 {
 	[super showWindow:sender];
-	[self performSelector:@selector(watchUserEvents) withObject:nil afterDelay:0.1];
+	[self performSelector:@selector(watchUserEvents) withObject:nil afterDelay:0.05];
 }
 
 - (void)watchUserEvents
@@ -181,9 +181,7 @@
 	}
 	while(!closeMe);
 	[self close];
-	[self release];
 }
-
 
 - (NSMutableString*)mutablePrefix;
 {
@@ -544,7 +542,6 @@
 {
 	NSLog(@"%d staticPrefix",[staticPrefix retainCount]);
 	[staticPrefix release];
-	NSLog(@"%d staticPrefix",[staticPrefix retainCount]);
 	[mutablePrefix release];
 	[suggestions release];
 	[shell release];
