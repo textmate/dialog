@@ -28,6 +28,10 @@ const NSString* TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 - (void)stopAnimation:(id)sender;
 @end
 
+@interface WebView (LeopardOnly)
+- (void)setDrawsBackground:(BOOL)drawsBackground;
+@end
+
 @implementation TMDHTMLTip
 // ==================
 // = Setup/teardown =
