@@ -21,7 +21,6 @@
 		91D6F9060CF23E7F000F8170 /* menu.mm in Sources */ = {isa = PBXBuildFile; fileRef = 91D6F9040CF23E7F000F8170 /* menu.mm */; };
 		91D6F90B0CF23EAE000F8170 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91D6F90A0CF23EAE000F8170 /* Carbon.framework */; };
 		91D6F95A0CF2BD16000F8170 /* extendedmenu.mm in Sources */ = {isa = PBXBuildFile; fileRef = 91D6F9560CF2BD16000F8170 /* extendedmenu.mm */; };
-		91D6F95B0CF2BD16000F8170 /* IncrementalPopUpMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = 91D6F9580CF2BD16000F8170 /* IncrementalPopUpMenu.nib */; };
 		91D6F95C0CF2BD16000F8170 /* TMDIncrementalPopUpMenu.mm in Sources */ = {isa = PBXBuildFile; fileRef = 91D6F9590CF2BD16000F8170 /* TMDIncrementalPopUpMenu.mm */; };
 		91D6F9650CF2BD32000F8170 /* TMDBorderLessWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 91D6F9640CF2BD32000F8170 /* TMDBorderLessWindow.m */; };
 		91D6F9710CF2C803000F8170 /* htmltips.mm in Sources */ = {isa = PBXBuildFile; fileRef = 91D6F96E0CF2C803000F8170 /* htmltips.mm */; };
@@ -67,7 +66,6 @@
 		91D6F90A0CF23EAE000F8170 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		91D6F9560CF2BD16000F8170 /* extendedmenu.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = extendedmenu.mm; path = Commands/ExtendedPopUp/extendedmenu.mm; sourceTree = "<group>"; };
 		91D6F9570CF2BD16000F8170 /* TMDIncrementalPopUpMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TMDIncrementalPopUpMenu.h; path = Commands/ExtendedPopUp/TMDIncrementalPopUpMenu.h; sourceTree = "<group>"; };
-		91D6F9580CF2BD16000F8170 /* IncrementalPopUpMenu.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = IncrementalPopUpMenu.nib; path = Commands/ExtendedPopUp/IncrementalPopUpMenu.nib; sourceTree = "<group>"; };
 		91D6F9590CF2BD16000F8170 /* TMDIncrementalPopUpMenu.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = TMDIncrementalPopUpMenu.mm; path = Commands/ExtendedPopUp/TMDIncrementalPopUpMenu.mm; sourceTree = "<group>"; };
 		91D6F9630CF2BD32000F8170 /* TMDBorderLessWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TMDBorderLessWindow.h; path = Commands/Utilities/TMDBorderLessWindow.h; sourceTree = "<group>"; };
 		91D6F9640CF2BD32000F8170 /* TMDBorderLessWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TMDBorderLessWindow.m; path = Commands/Utilities/TMDBorderLessWindow.m; sourceTree = "<group>"; };
@@ -215,7 +213,6 @@
 			children = (
 				91D6F9560CF2BD16000F8170 /* extendedmenu.mm */,
 				91D6F9570CF2BD16000F8170 /* TMDIncrementalPopUpMenu.h */,
-				91D6F9580CF2BD16000F8170 /* IncrementalPopUpMenu.nib */,
 				91D6F9590CF2BD16000F8170 /* TMDIncrementalPopUpMenu.mm */,
 			);
 			name = ExtendedPopUp;
@@ -311,7 +308,6 @@
 			files = (
 				91D6F8F90CF23D6E000F8170 /* tm_dialog2 in Resources */,
 				8D5B49B0048680CD000E48DA /* InfoPlist.strings in Resources */,
-				91D6F95B0CF2BD16000F8170 /* IncrementalPopUpMenu.nib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
