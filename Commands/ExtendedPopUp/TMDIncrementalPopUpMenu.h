@@ -8,7 +8,7 @@
 #import <Cocoa/Cocoa.h>
 #define MAX_ROWS 15
 
-@interface TMDIncrementalPopUpMenu : NSWindowController
+@interface TMDIncrementalPopUpMenu : NSWindow
 {
 	IBOutlet NSArrayController* anArrayController;
 	NSArray* suggestions;

@@ -31,7 +31,7 @@ echo '{suggestions = ({title = "**law**";filterOn = "law";},{title = "**laws**";
 
 	TMDIncrementalPopUpMenu* xPopUp = [[TMDIncrementalPopUpMenu alloc] initWithDictionary:initialValues];
 	[xPopUp setCaretPos:pos];
-	[xPopUp showWindow:self];
+	[xPopUp orderFront:self];
 }
 
 @end

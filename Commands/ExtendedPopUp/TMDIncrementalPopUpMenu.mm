@@ -23,7 +23,44 @@
 @implementation TMDIncrementalPopUpMenu
 - (id)initWithDictionary:(NSDictionary*)aDictionary;
 {
-	if(self = [self initWithWindowNibName:@"IncrementalPopUpMenu"]) {
+	if(self = [self initWithContentRect:NSZeroRect styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO])
+	{
+		[self setReleasedWhenClosed:YES];
+		[self setLevel:NSStatusWindowLevel];
+		[self setHidesOnDeactivate:YES];
+
+		NSScrollView* scrollView = [[NSScrollView alloc] initWithFrame:NSZeroRect];
+		{
+			[scrollView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
+			[scrollView setAutohidesScrollers:YES];
+			[scrollView setHasVerticalScroller:YES];
+			[[scrollView verticalScroller] setControlSize:NSSmallControlSize];
+
+			theTableView = [[NSTableView alloc] initWithFrame:NSZeroRect];
+			{
+				[theTableView setFocusRingType:NSFocusRingTypeNone];
+				[theTableView setAllowsEmptySelection:NO];
+				[theTableView setHeaderView:nil];
+
+				NSTableColumn *column = [[NSTableColumn alloc] initWithIdentifier:@"foo"];
+				{
+					[[column headerCell] setStringValue:@"foo"];
+					[column setEditable:NO];
+					[theTableView addTableColumn:column];
+					[column setWidth:[theTableView bounds].size.width];
+				}
+				[column release];
+
+				[theTableView setDataSource:self];
+
+				[scrollView setDocumentView:theTableView];
+			}
+			[theTableView release];
+
+			[self setContentView:scrollView];
+		}
+		[scrollView release];
+		
 		mutablePrefix = [[aDictionary objectForKey:@"currentWord"] mutableCopy];
 		stringWidth   = [mutablePrefix sizeWithAttributes:[NSDictionary dictionaryWithObject:[self font] forKey:NSFontAttributeName]].width;
 
@@ -51,9 +88,9 @@
 	return self;
 }
 
-- (void)showWindow:(id)sender
+- (void)orderFront:(id)sender
 {
-	[super showWindow:sender];
+	[super orderFront:sender];
 	[self performSelector:@selector(watchUserEvents) withObject:nil afterDelay:0.05];
 }
 
@@ -170,7 +207,7 @@
 			else if(t == NSRightMouseDown || t == NSLeftMouseDown)
 			{
 				[NSApp sendEvent:event];
-				if(! NSPointInRect([NSEvent mouseLocation], [[self window] frame]))
+				if(! NSPointInRect([NSEvent mouseLocation], [self frame]))
 					break;
 			}
 			else
@@ -235,6 +272,25 @@
 	// [self close];
 }
 
+- (int)numberOfRowsInTableView:(NSTableView *)aTableView
+{
+	return [filtered count];
+}
+
+- (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex
+{
+	NSLog(@"[%@ tableView:%@ objectValueForTableColumn:%@ row:%d]", [self class], aTableView, aTableColumn, rowIndex);
+	// NSImage* image = nil;
+	// 
+	// NSString* imageName = [[filtered objectAtIndex:rowIndex] objectForKey:@"image"];
+	// if(imageName)
+	// 	image = [images objectForKey:imageName];
+	// 
+	// [[aTableColumn dataCell] setImage:image];
+
+	return [[filtered objectAtIndex:rowIndex] objectForKey:@"title"];
+}
+
 - (void)filter
 {
 	NSRect mainScreen = [self rectOfMainScreen];
@@ -250,7 +306,7 @@
 	{
 		myArray2 = suggestions;
 	}
-	NSPoint old = NSMakePoint([[self window] frame].origin.x,[[self window] frame].origin.y +[[self window] frame].size.height);
+	NSPoint old = NSMakePoint([self frame].origin.x,[self frame].origin.y +[self frame].size.height);
 	float newHeight = 0;
 	if([myArray2 count]>MAX_ROWS)
 	{
@@ -268,7 +324,7 @@
 	float maxLen = 1;
 	NSString* item;
 	int i;
-	float maxWidth = [[self window] frame].size.width;
+	float maxWidth = [self frame].size.width;
 	if([myArray2 count]>0)
 	{
 		for(i=0; i<[myArray2 count]; i++)
@@ -289,7 +345,7 @@
 	{
 		old.y = caretPos.y + (newHeight + [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"]*1.5);
 	}
-	[[self window] setFrame:NSMakeRect(old.x,old.y-newHeight,maxWidth,newHeight) display:YES];
+	[self setFrame:NSMakeRect(old.x,old.y-newHeight,maxWidth,newHeight) display:YES];
 	//NSLog(@"myArray2 retaincount %d",[myArray2 retainCount]);
 	//NSLog(@"filtered retaincount in filter %d",[filtered retainCount]);
 	//[self setValue:myArray2 forKey:@"filtered"];
@@ -329,21 +385,21 @@
 	NSRect mainScreen = [self rectOfMainScreen];
 
 	int offx = (caretPos.x/mainScreen.size.width) + 1;
-	if((caretPos.x + [[self window] frame].size.width) > (mainScreen.size.width*offx))
-		caretPos.x = caretPos.x - [[self window] frame].size.width;
+	if((caretPos.x + [self frame].size.width) > (mainScreen.size.width*offx))
+		caretPos.x = caretPos.x - [self frame].size.width;
 	caretPos.x = caretPos.x - [self stringWidth];
 
-	if(caretPos.y>=0 && caretPos.y<[[self window] frame].size.height)
+	if(caretPos.y>=0 && caretPos.y<[self frame].size.height)
 	{
-		caretPos.y = caretPos.y + ([[self window] frame].size.height + [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"]*1.5);
+		caretPos.y = caretPos.y + ([self frame].size.height + [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"]*1.5);
 		[self setAbove:YES];
 	}
-	if(caretPos.y<0 && (mainScreen.size.height-[[self window] frame].size.height)<(caretPos.y*-1))
+	if(caretPos.y<0 && (mainScreen.size.height-[self frame].size.height)<(caretPos.y*-1))
 	{
-		caretPos.y = caretPos.y + ([[self window] frame].size.height + [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"]*1.5);
+		caretPos.y = caretPos.y + ([self frame].size.height + [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"]*1.5);
 		[self setAbove:YES];
 	}
-	[[self window] setFrameTopLeftPoint:caretPos];
+	[self setFrameTopLeftPoint:caretPos];
 }
 
 - (void)setAbove:(BOOL)aBool
@@ -536,6 +592,7 @@
 	[aValue retain];
 	[filtered release];
 	filtered = aValue;
+	[theTableView reloadData];
 }
 
 - (void)dealloc
