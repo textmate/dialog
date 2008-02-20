@@ -10,20 +10,19 @@
 
 @interface TMDIncrementalPopUpMenu : NSWindow
 {
-	IBOutlet NSArrayController* anArrayController;
 	NSArray* suggestions;
 	NSMutableString* mutablePrefix;
 	NSString* extraChars;
 	NSString* staticPrefix;
 	NSArray* filtered;
 	NSString* shell;
-	IBOutlet id theTableView;
+	IBOutlet NSTableView* theTableView;
 	float stringWidth;
 	NSPoint caretPos;
 	BOOL isAbove;
 	BOOL closeMe;
 }
-- (id)initWithDictionary:(NSDictionary*)aDictionary;
+- (id)initWithSuggestions:(NSArray*)theSuggestions currentWord:(NSString*)currentWord staticPrefix:(NSString*)staticPrefix extraChars:(NSString*)extraAllowedChars shellCommand:(NSString*)shellCommand;
 - (void)filter;
 - (NSMutableString*)mutablePrefix;
 - (id)theTableView;

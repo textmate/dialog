@@ -21,10 +21,26 @@
 @end
 
 @implementation TMDIncrementalPopUpMenu
-- (id)initWithDictionary:(NSDictionary*)aDictionary;
+- (id)initWithSuggestions:(NSArray*)theSuggestions currentWord:(NSString*)currentWord staticPrefix:(NSString*)theStaticPrefix extraChars:(NSString*)extraAllowedChars shellCommand:(NSString*)shellCommand;
 {
 	if(self = [self initWithContentRect:NSZeroRect styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO])
 	{
+		mutablePrefix = [currentWord mutableCopy];
+		stringWidth   = [mutablePrefix sizeWithAttributes:[NSDictionary dictionaryWithObject:[self font] forKey:NSFontAttributeName]].width;
+
+		extraChars = [extraAllowedChars retain];
+
+		suggestions = [theSuggestions retain];
+
+		if(theStaticPrefix)
+			staticPrefix = [theStaticPrefix retain];
+		else
+			staticPrefix = @"";
+
+		shell = [shellCommand retain];
+
+
+		// Window setup
 		[self setReleasedWhenClosed:YES];
 		[self setLevel:NSStatusWindowLevel];
 		[self setHidesOnDeactivate:YES];
@@ -58,31 +74,12 @@
 			[theTableView release];
 
 			[self setContentView:scrollView];
+
+
+			[self filter];
+			closeMe = NO;
 		}
 		[scrollView release];
-		
-		mutablePrefix = [[aDictionary objectForKey:@"currentWord"] mutableCopy];
-		stringWidth   = [mutablePrefix sizeWithAttributes:[NSDictionary dictionaryWithObject:[self font] forKey:NSFontAttributeName]].width;
-
-		if([aDictionary objectForKey:@"extraChars"])
-			extraChars = [[aDictionary objectForKey:@"extraChars"] retain];
-
-		suggestions = [[aDictionary objectForKey:@"suggestions"] retain];
-
-		if([aDictionary objectForKey:@"staticPrefix"])
-		{
-			staticPrefix = [[aDictionary objectForKey:@"staticPrefix"] retain];
-		}
-		else
-		{
-			staticPrefix = @"";
-		}
-
-		if([aDictionary objectForKey:@"shell"])
-			shell = [[aDictionary objectForKey:@"shell"] retain];
-
-		[self filter];
-		closeMe = NO;
 	}
 
 	return self;
@@ -279,7 +276,6 @@
 
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex
 {
-	NSLog(@"[%@ tableView:%@ objectValueForTableColumn:%@ row:%d]", [self class], aTableView, aTableColumn, rowIndex);
 	// NSImage* image = nil;
 	// 
 	// NSString* imageName = [[filtered objectAtIndex:rowIndex] objectForKey:@"image"];
@@ -418,9 +414,9 @@
 }
 - (void)completeAndInsertSnippet:(id)nothing
 {
-	if([anArrayController selectionIndex] != NSNotFound)
+	if([theTableView selectedRow] != NSNotFound)
 	{
-		id selection = [filtered objectAtIndex:[anArrayController selectionIndex]];
+		id selection = [filtered objectAtIndex:[theTableView selectedRow]];
 		NSString* aString = [selection valueForKey:@"filterOn"];
 		if(!aString)
 			aString = [selection valueForKey:@"title"];
@@ -448,60 +444,59 @@
 
 - (void)selectRow:(int)row
 {
-	[anArrayController setSelectionIndex:row];
+	[theTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
 	[[self theTableView] scrollRowToVisible:row];
 }
 
 - (void)scrollLineUp:(id)sender
 {
-	int row = [anArrayController selectionIndex];
+	int row = [theTableView selectedRow];
 	if (--row >= 0) [self selectRow:row];
 }
 -(void)scrollLineDown:(id)sender
 {
-	int row = [anArrayController selectionIndex];
+	int row = [theTableView selectedRow];
 	if (++row < [filtered count]) [self selectRow:row];
 }
 - (void)moveToBeginningOfDocument:(id)sender 
 {
-	[anArrayController setSelectionIndex:0];
+	[self selectRow:0];
 }
 - (void)moveToEndOfDocument:(id)sender 
 {
-	[anArrayController setSelectionIndex:[filtered count]-1];
+	[self selectRow:[filtered count]-1];
 }
 - (void)pageDown:(id)sender
 {
-	int oldIndex = [anArrayController selectionIndex];
+	int oldIndex = [theTableView selectedRow];
 	if([filtered count]<(MAX_ROWS+1))
-		[anArrayController setSelectionIndex:[filtered count]-1];
+		[self selectRow:[filtered count]-1];
 	else
 	{
 		if(oldIndex+MAX_ROWS>=[filtered count])
-			[anArrayController setSelectionIndex:[filtered count]-1];
+			[self selectRow:[filtered count]-1];
 		else 
-			[anArrayController setSelectionIndex:oldIndex+MAX_ROWS-1];
-		[[self theTableView] scrollRowToVisible:[anArrayController selectionIndex]];
+			[self selectRow:oldIndex+MAX_ROWS-1];
+		[[self theTableView] scrollRowToVisible:[theTableView selectedRow]];
 	}
 
 }
 - (void)pageUp:(id)sender 
 {
-	int oldIndex = [anArrayController selectionIndex];
+	int oldIndex = [theTableView selectedRow];
 	if(oldIndex<MAX_ROWS)
-		[anArrayController setSelectionIndex:0];
+		[self selectRow:0];
 	else
 	{
-		[anArrayController setSelectionIndex:oldIndex-MAX_ROWS+1];
-		[[self theTableView] scrollRowToVisible:[anArrayController selectionIndex]];
+		[self selectRow:oldIndex-MAX_ROWS+1];
+		[[self theTableView] scrollRowToVisible:[theTableView selectedRow]];
 	}
 	
 }
 - (void)keyDown:(NSEvent*)anEvent
 {
-	// //NSLog(@"%@  <-prefix", mutablePrefix);
 	NSString* aString = [anEvent characters];
-	unichar		key = 0;
+	unichar key       = 0;
 	if([aString length] == 1)
 	{
 		key = [aString characterAtIndex:0];
@@ -574,7 +569,6 @@
 
 - (void)writeToTM:(NSString*)string asSnippet:(BOOL)snippet
 {
-	NSLog(@"[%@ writeToTM:%@ asSnippet:%d]", [self class], string, snippet);
 	id textView = nil;
 	if(snippet && (textView = [NSApp targetForAction:@selector(insertSnippetWithOptions:)]))
 		[textView insertSnippetWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:string, @"content",nil]];
@@ -597,7 +591,6 @@
 
 - (void)dealloc
 {
-	NSLog(@"%d staticPrefix",[staticPrefix retainCount]);
 	[staticPrefix release];
 	[mutablePrefix release];
 	[suggestions release];
