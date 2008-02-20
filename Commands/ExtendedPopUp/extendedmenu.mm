@@ -36,17 +36,17 @@ static option_t const expectedOptions[] =
 
 	NSDictionary* initialValues = [proxy readPropertyListFromInput];
 	NSArray* suggestions = [initialValues objectForKey:@"suggestions"];
-
 	NSPoint pos = NSZeroPoint;
 	if(id textView = [NSApp targetForAction:@selector(positionForWindowUnderCaret)])
 		pos = [textView positionForWindowUnderCaret];
 
 	TMDIncrementalPopUpMenu* xPopUp = [[TMDIncrementalPopUpMenu alloc] initWithSuggestions:suggestions
-                                                                              currentWord:[initialValues objectForKey:@"currentWord"]
-                                                                             staticPrefix:[initialValues objectForKey:@"staticPrefix"]
-                                                                               extraChars:[initialValues objectForKey:@"extraChars"]
-                                                                             shellCommand:[initialValues objectForKey:@"shell"]
-	];
+                                                                               currentWord:[initialValues objectForKey:@"currentWord"]
+                                                                              staticPrefix:[initialValues objectForKey:@"staticPrefix"]
+                                                                                extraChars:[initialValues objectForKey:@"extraChars"]
+                                                                              shellCommand:[initialValues objectForKey:@"shell"]
+                                                                               environment:[proxy environment]
+                                                                              extraOptions:[initialValues objectForKey:@"extraOptions"]];
 
 	// TMDIncrementalPopUpMenu* xPopUp = [[TMDIncrementalPopUpMenu alloc] initWithSuggestions:suggestions
 	//                                                                               currentWord:[proxy valueForOption:@"current-word"]

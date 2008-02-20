@@ -1,7 +1,7 @@
 //
 //  TMDIncrementalPopUpMenu.mm
 //
-//  Created by Joachim MŒrtensson on 2007-08-10.
+//  Created by Joachim MÃ¥rtensson on 2007-08-10.
 //  Copyright (c) 2007 __MyCompanyName__. All rights reserved.
 //
 
@@ -21,7 +21,13 @@
 @end
 
 @implementation TMDIncrementalPopUpMenu
-- (id)initWithSuggestions:(NSArray*)theSuggestions currentWord:(NSString*)currentWord staticPrefix:(NSString*)theStaticPrefix extraChars:(NSString*)extraAllowedChars shellCommand:(NSString*)shellCommand;
+- (id)initWithSuggestions:(NSArray*)theSuggestions
+              currentWord:(NSString*)currentWord
+             staticPrefix:(NSString*)theStaticPrefix
+               extraChars:(NSString*)extraAllowedChars
+             shellCommand:(NSString*)shellCommand
+              environment:(NSString*)theEnvironment
+             extraOptions:(NSString*)theOptions;
 {
 	if(self = [self initWithContentRect:NSZeroRect styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO])
 	{
@@ -31,7 +37,9 @@
 		extraChars = [extraAllowedChars retain];
 
 		suggestions = [theSuggestions retain];
-
+        env = [theEnvironment retain];
+        extraOptions = [theOptions retain];
+        
 		if(theStaticPrefix)
 			staticPrefix = [theStaticPrefix retain];
 		else
@@ -416,7 +424,14 @@
 {
 	if([theTableView selectedRow] != NSNotFound)
 	{
-		id selection = [filtered objectAtIndex:[theTableView selectedRow]];
+
+		//id selection = [filtered objectAtIndex:[theTableView selectedRow]];
+		NSMutableDictionary* selection = [NSMutableDictionary dictionary];
+		[selection addEntriesFromDictionary:[filtered objectAtIndex:[theTableView selectedRow]]];
+        [selection setObject:env forKey:@"environment"];
+        [selection setValue:extraOptions forKey:@"extraOptions"];
+		
+		
 		NSString* aString = [selection valueForKey:@"filterOn"];
 		if(!aString)
 			aString = [selection valueForKey:@"title"];
