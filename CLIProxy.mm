@@ -111,7 +111,13 @@
 
 - (id)readPropertyListFromInput;
 {
-	return [TMDCommand readPropertyList:[self inputHandle]];
+	NSString* error = nil;
+	id plist        = [TMDCommand readPropertyList:[self inputHandle] error:&error];
+
+	if(error || !plist)
+		[self writeStringToError:error ?: @"unknown error parsing property list\n"];
+
+	return plist;
 }
 
 // ================

@@ -20,21 +20,13 @@ static NSMutableDictionary* Commands = nil;
 	return [Commands objectForKey:aCommand];
 }
 
-+ (id)readPropertyList:(NSFileHandle*)aFileHandle
++ (id)readPropertyList:(NSFileHandle*)aFileHandle error:(NSString**)error;
 {
 	NSData* data = [aFileHandle readDataToEndOfFile];
 	if([data length] == 0)
 		return nil;
 
-	NSString* error = nil;
-	id plist = [NSPropertyListSerialization propertyListFromData:data mutabilityOption:NSPropertyListMutableContainersAndLeaves format:nil errorDescription:&error];
-
-	if(error || !plist)
-	{
-		fprintf(stderr, "%s\n", [error UTF8String] ?: "unknown error parsing property list");
-		fwrite([data bytes], [data length], 1, stderr);
-		fprintf(stderr, "\n");
-	}
+	id plist = [NSPropertyListSerialization propertyListFromData:data mutabilityOption:NSPropertyListMutableContainersAndLeaves format:nil errorDescription:error];
 
 	return plist;
 }

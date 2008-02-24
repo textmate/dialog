@@ -6,7 +6,7 @@
 
 + (id)objectForCommand:(NSString*)aCommand;
 
-+ (id)readPropertyList:(NSFileHandle*)aFileHandle;
++ (id)readPropertyList:(NSFileHandle*)aFileHandle error:(NSString**)error;
 + (void)writePropertyList:(id)aPlist toFileHandle:(NSFileHandle*)aFileHandle;
 
 - (NSString *)commandDescription;
