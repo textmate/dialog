@@ -32,28 +32,23 @@ static option_t const expectedOptions[] =
 
 - (void)handleCommand:(CLIProxy*)proxy
 {
-	// SetOptionTemplate(proxy, expectedOptions);
+	SetOptionTemplate(proxy, expectedOptions);
 
 	NSDictionary* initialValues = [proxy readPropertyListFromInput];
-	NSArray* suggestions = [initialValues objectForKey:@"suggestions"];
-	NSPoint pos = NSZeroPoint;
+	NSArray* suggestions        = [initialValues objectForKey:@"suggestions"];
+	NSPoint pos                 = NSZeroPoint;
 	if(id textView = [NSApp targetForAction:@selector(positionForWindowUnderCaret)])
 		pos = [textView positionForWindowUnderCaret];
 
 	TMDIncrementalPopUpMenu* xPopUp = [[TMDIncrementalPopUpMenu alloc] initWithSuggestions:suggestions
-                                                                               currentWord:[initialValues objectForKey:@"currentWord"]
-                                                                              staticPrefix:[initialValues objectForKey:@"staticPrefix"]
-                                                                                extraChars:[initialValues objectForKey:@"extraChars"]
-                                                                              shellCommand:[initialValues objectForKey:@"shell"]
-                                                                               environment:[proxy environment]
-                                                                              extraOptions:[initialValues objectForKey:@"extraOptions"]];
+                                                                              currentWord:[proxy valueForOption:@"current-word"]
+                                                                             staticPrefix:[proxy valueForOption:@"static-prefix"]
+                                                                               extraChars:[proxy valueForOption:@"extra-chars"]
+                                                                             shellCommand:[proxy valueForOption:@"shell-cmd"]
+                                                                              environment:[proxy environment]
+                                                                             extraOptions:[proxy valueForOption:@"extraOptions"]
+	];
 
-	// TMDIncrementalPopUpMenu* xPopUp = [[TMDIncrementalPopUpMenu alloc] initWithSuggestions:suggestions
-	//                                                                               currentWord:[proxy valueForOption:@"current-word"]
-	//                                                                              staticPrefix:[proxy valueForOption:@"static-prefix"]
-	//                                                                                extraChars:[proxy valueForOption:@"extra-chars"]
-	//                                                                              shellCommand:[proxy valueForOption:@"shell-cmd"]
-	// ];
 	[xPopUp setCaretPos:pos];
 	[xPopUp orderFront:self];
 }

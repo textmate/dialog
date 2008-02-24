@@ -26,7 +26,7 @@
              staticPrefix:(NSString*)theStaticPrefix
                extraChars:(NSString*)extraAllowedChars
              shellCommand:(NSString*)shellCommand
-              environment:(NSString*)theEnvironment
+              environment:(NSDictionary*)theEnvironment
              extraOptions:(NSString*)theOptions;
 {
 	if(self = [self initWithContentRect:NSZeroRect styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO])
@@ -37,8 +37,9 @@
 		extraChars = [extraAllowedChars retain];
 
 		suggestions = [theSuggestions retain];
-        env = [theEnvironment retain];
-        extraOptions = [theOptions retain];
+
+		env          = [theEnvironment retain];
+		extraOptions = [theOptions retain];
         
 		if(theStaticPrefix)
 			staticPrefix = [theStaticPrefix retain];

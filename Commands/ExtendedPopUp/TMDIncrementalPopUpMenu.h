@@ -16,15 +16,15 @@
 	NSString* staticPrefix;
 	NSArray* filtered;
 	NSString* shell;
-    NSDictionary* extraOptions;
-    NSDictionary* env;
+	NSDictionary* extraOptions;
+	NSDictionary* env;
 	IBOutlet NSTableView* theTableView;
 	float stringWidth;
 	NSPoint caretPos;
 	BOOL isAbove;
 	BOOL closeMe;
 }
-- (id)initWithSuggestions:(NSArray*)theSuggestions currentWord:(NSString*)currentWord staticPrefix:(NSString*)staticPrefix extraChars:(NSString*)extraAllowedChars shellCommand:(NSString*)shellCommand environment:(NSString*)theEnvironment extraOptions:(NSString*)theOptions;
+- (id)initWithSuggestions:(NSArray*)theSuggestions currentWord:(NSString*)currentWord staticPrefix:(NSString*)staticPrefix extraChars:(NSString*)extraAllowedChars shellCommand:(NSString*)shellCommand environment:(NSDictionary*)theEnvironment extraOptions:(NSString*)theOptions;
 - (void)filter;
 - (NSMutableString*)mutablePrefix;
 - (id)theTableView;
