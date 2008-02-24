@@ -52,6 +52,7 @@
 		[self setReleasedWhenClosed:YES];
 		[self setLevel:NSStatusWindowLevel];
 		[self setHidesOnDeactivate:YES];
+		[self setHasShadow:YES];
 
 		NSScrollView* scrollView = [[NSScrollView alloc] initWithFrame:NSZeroRect];
 		{
