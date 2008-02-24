@@ -38,6 +38,10 @@
 
 		suggestions = [[initialValues objectForKey:@"suggestions"] retain];
 
+		wait = [[proxy valueForOption:@"wait"] boolValue];
+		if(wait)
+			outputHandle = [[proxy outputHandle] retain];
+
 		// Convert image paths to NSImages
 		NSDictionary* imagePaths    = [[[initialValues objectForKey:@"images"] retain] autorelease];
 		images = [[NSMutableDictionary alloc] initWithCapacity:[imagePaths count]];
@@ -621,6 +625,8 @@
 
 - (void)dealloc
 {
+	if(wait)
+		[outputHandle release];
 	[staticPrefix release];
 	[mutablePrefix release];
 	[suggestions release];
