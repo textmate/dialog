@@ -3,7 +3,6 @@
 //  Dialog2
 //
 //  Created by Ciaran Walsh on 23/11/2007.
-//  Copyright 2007 __MyCompanyName__. All rights reserved.
 //
 
 #import <string>

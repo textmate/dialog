@@ -3,7 +3,6 @@
 //  Dialog
 //
 //  Created by Joachim Mårtensson on 2007-08-14.
-//  Copyright 2007 __MyCompanyName__. All rights reserved.
 //
 
 #import "TMDBorderLessWindow.h"

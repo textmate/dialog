@@ -2,7 +2,6 @@
 //  TMDHTMLTips.mm
 //
 //  Created by Ciarán Walsh on 2007-08-19.
-//  Copyright (c) 2007 __MyCompanyName__. All rights reserved.
 //
 
 #import "TMDHTMLTips.h"

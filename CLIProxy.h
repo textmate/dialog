@@ -3,7 +3,6 @@
 //  Dialog2
 //
 //  Created by Ciaran Walsh on 16/02/2008.
-//  Copyright 2008 __MyCompanyName__. All rights reserved.
 //
 
 #import <Cocoa/Cocoa.h>

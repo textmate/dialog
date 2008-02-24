@@ -2,7 +2,6 @@
 //  TMDIncrementalPopUpMenu.mm
 //
 //  Created by Joachim Mårtensson on 2007-08-10.
-//  Copyright (c) 2007 __MyCompanyName__. All rights reserved.
 //
 
 #import "TMDIncrementalPopUpMenu.h"

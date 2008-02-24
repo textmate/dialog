@@ -2,7 +2,6 @@
 //  TMDIncrementalPopUpMenu.h
 //
 //  Created by Joachim MŒrtensson on 2007-08-10.
-//  Copyright (c) 2007 __MyCompanyName__. All rights reserved.
 //
 
 #import <Cocoa/Cocoa.h>
