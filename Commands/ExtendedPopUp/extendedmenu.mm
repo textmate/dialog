@@ -40,6 +40,19 @@ static option_t const expectedOptions[] =
 	if(id textView = [NSApp targetForAction:@selector(positionForWindowUnderCaret)])
 		pos = [textView positionForWindowUnderCaret];
 
+	// Convert image paths to NSImages
+	NSDictionary* imagePaths    = [[[initialValues objectForKey:@"images"] retain] autorelease];
+	NSMutableDictionary* images = [NSMutableDictionary dictionaryWithCapacity:[imagePaths count]];
+
+	NSEnumerator *imageEnum = [imagePaths keyEnumerator];
+	while (NSString* imageName = [imageEnum nextObject]) {
+		NSString* imagePath = [imagePaths objectForKey:imageName];
+		NSImage* image      = [[NSImage alloc] initByReferencingFile:imagePath];
+		if(image && [image isValid])
+			[images setObject:image forKey:imageName];
+		[image release];
+	}
+
 	TMDIncrementalPopUpMenu* xPopUp = [[TMDIncrementalPopUpMenu alloc] initWithSuggestions:suggestions
                                                                               currentWord:[proxy valueForOption:@"current-word"]
                                                                              staticPrefix:[proxy valueForOption:@"static-prefix"]
@@ -47,6 +60,7 @@ static option_t const expectedOptions[] =
                                                                              shellCommand:[proxy valueForOption:@"shell-cmd"]
                                                                               environment:[proxy environment]
                                                                              extraOptions:[proxy valueForOption:@"extraOptions"]
+                                                                                   images:images
 	];
 
 	[xPopUp setCaretPos:pos];

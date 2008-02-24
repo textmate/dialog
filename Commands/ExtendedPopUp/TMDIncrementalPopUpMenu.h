@@ -11,6 +11,7 @@
 @interface TMDIncrementalPopUpMenu : NSWindow
 {
 	NSArray* suggestions;
+	NSDictionary* images;
 	NSMutableString* mutablePrefix;
 	NSString* extraChars;
 	NSString* staticPrefix;
@@ -24,7 +25,7 @@
 	BOOL isAbove;
 	BOOL closeMe;
 }
-- (id)initWithSuggestions:(NSArray*)theSuggestions currentWord:(NSString*)currentWord staticPrefix:(NSString*)staticPrefix extraChars:(NSString*)extraAllowedChars shellCommand:(NSString*)shellCommand environment:(NSDictionary*)theEnvironment extraOptions:(NSString*)theOptions;
+- (id)initWithSuggestions:(NSArray*)theSuggestions currentWord:(NSString*)currentWord staticPrefix:(NSString*)staticPrefix extraChars:(NSString*)extraAllowedChars shellCommand:(NSString*)shellCommand environment:(NSDictionary*)theEnvironment extraOptions:(NSString*)theOptions images:(NSDictionary*)theImages;
 - (void)filter;
 - (NSMutableString*)mutablePrefix;
 - (id)theTableView;

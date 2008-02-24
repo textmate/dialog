@@ -27,7 +27,8 @@
                extraChars:(NSString*)extraAllowedChars
              shellCommand:(NSString*)shellCommand
               environment:(NSDictionary*)theEnvironment
-             extraOptions:(NSString*)theOptions;
+             extraOptions:(NSString*)theOptions
+                   images:(NSDictionary*)theImages;
 {
 	if(self = [self initWithContentRect:NSZeroRect styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO])
 	{
@@ -37,6 +38,8 @@
 		extraChars = [extraAllowedChars retain];
 
 		suggestions = [theSuggestions retain];
+
+		images = [theImages retain];
 
 		env          = [theEnvironment retain];
 		extraOptions = [theOptions retain];
@@ -70,7 +73,7 @@
 
 				NSTableColumn *column = [[NSTableColumn alloc] initWithIdentifier:@"foo"];
 				{
-					[[column headerCell] setStringValue:@"foo"];
+					[column setDataCell:[NSClassFromString(@"OakImageAndTextCell") new]];
 					[column setEditable:NO];
 					[theTableView addTableColumn:column];
 					[column setWidth:[theTableView bounds].size.width];
@@ -286,13 +289,13 @@
 
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex
 {
-	// NSImage* image = nil;
-	// 
-	// NSString* imageName = [[filtered objectAtIndex:rowIndex] objectForKey:@"image"];
-	// if(imageName)
-	// 	image = [images objectForKey:imageName];
-	// 
-	// [[aTableColumn dataCell] setImage:image];
+	NSImage* image = nil;
+	
+	NSString* imageName = [[filtered objectAtIndex:rowIndex] objectForKey:@"image"];
+	if(imageName)
+		image = [images objectForKey:imageName];
+	
+	[[aTableColumn dataCell] setImage:image];
 
 	return [[filtered objectAtIndex:rowIndex] objectForKey:@"title"];
 }
