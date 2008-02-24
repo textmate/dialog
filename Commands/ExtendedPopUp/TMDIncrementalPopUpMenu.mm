@@ -32,7 +32,10 @@
 {
 	if(self = [self initWithContentRect:NSZeroRect styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO])
 	{
+		if(!currentWord)
+			currentWord = @"";
 		mutablePrefix = [currentWord mutableCopy];
+
 		stringWidth   = [mutablePrefix sizeWithAttributes:[NSDictionary dictionaryWithObject:[self font] forKey:NSFontAttributeName]].width;
 
 		extraChars = [extraAllowedChars retain];

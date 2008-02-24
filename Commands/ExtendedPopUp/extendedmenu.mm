@@ -26,7 +26,7 @@ static option_t const expectedOptions[] =
 {
 	{ "c", "current-word",	option_t::required_argument, option_t::string, "Sets the current word, which will be used to filter the suggestions."},
 	{ "s", "static-prefix",	option_t::required_argument, option_t::string, "A prefix which is used when filtering suggestions."},
-	{ "x", "extra-chars",	option_t::required_argument, option_t::string, "A string of extra characters which are allowed while typing."},
+	{ "e", "extra-chars",	option_t::required_argument, option_t::string, "A string of extra characters which are allowed while typing."},
 	{ "x", "shell-cmd",		option_t::required_argument, option_t::string, "When the user selects an item, this command will be passed the selection on STDIN, and the output will be written to the document."},
 };
 
@@ -35,7 +35,7 @@ static option_t const expectedOptions[] =
 	SetOptionTemplate(proxy, expectedOptions);
 
 	NSDictionary* initialValues = [proxy readPropertyListFromInput];
-	NSArray* suggestions        = [initialValues objectForKey:@"suggestions"];
+
 	NSPoint pos                 = NSZeroPoint;
 	if(id textView = [NSApp targetForAction:@selector(positionForWindowUnderCaret)])
 		pos = [textView positionForWindowUnderCaret];
@@ -53,13 +53,13 @@ static option_t const expectedOptions[] =
 		[image release];
 	}
 
-	TMDIncrementalPopUpMenu* xPopUp = [[TMDIncrementalPopUpMenu alloc] initWithSuggestions:suggestions
+	TMDIncrementalPopUpMenu* xPopUp = [[TMDIncrementalPopUpMenu alloc] initWithSuggestions:[initialValues objectForKey:@"suggestions"]
                                                                               currentWord:[proxy valueForOption:@"current-word"]
                                                                              staticPrefix:[proxy valueForOption:@"static-prefix"]
                                                                                extraChars:[proxy valueForOption:@"extra-chars"]
                                                                              shellCommand:[proxy valueForOption:@"shell-cmd"]
                                                                               environment:[proxy environment]
-                                                                             extraOptions:[proxy valueForOption:@"extraOptions"]
+                                                                             extraOptions:[initialValues objectForKey:@"extraOptions"]
                                                                                    images:images
 	];
 
