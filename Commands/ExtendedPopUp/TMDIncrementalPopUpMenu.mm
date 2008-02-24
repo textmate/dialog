@@ -38,10 +38,6 @@
 
 		suggestions = [[initialValues objectForKey:@"suggestions"] retain];
 
-		wait = [[proxy valueForOption:@"wait"] boolValue];
-		if(wait)
-			outputHandle = [[proxy outputHandle] retain];
-
 		// Convert image paths to NSImages
 		NSDictionary* imagePaths    = [[[initialValues objectForKey:@"images"] retain] autorelease];
 		images = [[NSMutableDictionary alloc] initWithCapacity:[imagePaths count]];
@@ -471,6 +467,8 @@
 			NSString* fromShell =[[self executeShellCommand:shell WithDictionary:selection] retain];
 			[self writeToTM:fromShell asSnippet:YES];
 		}
+		if(wait && outputHandle)
+			[outputHandle writeString:[selection valueForKey:@"title"]];
 		closeMe = YES;
 	}
 }
@@ -625,8 +623,6 @@
 
 - (void)dealloc
 {
-	if(wait)
-		[outputHandle release];
 	[staticPrefix release];
 	[mutablePrefix release];
 	[suggestions release];
