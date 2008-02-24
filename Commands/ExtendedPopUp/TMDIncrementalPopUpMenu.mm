@@ -467,8 +467,6 @@
 			NSString* fromShell =[[self executeShellCommand:shell WithDictionary:selection] retain];
 			[self writeToTM:fromShell asSnippet:YES];
 		}
-		if(wait && outputHandle)
-			[outputHandle writeString:[selection valueForKey:@"title"]];
 		closeMe = YES;
 	}
 }
