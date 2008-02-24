@@ -21,38 +21,45 @@
 @end
 
 @implementation TMDIncrementalPopUpMenu
-- (id)initWithSuggestions:(NSArray*)theSuggestions
-              currentWord:(NSString*)currentWord
-             staticPrefix:(NSString*)theStaticPrefix
-               extraChars:(NSString*)extraAllowedChars
-             shellCommand:(NSString*)shellCommand
-              environment:(NSDictionary*)theEnvironment
-             extraOptions:(NSString*)theOptions
-                   images:(NSDictionary*)theImages;
+- (id)initWithProxy:(CLIProxy*)proxy;
 {
 	if(self = [self initWithContentRect:NSZeroRect styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO])
 	{
+		NSString* currentWord = [proxy valueForOption:@"current-word"];
 		if(!currentWord)
 			currentWord = @"";
 		mutablePrefix = [currentWord mutableCopy];
 
 		stringWidth   = [mutablePrefix sizeWithAttributes:[NSDictionary dictionaryWithObject:[self font] forKey:NSFontAttributeName]].width;
 
-		extraChars = [extraAllowedChars retain];
+		extraChars = [[proxy valueForOption:@"extra-chars"] retain];
 
-		suggestions = [theSuggestions retain];
+		NSDictionary* initialValues = [proxy readPropertyListFromInput];
 
-		images = [theImages retain];
+		suggestions = [[initialValues objectForKey:@"suggestions"] retain];
 
-		env          = [theEnvironment retain];
-		extraOptions = [theOptions retain];
+		// Convert image paths to NSImages
+		NSDictionary* imagePaths    = [[[initialValues objectForKey:@"images"] retain] autorelease];
+		images = [[NSMutableDictionary alloc] initWithCapacity:[imagePaths count]];
+
+		NSEnumerator *imageEnum = [imagePaths keyEnumerator];
+		while (NSString* imageName = [imageEnum nextObject]) {
+			NSString* imagePath = [imagePaths objectForKey:imageName];
+			NSImage* image      = [[NSImage alloc] initByReferencingFile:imagePath];
+			if(image && [image isValid])
+				[images setObject:image forKey:imageName];
+			[image release];
+		}
+
+		env          = [[proxy environment] retain];
+		extraOptions = [[initialValues objectForKey:@"extraOptions"] retain];
         
-		if(theStaticPrefix)
-			staticPrefix = [theStaticPrefix retain];
+		if([proxy valueForOption:@"static-prefix"])
+			staticPrefix = [[proxy valueForOption:@"static-prefix"] retain];
 		else
 			staticPrefix = @"";
 
-		shell = [shellCommand retain];
+		shell = [[proxy valueForOption:@"shell-cmd"] retain];
 
 
 		// Window setup

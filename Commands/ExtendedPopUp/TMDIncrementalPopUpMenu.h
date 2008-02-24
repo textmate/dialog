@@ -6,12 +6,14 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "CLIProxy.h"
+
 #define MAX_ROWS 15
 
 @interface TMDIncrementalPopUpMenu : NSWindow
 {
 	NSArray* suggestions;
-	NSDictionary* images;
+	NSMutableDictionary* images;
 	NSMutableString* mutablePrefix;
 	NSString* extraChars;
 	NSString* staticPrefix;
@@ -19,13 +21,13 @@
 	NSString* shell;
 	NSDictionary* extraOptions;
 	NSDictionary* env;
-	IBOutlet NSTableView* theTableView;
+	NSTableView* theTableView;
 	float stringWidth;
 	NSPoint caretPos;
 	BOOL isAbove;
 	BOOL closeMe;
 }
-- (id)initWithSuggestions:(NSArray*)theSuggestions currentWord:(NSString*)currentWord staticPrefix:(NSString*)staticPrefix extraChars:(NSString*)extraAllowedChars shellCommand:(NSString*)shellCommand environment:(NSDictionary*)theEnvironment extraOptions:(NSString*)theOptions images:(NSDictionary*)theImages;
+- (id)initWithProxy:(CLIProxy*)proxy;
 - (void)filter;
 - (NSMutableString*)mutablePrefix;
 - (id)theTableView;

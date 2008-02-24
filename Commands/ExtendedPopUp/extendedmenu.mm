@@ -21,7 +21,6 @@ echo '{suggestions = ({title = "**law**";filterOn = "law";},{title = "**laws**";
 	[TMDCommand registerObject:[self new] forCommand:@"popup"];
 }
 
-
 static option_t const expectedOptions[] =
 {
 	{ "c", "current-word",	option_t::required_argument, option_t::string, "Sets the current word, which will be used to filter the suggestions."},
@@ -30,38 +29,16 @@ static option_t const expectedOptions[] =
 	{ "x", "shell-cmd",		option_t::required_argument, option_t::string, "When the user selects an item, this command will be passed the selection on STDIN, and the output will be written to the document."},
 };
 
+
 - (void)handleCommand:(CLIProxy*)proxy
 {
 	SetOptionTemplate(proxy, expectedOptions);
 
-	NSDictionary* initialValues = [proxy readPropertyListFromInput];
-
-	NSPoint pos                 = NSZeroPoint;
+	NSPoint pos = NSZeroPoint;
 	if(id textView = [NSApp targetForAction:@selector(positionForWindowUnderCaret)])
 		pos = [textView positionForWindowUnderCaret];
 
-	// Convert image paths to NSImages
-	NSDictionary* imagePaths    = [[[initialValues objectForKey:@"images"] retain] autorelease];
-	NSMutableDictionary* images = [NSMutableDictionary dictionaryWithCapacity:[imagePaths count]];
-
-	NSEnumerator *imageEnum = [imagePaths keyEnumerator];
-	while (NSString* imageName = [imageEnum nextObject]) {
-		NSString* imagePath = [imagePaths objectForKey:imageName];
-		NSImage* image      = [[NSImage alloc] initByReferencingFile:imagePath];
-		if(image && [image isValid])
-			[images setObject:image forKey:imageName];
-		[image release];
-	}
-
-	TMDIncrementalPopUpMenu* xPopUp = [[TMDIncrementalPopUpMenu alloc] initWithSuggestions:[initialValues objectForKey:@"suggestions"]
-                                                                              currentWord:[proxy valueForOption:@"current-word"]
-                                                                             staticPrefix:[proxy valueForOption:@"static-prefix"]
-                                                                               extraChars:[proxy valueForOption:@"extra-chars"]
-                                                                             shellCommand:[proxy valueForOption:@"shell-cmd"]
-                                                                              environment:[proxy environment]
-                                                                             extraOptions:[initialValues objectForKey:@"extraOptions"]
-                                                                                   images:images
-	];
+	TMDIncrementalPopUpMenu* xPopUp = [[TMDIncrementalPopUpMenu alloc] initWithProxy:proxy];
 
 	[xPopUp setCaretPos:pos];
 	[xPopUp orderFront:self];
