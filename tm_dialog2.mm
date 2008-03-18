@@ -27,7 +27,11 @@
 
 id connect ()
 {
-	id proxy = [NSConnection rootProxyForConnectionWithRegisteredName:DialogServerConnectionName host:nil];
+	NSString* portName = DialogServerConnectionName;
+	if(char const* var = getenv("DIALOG_PORT_NAME"))
+		portName = [NSString stringWithUTF8String:var];
+
+	id proxy = [NSConnection rootProxyForConnectionWithRegisteredName:portName host:nil];
 	[proxy setProtocolForProxy:@protocol(DialogServerProtocol)];
 	return proxy;
 }
