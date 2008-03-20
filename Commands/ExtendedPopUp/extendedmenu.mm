@@ -4,7 +4,7 @@
 #import "../Utilities/TextMate.h" // -positionForWindowUnderCaret
 
 /*
-echo '{suggestions = ({title = "**law**";filterOn = "law";},{title = "**laws**";filterOn = "laws";snippet = "(${1:hello}, ${2:again})";}); mutablePrefix = ""; currentWord = "la";shell = "ruby -e \"puts STDIN.read\""; }' |"$DIALOG" extended-popup
+echo '{suggestions = ({title = "**law**";filterOn = "law";},{title = "**laws**";filterOn = "laws";snippet = "(${1:hello}, ${2:again})";}); mutablePrefix = ""; currentWord = "la";shell = "ruby -e \"puts STDIN.read\""; }' |"$DIALOG" popup
 */
 
 // ==================
@@ -52,7 +52,7 @@ static option_t const expectedOptions[] =
 - (NSString *)usageForInvocation:(NSString *)invocation;
 {
 	return [NSString stringWithFormat:
-		@"%@ «options» <<<'( { title = \"foo\" }, { title = \"bar\" } )'\n"
+		@"%@ «options» <<<'{ suggestions = ( { title = \"foo\"; }, { title = \"bar\"; } ); }'\n"
 		@"\nOptions:\n%@",
 		invocation, GetOptionList(expectedOptions)];
 }
