@@ -33,7 +33,6 @@
 - (void)keyDown:(NSEvent*)anEvent;
 - (void)tab;
 - (int)stringWidth;
-- (void)writeToTM:(NSString*)aString asSnippet:(BOOL)snippet;
 - (NSString*)executeShellCommand:(NSString*)command WithDictionary:(NSDictionary*)dict;
 - (NSArray*)filtered;
 - (void)setFiltered:(NSArray*)aValue;

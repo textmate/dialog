@@ -283,7 +283,7 @@
 				//[temp release];
 			}
 			
-			[self writeToTM:tStatic asSnippet:NO];
+			[TextMate insertText:tStatic asSnippet:NO];
 			[self filter];
 		}
 
@@ -453,18 +453,18 @@
 		if([aString length] > [temp length])
 		{
 			NSString* temp2 = [aString substringFromIndex:[temp length]];
-			[self writeToTM:temp2 asSnippet:NO];
+			[TextMate insertText:temp2 asSnippet:NO];
 		}
 		if([selection valueForKey:@"snippet"])
 		{
-			//[self writeToTM:[[ob valueForKey:@"snippet"] copy] asSnippet:YES];
-			[self writeToTM:[selection valueForKey:@"snippet"] asSnippet:YES];
+			//[TextMate insertText:[[ob valueForKey:@"snippet"] copy] asSnippet:YES];
+			[TextMate insertText:[selection valueForKey:@"snippet"] asSnippet:YES];
 		}
 		else if(shell)
 		{
 			//NSLog(@"shell");
 			NSString* fromShell =[[self executeShellCommand:shell WithDictionary:selection] retain];
-			[self writeToTM:fromShell asSnippet:YES];
+			[TextMate insertText:fromShell asSnippet:YES];
 		}
 		closeMe = YES;
 	}
@@ -560,7 +560,7 @@
 			//[self interpretKeyEvents:[NSArray arrayWithObject:anEvent]];
 			[mutablePrefix appendString:aString];
 			//[mutablePrefix retain];
-			//[self writeToTM:aString asSnippet:NO];
+			//[TextMate insertText:aString asSnippet:NO];
 			[self filter];
 		}
 	}
@@ -594,15 +594,6 @@
 	data = [taskOutput readDataToEndOfFile];
 	NSString* r = [[NSString alloc] initWithData: data encoding: NSUTF8StringEncoding];
 	return [r autorelease];
-}
-
-- (void)writeToTM:(NSString*)string asSnippet:(BOOL)snippet
-{
-	id textView = nil;
-	if(snippet && (textView = [NSApp targetForAction:@selector(insertSnippetWithOptions:)]))
-		[textView insertSnippetWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:string, @"content",nil]];
-	else if(textView = [NSApp targetForAction:@selector(insertText:)])
-		[textView insertText:string];
 }
 
 - (NSArray*)filtered

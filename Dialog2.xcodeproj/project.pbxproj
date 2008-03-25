@@ -10,6 +10,7 @@
 		177E4DA309132A0F0064163D /* Dialog2.mm in Sources */ = {isa = PBXBuildFile; fileRef = 177E4DA209132A0F0064163D /* Dialog2.mm */; };
 		8D5B49B0048680CD000E48DA /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
 		8D5B49B4048680CD000E48DA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */; };
+		910713760D99768B0091C83C /* TextMate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 910713750D99768B0091C83C /* TextMate.mm */; };
 		9192ECB50CF7AF39003D9967 /* TMDNibController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9192ECB40CF7AF39003D9967 /* TMDNibController.mm */; };
 		91BF40BA0D6792CB001834B3 /* CLIProxy.mm in Sources */ = {isa = PBXBuildFile; fileRef = 91BF40B90D6792CB001834B3 /* CLIProxy.mm */; };
 		91D6F89E0CF23B0D000F8170 /* TMDCommand.mm in Sources */ = {isa = PBXBuildFile; fileRef = 91D6F89A0CF23B0D000F8170 /* TMDCommand.mm */; };
@@ -51,6 +52,7 @@
 		32DBCF630370AF2F00C91783 /* Dialog2_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Dialog2_Prefix.pch; sourceTree = "<group>"; };
 		8D5B49B6048680CD000E48DA /* Dialog2.tmplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Dialog2.tmplugin; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D5B49B7048680CD000E48DA /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Info.plist; sourceTree = "<group>"; };
+		910713750D99768B0091C83C /* TextMate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = TextMate.mm; path = Commands/Utilities/TextMate.mm; sourceTree = "<group>"; };
 		9192ECB30CF7AF39003D9967 /* TMDNibController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TMDNibController.h; path = Commands/Utilities/TMDNibController.h; sourceTree = "<group>"; };
 		9192ECB40CF7AF39003D9967 /* TMDNibController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = TMDNibController.mm; path = Commands/Utilities/TMDNibController.mm; sourceTree = "<group>"; };
 		91BF40B80D6792CB001834B3 /* CLIProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CLIProxy.h; sourceTree = "<group>"; };
@@ -228,6 +230,7 @@
 				91D6F9630CF2BD32000F8170 /* TMDBorderLessWindow.h */,
 				91D6F9640CF2BD32000F8170 /* TMDBorderLessWindow.m */,
 				91D6F9670CF2C2B5000F8170 /* TextMate.h */,
+				910713750D99768B0091C83C /* TextMate.mm */,
 				9192ECB30CF7AF39003D9967 /* TMDNibController.h */,
 				9192ECB40CF7AF39003D9967 /* TMDNibController.mm */,
 			);
@@ -350,6 +353,7 @@
 				91D6F9960CF33A7A000F8170 /* window.mm in Sources */,
 				9192ECB50CF7AF39003D9967 /* TMDNibController.mm in Sources */,
 				91BF40BA0D6792CB001834B3 /* CLIProxy.mm in Sources */,
+				910713760D99768B0091C83C /* TextMate.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
