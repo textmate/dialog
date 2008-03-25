@@ -64,7 +64,6 @@
 
 - (void)hello:(id)options
 {
-	NSLog(@"%s %@", _cmd, options);
 	[self performSelector:@selector(dispatch:) withObject:options afterDelay:0.0];
 }
 
