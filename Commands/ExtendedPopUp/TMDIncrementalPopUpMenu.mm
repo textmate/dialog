@@ -436,7 +436,7 @@
 }
 - (void)completeAndInsertSnippet:(id)nothing
 {
-	if([theTableView selectedRow] != NSNotFound)
+	if([theTableView selectedRow] != -1)
 	{
 
 		//id selection = [filtered objectAtIndex:[theTableView selectedRow]];
