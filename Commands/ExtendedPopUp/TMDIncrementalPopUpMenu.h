@@ -25,6 +25,7 @@
 	NSPoint caretPos;
 	BOOL isAbove;
 	BOOL closeMe;
+	BOOL caseSensitive;
 }
 - (id)initWithProxy:(CLIProxy*)proxy;
 - (void)filter;

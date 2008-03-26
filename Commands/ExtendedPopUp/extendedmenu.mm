@@ -23,10 +23,11 @@ echo '{suggestions = ({title = "**law**";filterOn = "law";},{title = "**laws**";
 
 static option_t const expectedOptions[] =
 {
-	{ "c", "current-word",	option_t::required_argument, option_t::string, "Sets the current word, which will be used to filter the suggestions."},
-	{ "s", "static-prefix",	option_t::required_argument, option_t::string, "A prefix which is used when filtering suggestions."},
-	{ "e", "extra-chars",	option_t::required_argument, option_t::string, "A string of extra characters which are allowed while typing."},
-	{ "x", "shell-cmd",		option_t::required_argument, option_t::string, "When the user selects an item, this command will be passed the selection on STDIN, and the output will be written to the document."},
+	{ "c", "current-word",		option_t::required_argument, option_t::string,	"Sets the current word, which will be used to filter the suggestions."},
+	{ "s", "static-prefix",		option_t::required_argument, option_t::string,	"A prefix which is used when filtering suggestions."},
+	{ "e", "extra-chars",		option_t::required_argument, option_t::string,	"A string of extra characters which are allowed while typing."},
+	{ "i", "case-insensitive",	option_t::no_argument, option_t::none,				"Case is ignored when comparing typed characters."},
+	{ "x", "shell-cmd",			option_t::required_argument, option_t::string,	"When the user selects an item, this command will be passed the selection on STDIN, and the output will be written to the document."},
 };
 
 

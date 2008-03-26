@@ -37,6 +37,10 @@
 
 		suggestions = [[initialValues objectForKey:@"suggestions"] retain];
 
+		caseSensitive = YES;
+		if([[proxy valueForOption:@"case-insensitive"] boolValue])
+			caseSensitive = NO;
+
 		// Convert image paths to NSImages
 		NSDictionary* imagePaths    = [[[initialValues objectForKey:@"images"] retain] autorelease];
 		images = [[NSMutableDictionary alloc] initWithCapacity:[imagePaths count]];
@@ -316,7 +320,11 @@
 	NSArray* myArray2;
 	if([mutablePrefix length] > 0)
 	{
-		NSPredicate* predicate = [NSPredicate predicateWithFormat:@"filterOn BEGINSWITH %@ OR (filterOn == NULL AND title BEGINSWITH %@)", [staticPrefix stringByAppendingString:mutablePrefix], [staticPrefix stringByAppendingString:mutablePrefix]];
+		NSPredicate* predicate;
+		if(caseSensitive)
+			predicate = [NSPredicate predicateWithFormat:@"filterOn BEGINSWITH %@ OR (filterOn == NULL AND title BEGINSWITH %@)", [staticPrefix stringByAppendingString:mutablePrefix], [staticPrefix stringByAppendingString:mutablePrefix]];
+		else
+			predicate = [NSPredicate predicateWithFormat:@"filterOn BEGINSWITH[c] %@ OR (filterOn == NULL AND title BEGINSWITH[c] %@)", [staticPrefix stringByAppendingString:mutablePrefix], [staticPrefix stringByAppendingString:mutablePrefix]];
 		myArray2 = [suggestions filteredArrayUsingPredicate:predicate];
 		//[anArrayController rearrangeObjects];
 	}
