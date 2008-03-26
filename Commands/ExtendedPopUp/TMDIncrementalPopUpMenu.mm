@@ -42,8 +42,8 @@
 			caseSensitive = NO;
 
 		// Convert image paths to NSImages
-		NSDictionary* imagePaths    = [[[initialValues objectForKey:@"images"] retain] autorelease];
-		images = [[NSMutableDictionary alloc] initWithCapacity:[imagePaths count]];
+		NSDictionary* imagePaths = [[[initialValues objectForKey:@"images"] retain] autorelease];
+		images                   = [[NSMutableDictionary alloc] initWithCapacity:[imagePaths count]];
 
 		NSEnumerator *imageEnum = [imagePaths keyEnumerator];
 		while (NSString* imageName = [imageEnum nextObject]) {
@@ -471,7 +471,7 @@
 		else if(shell)
 		{
 			//NSLog(@"shell");
-			NSString* fromShell =[[self executeShellCommand:shell WithDictionary:selection] retain];
+			NSString* fromShell = [self executeShellCommand:shell WithDictionary:selection];
 			[TextMate insertText:fromShell asSnippet:YES];
 		}
 		closeMe = YES;
@@ -577,31 +577,29 @@
 - (NSString*)executeShellCommand:(NSString*)command WithDictionary:(NSDictionary*)dict
 {
 	NSString* stdIn = [dict description];
-	NSTask* task = [[ NSTask alloc ] init ];
-	[task setLaunchPath: @"/bin/sh"];
-	NSArray *arguments;
-	arguments = [NSArray arrayWithObjects:@"-c", command, nil];
-	[task setArguments: arguments];
+	NSTask* task    = [NSTask new];
+	[task setLaunchPath:@"/bin/sh"];
+
+	NSArray *arguments = [NSArray arrayWithObjects:@"-c", command, nil];
+	[task setArguments:arguments];
+
 	[task setStandardInput:[[NSPipe alloc ] init]];
-	NSPipe *pipe;
-	pipe = [NSPipe pipe];
-	[task setStandardOutput: pipe];
-	NSFileHandle* taskInput = [[task standardInput] fileHandleForWriting ];
+	NSPipe *pipe = [NSPipe pipe];
+	[task setStandardOutput:pipe];
 
-	//const char* cStringToSendToTask = [ stdIn UTF8String ];
-
+	NSFileHandle* taskInput = [[task standardInput] fileHandleForWriting];
 	[taskInput writeString:stdIn];
 	[taskInput closeFile];
 
-	NSFileHandle* taskOutput;
-	taskOutput = [pipe fileHandleForReading];
+	NSFileHandle* taskOutput = [pipe fileHandleForReading];
 
 	[task launch];
 
-	NSData *data;
-	data = [taskOutput readDataToEndOfFile];
-	NSString* r = [[NSString alloc] initWithData: data encoding: NSUTF8StringEncoding];
-	return [r autorelease];
+	NSData *data = [taskOutput readDataToEndOfFile];
+
+	[task release];
+
+	return [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
 }
 
 - (NSArray*)filtered
