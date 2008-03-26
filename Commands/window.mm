@@ -44,7 +44,6 @@ std::string find_nib (std::string nibName, std::string currentDirectory, NSDicti
 
 	iterate(it, candidates)
 	{
-		fprintf(stderr, "candidate: %s\n", it->c_str());
 		struct stat sb;
 		if(stat(it->c_str(), &sb) == 0)
 			return *it;
