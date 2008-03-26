@@ -113,13 +113,12 @@ static option_t const expectedOptions[] =
 			[TMDChameleon createSubclassNamed:key withValues:[dynamicClasses objectForKey:key]];
 
 		TMDNibController* nibController = [[[TMDNibController alloc] initWithNibName:nib] autorelease];
-		NSDictionary *windowOptions = [proxy valueForOption:@"options"];
-		id parameters = [windowOptions objectForKey:@"parameters"];
+		id parameters = [proxy valueForOption:@"parameters"];
 		if(! parameters)
 			parameters = [proxy readPropertyListFromInput];
 		[nibController updateParametersWith:parameters];
 
-		NSDictionary *initialValues = [windowOptions objectForKey:@"defaults"];
+		NSDictionary *initialValues = [proxy valueForOption:@"defaults"];
 		if(initialValues && [initialValues count])
 			[[NSUserDefaults standardUserDefaults] registerDefaults:initialValues];
 
@@ -133,9 +132,9 @@ static option_t const expectedOptions[] =
 			[proxy writeStringToOutput:[nibController token]];
 		}
 		
-		[nibController showWindowAndCenter:[[windowOptions objectForKey:@"center"] boolValue]];
+		[nibController showWindowAndCenter:[[proxy valueForOption:@"center"] boolValue]];
 		
-		if([[windowOptions objectForKey:@"modal"] boolValue])
+		if([[proxy valueForOption:@"modal"] boolValue])
 			[nibController runModal];
 	}
 	else if([command isEqualToString:@"wait"])
