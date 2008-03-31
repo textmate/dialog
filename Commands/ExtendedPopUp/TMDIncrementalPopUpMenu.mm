@@ -337,7 +337,7 @@
 	NSPoint old = NSMakePoint([self frame].origin.x, [self frame].origin.y + [self frame].size.height);
 
 	int displayedRows = [newFiltered count] < MAX_ROWS ? [newFiltered count] : MAX_ROWS;
-	float newHeight   = [theTableView rowHeight] * displayedRows * 1.5; // TODO track down this magic number
+	float newHeight   = ([theTableView rowHeight] + [theTableView intercellSpacing].height) * displayedRows;
 
 	float maxLen = 1;
 	NSString* item;
@@ -366,10 +366,9 @@
 
 	// newHeight is currently the new height for theTableView, but we need to resize the whole window
 	// so here we use the difference in height to find the new height for the window
-	newHeight = [[self contentView] frame].size.height + (newHeight - [theTableView frame].size.height);
+	// newHeight = [[self contentView] frame].size.height + (newHeight - [theTableView frame].size.height);
 	[self setFrame:NSMakeRect(old.x,old.y-newHeight,maxWidth,newHeight) display:YES];
 	[self setFiltered:newFiltered];
-	
 }
 
 - (NSFont*)font
