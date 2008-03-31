@@ -320,7 +320,7 @@
 {
 	NSRect mainScreen = [self rectOfMainScreen];
 
-	NSArray* myArray2;
+	NSArray* newFiltered;
 	if([mutablePrefix length] > 0)
 	{
 		NSPredicate* predicate;
@@ -328,37 +328,26 @@
 			predicate = [NSPredicate predicateWithFormat:@"filterOn BEGINSWITH %@ OR (filterOn == NULL AND title BEGINSWITH %@)", [staticPrefix stringByAppendingString:mutablePrefix], [staticPrefix stringByAppendingString:mutablePrefix]];
 		else
 			predicate = [NSPredicate predicateWithFormat:@"filterOn BEGINSWITH[c] %@ OR (filterOn == NULL AND title BEGINSWITH[c] %@)", [staticPrefix stringByAppendingString:mutablePrefix], [staticPrefix stringByAppendingString:mutablePrefix]];
-		myArray2 = [suggestions filteredArrayUsingPredicate:predicate];
-		//[anArrayController rearrangeObjects];
+		newFiltered = [suggestions filteredArrayUsingPredicate:predicate];
 	}
 	else
 	{
-		myArray2 = suggestions;
+		newFiltered = suggestions;
 	}
-	NSPoint old = NSMakePoint([self frame].origin.x,[self frame].origin.y +[self frame].size.height);
-	float newHeight = 0;
-	if([myArray2 count]>MAX_ROWS)
-	{
-		newHeight = [theTableView rowHeight]*MAX_ROWS*1.15;
-	}
-	else if([myArray2 count]>1)
-	{
-		newHeight = [theTableView rowHeight]*[myArray2 count]*1.15;
-	}
-	else
-	{
-		newHeight = [theTableView rowHeight] * 1.2;
-	}
+	NSPoint old = NSMakePoint([self frame].origin.x, [self frame].origin.y + [self frame].size.height);
+
+	int displayedRows = [newFiltered count] < MAX_ROWS ? [newFiltered count] : MAX_ROWS;
+	float newHeight   = [theTableView rowHeight] * displayedRows * 1.5; // TODO track down this magic number
 
 	float maxLen = 1;
 	NSString* item;
 	int i;
 	float maxWidth = [self frame].size.width;
-	if([myArray2 count]>0)
+	if([newFiltered count]>0)
 	{
-		for(i=0; i<[myArray2 count]; i++)
+		for(i=0; i<[newFiltered count]; i++)
 		{
-			item = [[myArray2 objectAtIndex:i] objectForKey:@"title"];
+			item = [[newFiltered objectAtIndex:i] objectForKey:@"title"];
 			if([item length]>maxLen)
 				maxLen = [item length];
 		}
@@ -374,12 +363,12 @@
 	{
 		old.y = caretPos.y + (newHeight + [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"]*1.5);
 	}
+
+	// newHeight is currently the new height for theTableView, but we need to resize the whole window
+	// so here we use the difference in height to find the new height for the window
+	newHeight = [[self contentView] frame].size.height + (newHeight - [theTableView frame].size.height);
 	[self setFrame:NSMakeRect(old.x,old.y-newHeight,maxWidth,newHeight) display:YES];
-	//NSLog(@"myArray2 retaincount %d",[myArray2 retainCount]);
-	//NSLog(@"filtered retaincount in filter %d",[filtered retainCount]);
-	//[self setValue:myArray2 forKey:@"filtered"];
-	[self setFiltered:myArray2];
-	//NSLog(@"filtered retaincount in filter after - %d",[filtered retainCount]);
+	[self setFiltered:newFiltered];
 	
 }
 
