@@ -11,6 +11,8 @@
 
 @interface TMDIncrementalPopUpMenu : NSWindow
 {
+	BOOL wait;
+	NSFileHandle* outputHandle;
 	NSArray* suggestions;
 	NSMutableDictionary* images;
 	NSMutableString* mutablePrefix;

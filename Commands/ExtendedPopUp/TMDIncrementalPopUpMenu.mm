@@ -37,6 +37,10 @@
 
 		suggestions = [[initialValues objectForKey:@"suggestions"] retain];
 
+		wait = [[proxy valueForOption:@"wait"] boolValue];
+		if(wait)
+			outputHandle = [[proxy outputHandle] retain];
+
 		caseSensitive = YES;
 		if([[proxy valueForOption:@"case-insensitive"] boolValue])
 			caseSensitive = NO;
@@ -63,7 +67,6 @@
 			staticPrefix = @"";
 
 		shell = [[proxy valueForOption:@"shell-cmd"] retain];
-
 
 		// Window setup
 		[self setReleasedWhenClosed:YES];
@@ -463,7 +466,11 @@
 			NSString* temp2 = [aString substringFromIndex:[temp length]];
 			[TextMate insertText:temp2 asSnippet:NO];
 		}
-		if([selection valueForKey:@"snippet"])
+		if(wait)
+		{
+			[outputHandle writeString:@"foo"];
+		}
+		else if([selection valueForKey:@"snippet"])
 		{
 			//[TextMate insertText:[[ob valueForKey:@"snippet"] copy] asSnippet:YES];
 			[TextMate insertText:[selection valueForKey:@"snippet"] asSnippet:YES];
@@ -617,6 +624,7 @@
 
 - (void)dealloc
 {
+	[outputHandle release];
 	[staticPrefix release];
 	[mutablePrefix release];
 	[suggestions release];
