@@ -437,14 +437,11 @@
 {
 	if([theTableView selectedRow] != -1)
 	{
-
-		//id selection = [filtered objectAtIndex:[theTableView selectedRow]];
 		NSMutableDictionary* selection = [NSMutableDictionary dictionary];
 		[selection addEntriesFromDictionary:[filtered objectAtIndex:[theTableView selectedRow]]];
-        [selection setObject:env forKey:@"environment"];
-        [selection setValue:extraOptions forKey:@"extraOptions"];
-		
-		
+		[selection setObject:env forKey:@"environment"];
+		[selection setValue:extraOptions forKey:@"extraOptions"];
+
 		NSString* aString = [selection valueForKey:@"filterOn"];
 		if(!aString)
 			aString = [selection valueForKey:@"title"];
@@ -456,16 +453,22 @@
 		}
 		if(wait)
 		{
-			[outputHandle writeString:@"foo"];
+			NSMutableDictionary* selectedItem = [[filtered objectAtIndex:[theTableView selectedRow]] mutableCopy];
+			// We want to return the index of the selected item into the array which was passed in,
+			// but we can’t use the selected row index as the contents of the tablview is filtered down.
+			// I’m using indexOfObject to find the index of the selected item in the main arrray,
+			// but there may be a better way
+			[selectedItem setObject:[NSNumber numberWithInt:[suggestions indexOfObject:[filtered objectAtIndex:[theTableView selectedRow]]]] forKey:@"index"];
+			[outputHandle writeString:[selectedItem description]];
+			[selectedItem release];
 		}
 		else if([selection valueForKey:@"snippet"])
 		{
-			//[TextMate insertText:[[ob valueForKey:@"snippet"] copy] asSnippet:YES];
 			[TextMate insertText:[selection valueForKey:@"snippet"] asSnippet:YES];
 		}
 		else if(shell)
 		{
-			//NSLog(@"shell");
+			// This is to be removed in place of the Ruby API using --wait once the Obj-C completion is updated
 			NSString* fromShell = [self executeShellCommand:shell WithDictionary:selection];
 			[TextMate insertText:fromShell asSnippet:YES];
 		}
