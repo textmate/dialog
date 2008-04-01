@@ -262,15 +262,15 @@
 		NSEnumerator *enumerator = [filtered objectEnumerator];
 		id firstObject = [enumerator nextObject];
 		id eachString;
-		id previousString = [firstObject objectForKey:@"filterOn"];
+		id previousString = [firstObject objectForKey:@"match"];
 		if(!previousString)
-			 previousString = [firstObject objectForKey:@"title"];
+			 previousString = [firstObject objectForKey:@"display"];
 		id dict;
 		while(dict = [enumerator nextObject])
 		{
-			eachString = [dict objectForKey:@"filterOn"];
+			eachString = [dict objectForKey:@"match"];
 			if(!eachString)
-				 eachString = [dict objectForKey:@"title"];
+				 eachString = [dict objectForKey:@"display"];
 			NSString *commonPrefix = [eachString commonPrefixWithString:previousString options:NSLiteralSearch];
 			previousString = commonPrefix;
 		}
@@ -313,7 +313,7 @@
 	
 	[[aTableColumn dataCell] setImage:image];
 
-	return [[filtered objectAtIndex:rowIndex] objectForKey:@"title"];
+	return [[filtered objectAtIndex:rowIndex] objectForKey:@"display"];
 }
 
 - (void)filter
@@ -325,9 +325,9 @@
 	{
 		NSPredicate* predicate;
 		if(caseSensitive)
-			predicate = [NSPredicate predicateWithFormat:@"filterOn BEGINSWITH %@ OR (filterOn == NULL AND title BEGINSWITH %@)", [staticPrefix stringByAppendingString:mutablePrefix], [staticPrefix stringByAppendingString:mutablePrefix]];
+			predicate = [NSPredicate predicateWithFormat:@"match BEGINSWITH %@ OR (match == NULL AND display BEGINSWITH %@)", [staticPrefix stringByAppendingString:mutablePrefix], [staticPrefix stringByAppendingString:mutablePrefix]];
 		else
-			predicate = [NSPredicate predicateWithFormat:@"filterOn BEGINSWITH[c] %@ OR (filterOn == NULL AND title BEGINSWITH[c] %@)", [staticPrefix stringByAppendingString:mutablePrefix], [staticPrefix stringByAppendingString:mutablePrefix]];
+			predicate = [NSPredicate predicateWithFormat:@"match BEGINSWITH[c] %@ OR (match == NULL AND display BEGINSWITH[c] %@)", [staticPrefix stringByAppendingString:mutablePrefix], [staticPrefix stringByAppendingString:mutablePrefix]];
 		newFiltered = [suggestions filteredArrayUsingPredicate:predicate];
 	}
 	else
@@ -347,7 +347,7 @@
 	{
 		for(i=0; i<[newFiltered count]; i++)
 		{
-			item = [[newFiltered objectAtIndex:i] objectForKey:@"title"];
+			item = [[newFiltered objectAtIndex:i] objectForKey:@"display"];
 			if([item length]>maxLen)
 				maxLen = [item length];
 		}
@@ -442,9 +442,9 @@
 		[selection setObject:env forKey:@"environment"];
 		[selection setValue:extraOptions forKey:@"extraOptions"];
 
-		NSString* aString = [selection valueForKey:@"filterOn"];
+		NSString* aString = [selection valueForKey:@"match"];
 		if(!aString)
-			aString = [selection valueForKey:@"title"];
+			aString = [selection valueForKey:@"display"];
 		NSString* temp = [staticPrefix stringByAppendingString:mutablePrefix];
 		if([aString length] > [temp length])
 		{
@@ -462,9 +462,9 @@
 			[outputHandle writeString:[selectedItem description]];
 			[selectedItem release];
 		}
-		else if([selection valueForKey:@"snippet"])
+		else if([selection valueForKey:@"insert"])
 		{
-			[TextMate insertText:[selection valueForKey:@"snippet"] asSnippet:YES];
+			[TextMate insertText:[selection valueForKey:@"insert"] asSnippet:YES];
 		}
 		else if(shell)
 		{
