@@ -225,7 +225,7 @@
 			}
 			else if(t == NSScrollWheel)
 			{
- 				if([event deviceDeltaY] >= 0.0)
+ 				if([event deltaY] >= 0.0)
  					[self scrollLineUp:self];
 				else
 					[self scrollLineDown:self];
