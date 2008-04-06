@@ -17,5 +17,5 @@
 	NSDate* didOpenAtDate; // ignore mouse moves for the next second
 	NSPoint mousePositionWhenOpened;
 }
-+ (void)showWithHTML:(NSString*)content atLocation:(NSPoint)point transparent:(BOOL)transparent;
++ (void)showWithContent:(NSString*)content atLocation:(NSPoint)point transparent:(BOOL)transparent html:(BOOL)html;
 @end

@@ -16,18 +16,19 @@
 
 - (NSString *)commandDescription
 {
-	return @"Shows a tooltip at the caret with the provided content rendered as HTML.";
+	return @"Shows a tooltip at the caret with the provided content, optionally rendered as HTML.";
 }
 
 - (NSString *)usageForInvocation:(NSString *)invocation;
 {
-	return [NSString stringWithFormat:@"Tooltip content is taken from STDIN, e.g.:\n\n\t%@ <<< '<some>html</some>'\nUse --transparent (-t) to give the tooltip window a transparent background (10.5+ only)", invocation];
+	return [NSString stringWithFormat:@"Tooltip content is taken from STDIN, e.g.:\n\n\t%@ --format=html <<< '<some>html</some>'\nUse --transparent (-t) to give the tooltip window a transparent background (10.5+ only)", invocation];
 }
 
 
 static option_t const expectedOptions[] =
 {
 	{ "t", "transparent", option_t::no_argument, option_t::none, "Gives the tooltip window a transparent background (10.5+ only)."},
+	{ "f", "format", option_t::required_argument, option_t::string, "'text' to display the content as-is, or 'html' to render it as HTML. Default is text."},
 };
 
 - (void)handleCommand:(CLIProxy*)proxy
@@ -61,6 +62,12 @@ static option_t const expectedOptions[] =
 		pos = [textView positionForWindowUnderCaret];
 
 	BOOL transparent = [[proxy valueForOption:@"transparent"] boolValue];
-	[TMDHTMLTip showWithHTML:content atLocation:pos transparent:transparent];
+	BOOL html = NO;
+	if([[proxy valueForOption:@"format"] isEqualToString:@"html"])
+		html = YES;
+	else if([proxy valueForOption:@"format"] && ![[proxy valueForOption:@"format"] isEqualToString:@"text"])
+		ErrorAndReturn(@"invalid format - only html and text are supported");
+
+	[TMDHTMLTip showWithContent:content atLocation:pos transparent:transparent html:html];
 }
 @end
