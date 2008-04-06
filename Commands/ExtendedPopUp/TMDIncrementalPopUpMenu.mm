@@ -24,10 +24,10 @@
 {
 	if(self = [self initWithContentRect:NSZeroRect styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO])
 	{
-		NSString* currentWord = [proxy valueForOption:@"current-word"];
-		if(!currentWord)
-			currentWord = @"";
-		mutablePrefix = [currentWord mutableCopy];
+		NSString* initialFilter = [proxy valueForOption:@"initial-filter"];
+		if(!initialFilter)
+			initialFilter = @"";
+		mutablePrefix = [initialFilter mutableCopy];
 
 		stringWidth   = [mutablePrefix sizeWithAttributes:[NSDictionary dictionaryWithObject:[self font] forKey:NSFontAttributeName]].width;
 
