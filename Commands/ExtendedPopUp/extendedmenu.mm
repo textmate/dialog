@@ -36,7 +36,7 @@ static option_t const expectedOptions[] =
 {
 	SetOptionTemplate(proxy, expectedOptions);
 
-	NSPoint pos = NSZeroPoint;
+	NSPoint pos = [NSEvent mouseLocation];
 	if(id textView = [NSApp targetForAction:@selector(positionForWindowUnderCaret)])
 		pos = [textView positionForWindowUnderCaret];
 

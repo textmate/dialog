@@ -56,7 +56,7 @@ static option_t const expectedOptions[] =
 	if(content == nil || [content length] == 0)
 		ErrorAndReturn(@"no content given");
 
-	NSPoint pos = NSZeroPoint;
+	NSPoint pos = [NSEvent mouseLocation];
 
 	if(id textView = [NSApp targetForAction:@selector(positionForWindowUnderCaret)])
 		pos = [textView positionForWindowUnderCaret];
