@@ -204,8 +204,8 @@ static option_t const expectedOptions[] =
 {
 	return [NSString stringWithFormat:
 		@"%@ show/create «options» «nib path»\n"
-		@"%@ update/ [-p «parameters»] «window token»\n"
-		@"%@ update wait/close «window token»\n"
+		@"%@ update [-p «parameters»] «window token»\n"
+		@"%@ wait/close «window token»\n"
 		@"\nParameters should be provided as a propertly list.\n"
 		@"\nOptions:\n%@",
 		invocation, invocation, invocation, GetOptionList(expectedOptions)];
