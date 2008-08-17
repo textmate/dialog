@@ -67,6 +67,7 @@ const NSString* TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 		NSFont* font = [NSFont fontWithName:fontName size:fontSize];
 		[webPreferences setStandardFontFamily:[font familyName]];
 		[webPreferences setDefaultFontSize:fontSize];
+		[webPreferences setDefaultFixedFontSize:fontSize];
 
 		webView = [[WebView alloc] initWithFrame:NSZeroRect];
 		[webView setPreferencesIdentifier:TMDTooltipPreferencesIdentifier];
@@ -102,7 +103,9 @@ const NSString* TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 				@"          padding: 2px;"
 				@"          overflow: hidden;"
 				@"          display: table-cell;"
+				@"          max-width: 800px;"
 				@"      }"
+				@"      pre { white-space: pre-wrap; }"
 				@"  </style>"
 				@"</head>"
 				@"<body>%@</body>"
