@@ -93,7 +93,7 @@ int main (int argc, char const* argv[])
 		nil
 	];
 
-	[proxy hello:dict];
+	[proxy connectFromClientWithOptions:dict];
 
 	int stdin_fd  = open_pipe(stdin_name, O_WRONLY);
 	int stdout_fd = open_pipe(stdout_name, O_RDONLY);

@@ -62,7 +62,7 @@
 		[interface writeStringToError:@"unknown command, try help.\n"];
 }
 
-- (void)hello:(id)options
+- (void)connectFromClientWithOptions:(id)options
 {
 	[self performSelector:@selector(dispatch:) withObject:options afterDelay:0.0];
 }

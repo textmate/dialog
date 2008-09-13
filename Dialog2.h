@@ -4,7 +4,7 @@
 #define DialogServerConnectionName @"com.macromates.dialog"
 
 @protocol DialogServerProtocol
-- (void)hello:(id)anArgument;
+- (void)connectFromClientWithOptions:(id)anArgument;
 @end
 
 #ifndef enumerate
