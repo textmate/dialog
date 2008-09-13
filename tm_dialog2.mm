@@ -39,7 +39,7 @@ id connect ()
 char const* create_pipe (char const* name)
 {
 	char* filename;
-	asprintf(&filename, "/tmp/dialog_fifo_%d_%s", getpid(), name);
+	asprintf(&filename, "%s/dialog_fifo_%d_%s", getenv("TMPDIR") ?: "/tmp", getpid(), name);
 	int res = mkfifo(filename, 0666);
 	if((res == -1) && (errno != EEXIST))
 	{
@@ -106,18 +106,17 @@ int main (int argc, char const* argv[])
 
 	while(fd_map.size() > 1 || (fd_map.size() == 1 && fd_map.find(STDIN_FILENO) == fd_map.end()))
 	{
-		fd_set readfds, writefds, errorfds;
-		FD_ZERO(&readfds); FD_ZERO(&writefds); FD_ZERO(&errorfds);
+		fd_set readfds, writefds;
+		FD_ZERO(&readfds); FD_ZERO(&writefds);
 
 		int num_fds = 0;
 		iterate(it, fd_map)
 		{
 			FD_SET(it->first, &readfds);
-			FD_SET(it->first, &errorfds);
 			num_fds = std::max(num_fds, it->first + 1);
 		}
 
-		int i = select(num_fds, &readfds, &writefds, &errorfds, NULL);
+		int i = select(num_fds, &readfds, &writefds, NULL, NULL);
 		if(i == -1)
 		{
 			perror("Error from select");
@@ -135,13 +134,6 @@ int main (int argc, char const* argv[])
 				if(len == 0)
 						to_remove.push_back(it); // we can’t remove as long as we need the iterator for the ++
 				else	write(it->second, buf, len);
-			}
-
-			if(FD_ISSET(it->first, &errorfds))
-			{
-				// only report a problem when owner is not -1 since there is a bug (<rdar://5745680>) where errors are reported for file descriptors with -1 as owner (which is the case when using here-docs/here-strings for stdin)
-				if(fcntl(STDIN_FILENO, F_GETOWN) != -1)
-					fprintf(stderr, "error condition on %d\n", it->first);
 			}
 		}
 
