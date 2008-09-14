@@ -1,5 +1,9 @@
 #import "TextMate.h"
 
+@interface NSObject (OakTextViewPrivate)
+- (id)insertSnippetWithOptions:(NSDictionary*)options;
+@end
+
 @interface NSWorkspace (ProcessSerialNumberFinder)
 - (ProcessSerialNumber)processSerialNumberForApplicationWithIdentifier:(NSString *)identifier;
 @end
