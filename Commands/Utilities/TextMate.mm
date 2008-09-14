@@ -4,6 +4,7 @@
 - (id)insertSnippetWithOptions:(NSDictionary*)options;
 @end
 
+#if 0
 @interface NSWorkspace (ProcessSerialNumberFinder)
 - (ProcessSerialNumber)processSerialNumberForApplicationWithIdentifier:(NSString *)identifier;
 @end
@@ -26,6 +27,7 @@
 	return psn;
 }
 @end
+#endif
 
 @implementation TextMate
 + (void)insertText:(NSString*)text asSnippet:(BOOL)asSnippet
