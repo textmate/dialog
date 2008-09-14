@@ -1,7 +1,8 @@
+#import <Foundation/Foundation.h>
+
 @interface NSObject (OakTextView)
 - (NSPoint)positionForWindowUnderCaret;
 @end
 
-@interface TextMate : NSObject
-+ (void)insertText:(NSString*)text asSnippet:(BOOL)asSnippet;
-@end
+void insert_text (NSString* someText);
+void insert_snippet (NSString* aSnippet);

@@ -34,6 +34,6 @@
 	if(text == nil || [text length] == 0)
 		ErrorAndReturn(@"no text given");
 
-	[TextMate insertText:text asSnippet:YES];
+	insert_snippet(text);
 }
 @end

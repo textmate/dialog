@@ -290,7 +290,7 @@
 				//[temp release];
 			}
 			
-			[TextMate insertText:tStatic asSnippet:NO];
+			insert_text(tStatic);
 			[self filter];
 		}
 
@@ -449,7 +449,7 @@
 		if([aString length] > [temp length])
 		{
 			NSString* temp2 = [aString substringFromIndex:[temp length]];
-			[TextMate insertText:temp2 asSnippet:NO];
+			insert_text(temp2);
 		}
 		if(wait)
 		{
@@ -464,13 +464,13 @@
 		}
 		else if([selection valueForKey:@"insert"])
 		{
-			[TextMate insertText:[selection valueForKey:@"insert"] asSnippet:YES];
+			insert_snippet([selection valueForKey:@"insert"]);
 		}
 		else if(shell)
 		{
 			// This is to be removed in place of the Ruby API using --wait once the Obj-C completion is updated
 			NSString* fromShell = [self executeShellCommand:shell WithDictionary:selection];
-			[TextMate insertText:fromShell asSnippet:YES];
+			insert_snippet(fromShell);
 		}
 		closeMe = YES;
 	}
@@ -566,7 +566,7 @@
 			//[self interpretKeyEvents:[NSArray arrayWithObject:anEvent]];
 			[mutablePrefix appendString:aString];
 			//[mutablePrefix retain];
-			//[TextMate insertText:aString asSnippet:NO];
+			//insert_text(aString);
 			[self filter];
 		}
 	}
