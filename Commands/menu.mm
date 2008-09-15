@@ -8,7 +8,8 @@
 // ========
 
 /*
-echo '{ menuItems = ({title = "foo"; header = 1;},{title = "bar";}); }' | "$DIALOG" menu
+echo '{ items = ({title = "foo"; header = 1;},{title = "bar";}); }' | "$DIALOG" menu
+"$DIALOG" menu --items '({title = "foo"; header = 1;},{title = "bar";})'
 */
 
 @interface TMDMenuCommand : TMDCommand
@@ -29,19 +30,24 @@ echo '{ menuItems = ({title = "foo"; header = 1;},{title = "bar";}); }' | "$DIAL
 
 - (NSString *)usageForInvocation:(NSString *)invocation;
 {
-	return [NSString stringWithFormat:@"The menu structure should be given as a property list on STDIN, e.g.\n"
-	       @"echo '{ menuItems = ({title = \"foo\";}, {separator = 1;}, {header=1; title=\"bar\";}, {title = \"baz\";}); }' | %@",invocation];
+	return [NSString stringWithFormat:@"\t%1$@ --items '({title = foo;}, {separator = 1;}, {header=1; title = bar;}, {title = baz;})'\n", invocation];
 }
 
 - (void)handleCommand:(CLIProxy*)proxy
 {
+	NSDictionary* args = [proxy parameters];
+	NSArray* menuItems = [args objectForKey:@"items"];
+
+	// FIXME this is needed only because we presently can’t express argument constraints (CLIProxy would otherwise correctly validate/convert CLI arguments)
+	if([menuItems isKindOfClass:[NSString class]])
+		menuItems = [NSPropertyListSerialization propertyListFromData:[(NSString*)menuItems dataUsingEncoding:NSUTF8StringEncoding] mutabilityOption:NSPropertyListImmutable format:nil errorDescription:NULL];
+
 	MenuRef menu_ref;
 	CreateNewMenu(0 /* menu id */, kMenuAttrDoNotCacheImage, &menu_ref);
 	SetMenuFont(menu_ref, 0, [[NSUserDefaults standardUserDefaults] integerForKey:@"OakBundleManagerDisambiguateMenuFontSize"] ?: 12);
 
 	int item_id = 0, item_index = 0;
 	bool in_section = false;
-	NSArray* menuItems = [[proxy readPropertyListFromInput] objectForKey:@"menuItems"];
 	enumerate(menuItems, NSDictionary* menuItem)
 	{
 		if([[menuItem objectForKey:@"separator"] intValue])
