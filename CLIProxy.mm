@@ -40,7 +40,37 @@
 	[arguments release];
 	[environment release];
 	[workingDirectory release];
+	[parameters release];
 	[super dealloc];
+}
+
+- (NSDictionary*)parameters
+{
+	if(!parameters)
+	{
+		NSMutableDictionary* res = [NSMutableDictionary dictionary];
+		if(id plist = [TMDCommand readPropertyList:[self inputHandle] error:NULL])
+		{
+			if([plist isKindOfClass:[NSDictionary class]])
+				res = plist;
+		}
+
+		NSString* lastKey = nil;
+		for(size_t i = 2; i < [arguments count]; ++i)
+		{
+			NSString* arg = [arguments objectAtIndex:i];
+			BOOL isOption = [arg hasPrefix:@"--"];
+			if(lastKey)
+				[res setObject:(isOption ? [NSNull null] : arg) forKey:lastKey];
+			lastKey = isOption ? [arg substringFromIndex:2] : nil;
+		}
+
+		if(lastKey)
+			[res setObject:[NSNull null] forKey:lastKey];
+
+		parameters = [res retain];
+	}
+	return parameters;
 }
 
 - (NSString*)workingDirectory

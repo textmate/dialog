@@ -21,6 +21,8 @@
 	size_t				optionCount;
 	NSArray* 			arguments;
 	NSDictionary*		parsedOptions;
+
+	NSDictionary*		parameters;
 }
 + (id)proxyWithOptions:(NSDictionary*)options;
 - (id)initWithOptions:(NSDictionary*)options;
@@ -28,6 +30,8 @@
 - (void)writeStringToOutput:(NSString*)text;
 - (void)writeStringToError:(NSString*)text;
 - (id)readPropertyListFromInput;
+
+- (NSDictionary*)parameters;
 
 - (NSFileHandle*)inputHandle;
 - (NSFileHandle*)outputHandle;
