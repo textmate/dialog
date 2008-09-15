@@ -21,53 +21,31 @@
 
 - (NSString *)usageForInvocation:(NSString *)invocation;
 {
-	return [NSString stringWithFormat:@"Tooltip content is taken from STDIN, e.g.:\n\n\t%@ --format=html <<< '<some>html</some>'\nUse --transparent (-t) to give the tooltip window a transparent background (10.5+ only)", invocation];
+	return [NSString stringWithFormat:@"\t%1$@ --text 'regular text'\n\t%1$@ --html '<some>html</some>'\nUse --transparent to give the tooltip window a transparent background (10.5+ only)", invocation];
 }
-
-
-static option_t const expectedOptions[] =
-{
-	{ "t", "transparent", option_t::no_argument, option_t::none, "Gives the tooltip window a transparent background (10.5+ only)."},
-	{ "f", "format", option_t::required_argument, option_t::string, "'text' to display the content as-is, or 'html' to render it as HTML. Default is text."},
-};
 
 - (void)handleCommand:(CLIProxy*)proxy
 {
-	NSString* content = nil;
-	
-	SetOptionTemplate(proxy, expectedOptions);
+	NSDictionary* args = [proxy parameters];
 
-	if([proxy numberOfArguments] > 3)
+	NSString* html = nil;
+	if(NSMutableString* text = [[[args objectForKey:@"text"] mutableCopy] autorelease])
 	{
-		ErrorAndReturn(@"too many arguments");
-	}
-	else if([proxy argumentAtIndex:2])
-	{
-		content = [proxy argumentAtIndex:2];
+		[text replaceOccurrencesOfString:@"&" withString:@"&amp;" options:0 range:NSMakeRange(0, [text length])];
+		[text replaceOccurrencesOfString:@"<" withString:@"&lt;" options:0 range:NSMakeRange(0, [text length])];
+		[text insertString:@"<pre>" atIndex:0];
+		[text appendString:@"</pre>"];
+		html = text;
 	}
 	else
 	{
-		NSData *data = [[proxy inputHandle] readDataToEndOfFile];
-
-		if([data length] > 0)
-			content = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
+		html = [args objectForKey:@"html"];
 	}
 
-	if(content == nil || [content length] == 0)
-		ErrorAndReturn(@"no content given");
-
 	NSPoint pos = [NSEvent mouseLocation];
-
 	if(id textView = [NSApp targetForAction:@selector(positionForWindowUnderCaret)])
 		pos = [textView positionForWindowUnderCaret];
 
-	BOOL transparent = [[proxy valueForOption:@"transparent"] boolValue];
-	BOOL html = NO;
-	if([[proxy valueForOption:@"format"] isEqualToString:@"html"])
-		html = YES;
-	else if([proxy valueForOption:@"format"] && ![[proxy valueForOption:@"format"] isEqualToString:@"text"])
-		ErrorAndReturn(@"invalid format - only html and text are supported");
-
-	[TMDHTMLTip showWithContent:content atLocation:pos transparent:transparent html:html];
+	[TMDHTMLTip showWithContent:html atLocation:pos transparent:([args objectForKey:@"transparent"] ? YES : NO)];
 }
 @end

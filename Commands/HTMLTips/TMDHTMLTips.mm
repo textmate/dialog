@@ -9,7 +9,8 @@
 #import <algorithm>
 
 /*
-echo '‘foobar’' | "$DIALOG" tooltip
+"$DIALOG" tooltip --text '‘foobar’'
+"$DIALOG" tooltip --html '<h1>‘foobar’</h1>'
 */
 
 static float slow_in_out (float t)
@@ -22,7 +23,7 @@ static float slow_in_out (float t)
 const NSString* TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 
 @interface TMDHTMLTip (Private)
-- (void)setContent:(NSString *)content html:(BOOL)html transparent:(BOOL)transparent;
+- (void)setContent:(NSString *)content transparent:(BOOL)transparent;
 - (void)runUntilUserActivity;
 - (void)stopAnimation:(id)sender;
 @end
@@ -35,11 +36,11 @@ const NSString* TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 // ==================
 // = Setup/teardown =
 // ==================
-+ (void)showWithContent:(NSString*)content atLocation:(NSPoint)point transparent:(BOOL)transparent html:(BOOL)html;
++ (void)showWithContent:(NSString*)content atLocation:(NSPoint)point transparent:(BOOL)transparent
 {
 	TMDHTMLTip* tip = [TMDHTMLTip new];
 	[tip setFrameTopLeftPoint:point];
-	[tip setContent:content html:html transparent:transparent]; // The tooltip will show itself automatically when the HTML is loaded
+	[tip setContent:content transparent:transparent]; // The tooltip will show itself automatically when the HTML is loaded
 }
 
 - (id)init;
@@ -92,7 +93,7 @@ const NSString* TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 // ===========
 // = Webview =
 // ===========
-- (void)setContent:(NSString *)content html:(BOOL)html transparent:(BOOL)transparent;
+- (void)setContent:(NSString *)content transparent:(BOOL)transparent
 {
 	NSString *fullContent =	@"<html>"
 				@"<head>"
@@ -110,14 +111,7 @@ const NSString* TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 				@"</head>"
 				@"<body>%@</body>"
 				@"</html>";
-	if(!html)
-	{
-		// For plain-text format, we need to escape all ‘<’ signs and wrap it in a <pre>
-		content = [[content mutableCopy] autorelease];
-		[(NSMutableString*)content replaceOccurrencesOfString:@"<" withString:@"&lt;" options:0 range:NSMakeRange(0, [content length])];
-		[(NSMutableString*)content insertString:@"<pre>" atIndex:0];
-		[(NSMutableString*)content appendString:@"</pre>"];
-	}
+
 	fullContent = [NSString stringWithFormat:fullContent, transparent ? @"transparent" : @"#F6EDC3", content];
 	[[webView mainFrame] loadHTMLString:fullContent baseURL:nil];
 }
