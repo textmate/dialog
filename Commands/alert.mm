@@ -3,10 +3,10 @@
 #import "../OptionParser.h"
 
 /*
-echo '{alertStyle = warning; buttonTitles = ('OK'); messageTitle = 'test'; informativeText = 'Testing';}' | "$DIALOG" alert
+echo '{alertStyle = warning; button1 = 'OK'; title = 'test'; body = 'Testing';}' | "$DIALOG" alert
 
 "$DIALOG" help alert
-"$DIALOG" alert -s critical -m "FOOL!" -t "test" -1 foo -2 bar -3 baz
+"$DIALOG" alert --alertStyle critical --title "FOOL!" --body "test" --button1 foo --button2 bar --button3 baz
 */
 
 // =========
@@ -18,121 +18,41 @@ echo '{alertStyle = warning; buttonTitles = ('OK'); messageTitle = 'test'; infor
 }
 @end
 
+NSAlertStyle alert_style_from_string (NSString* str)
+{
+	if([str isEqualToString:@"warning"])
+		return NSWarningAlertStyle;
+	else if([str isEqualToString:@"critical"])
+		return NSCriticalAlertStyle;
+	else
+		return NSInformationalAlertStyle;
+}
+
 @implementation TMDAlertCommand
 + (void)load
 {
 	[super registerObject:[self new] forCommand:@"alert"];
 }
 
-static option_t const expectedOptions[] =
-{
-	{ "m", "message",			option_t::required_argument,	option_t::string,		"Message title."},
-	{ "t", "text",				option_t::required_argument,	option_t::string,		"Informative text for the alert."},
-	{ "s", "alert-style",	option_t::required_argument,	option_t::string,		"One of warning, critical or informational (the default)."},
-	{ "1", "button1",			option_t::required_argument,	option_t::string,		"Button 1 label."},
-	{ "2", "button2",			option_t::required_argument,	option_t::string,		"Button 2 label."},
-	{ "3", "button3",			option_t::required_argument,	option_t::string,		"Button 3 label."},
-};
-
 - (void)handleCommand:(CLIProxy*)proxy
 {
-	// NSFileHandle* fh = [options objectForKey:@"stderr"];
+	NSDictionary* args = [proxy parameters];
 
-#if 1
-	SetOptionTemplate(proxy, expectedOptions);
-	NSAlertStyle	alertStyle        = NSInformationalAlertStyle;
-	NSString			*alertStyleString = [proxy valueForOption:@"alert-style"];
-	NSDictionary	*resultDict       = nil;
-		
 	NSAlert *alert = [[[NSAlert alloc] init] autorelease];
-	
-	if([alertStyleString isEqualToString:@"warning"])
-	{
-		alertStyle = NSWarningAlertStyle;
-	}
-	else if([alertStyleString isEqualToString:@"critical"])
-	{
-		alertStyle = NSCriticalAlertStyle;
-	}
-	else if([alertStyleString isEqualToString:@"informational"])
-	{
-		alertStyle = NSInformationalAlertStyle;
-	}
-	
-	[alert setAlertStyle:alertStyle];
-	if([proxy valueForOption:@"message"])
-		[alert setMessageText:[proxy valueForOption:@"message"]];
-	if([proxy valueForOption:@"text"])
-		[alert setInformativeText:[proxy valueForOption:@"text"]];
-	
-	// Setup buttons
-	if ([proxy valueForOption:@"button1"])
-		[alert addButtonWithTitle:[proxy valueForOption:@"button1"]];
-	if ([proxy valueForOption:@"button2"])
-		[alert addButtonWithTitle:[proxy valueForOption:@"button2"]];
-	if ([proxy valueForOption:@"button3"])
-		[alert addButtonWithTitle:[proxy valueForOption:@"button3"]];
-	
-	BOOL modal = YES;
-	
-	// Show the alert
-	if(not modal)
-	{
-#if 1
-		// Not supported yet; needs same infrastructure as will be required for nib-based sheets.
-		[NSException raise:@"NotSupportedYet" format:@"Sheet alerts not yet supported."];
-#else
-		// Window-modal (sheet).NSWindowController
-		// Find the window corresponding to the given path
+	[alert setAlertStyle:alert_style_from_string([args objectForKey:@"alertStyle"])];
+	if(NSString* msg = [args objectForKey:@"title"])
+		[alert setMessageText:msg];
+	if(NSString* txt = [args objectForKey:@"body"])
+		[alert setInformativeText:txt];
 
-		NSArray* windows = [NSApp windows];
-		NSWindow* chosenWindow = nil;
-		
-		enumerate(windows, NSWindow * window)
-		{
-			OakDocumentController*	documentController = [window controller];
-			if([documentController isKindOfClass:[OakDocumentController class]])
-			{
-				if(filePath == nil)
-				{
-					// Take first visible document window
-					if( [window isVisible] )
-					{
-						chosenWindow = window;
-						break;
-					}
-				}
-				else
-				{
-					// Find given document window
-					// TODO: documentWithContentsOfFile may be a better way to do this
-					// FIXME: standardize paths
-					if([[documentController->textDocument filename] isEqualToString:filePath])
-					{
-						chosenWindow = window;
-						break;
-					}
-				}
-			}
-		}
-		
-		// Fall back to modal
-		if(chosenWindow == nil)
-		{
-			modal = YES;
-		}
-#endif
-	}
-	
-	if(modal)
-	{
-		int alertResult = ([alert runModal] - NSAlertFirstButtonReturn);
-		
-		resultDict = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:alertResult] forKey:@"buttonClicked"];
-	}
+	int i = 0;
+	while(NSString* button = [args objectForKey:[NSString stringWithFormat:@"button%d", ++i]])
+		[alert addButtonWithTitle:button];
+
+	int alertResult = ([alert runModal] - NSAlertFirstButtonReturn);
+	NSDictionary* resultDict = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:alertResult] forKey:@"buttonClicked"];
 
 	[TMDCommand writePropertyList:resultDict toFileHandle:[proxy outputHandle]];
-#endif
 }
 
 - (NSString *)commandDescription
@@ -142,6 +62,6 @@ static option_t const expectedOptions[] =
 
 - (NSString *)usageForInvocation:(NSString *)invocation;
 {
-	return [NSString stringWithFormat:@"%@ «options»\n\nOptions:\n%@", invocation, GetOptionList(expectedOptions)];
+	return [NSString stringWithFormat:@"\t%1$@ --alertStyle warning --title 'Delete File?' --body 'You cannot undo this action.' --button1 Delete --button2 Cancel\n", invocation];
 }
 @end
