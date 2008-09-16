@@ -104,6 +104,12 @@ int main (int argc, char const* argv[])
 	fd_map[stdout_fd]    = STDOUT_FILENO;
 	fd_map[stderr_fd]    = STDERR_FILENO;
 
+	if(isatty(STDIN_FILENO) != 0)
+	{
+		fd_map.erase(fd_map.find(STDIN_FILENO));
+		close(stdin_fd);
+	}
+
 	while(fd_map.size() > 1 || (fd_map.size() == 1 && fd_map.find(STDIN_FILENO) == fd_map.end()))
 	{
 		fd_set readfds, writefds;
