@@ -2,52 +2,88 @@
 //  TMDNibController.mm
 //  Dialog2
 //
-//  Created by Ciaran Walsh on 23/11/2007.
-//
 
 #import <string>
+#import <map>
 #import "../../Dialog2.h"
 #import "../../TMDCommand.h"
 #import "TMDNibController.h"
 
 @interface NSMethodSignature (Private)
-+ (NSMethodSignature *)signatureWithObjCTypes:(const char *)types;
++ (NSMethodSignature*)signatureWithObjCTypes:(char const*)types;
 @end
 
 @interface TMDNibController (Private)
-- (void)return:(id)res;
+- (void)setParameters:(id)someParameters;
 @end
 
 @implementation TMDNibController
-static NSMutableDictionary* Nibs = [NSMutableDictionary new];
-static unsigned int NibTokenCount = 0;
-
-+ (TMDNibController *)controllerForToken:(NSString*)token;
+- (id)init
 {
-	return [Nibs objectForKey:token];
+	if(self = [super init])
+	{
+		parameters = [NSMutableDictionary new];
+		[parameters setObject:self forKey:@"controller"];
+
+		clientFileHandles = [NSMutableArray new];
+	}
+	return self;
 }
 
-+ (void)addController:(TMDNibController *)controller
+- (id)initWithNibPath:(NSString*)aPath
 {
-	[Nibs setObject:controller forKey:[controller token]];
+	if(self = [self init])
+	{
+		if(NSNib* nib = [[[NSNib alloc] initWithContentsOfURL:[NSURL fileURLWithPath:aPath]] autorelease])
+		{
+			BOOL didInstantiate = NO;
+			@try {
+				didInstantiate = [nib instantiateNibWithOwner:self topLevelObjects:&topLevelObjects];
+			}
+			@catch(NSException* e) {
+				// our retain count is too high if we reach this branch (<rdar://4803521>) so no RAII idioms for Cocoa, which is why we have the didLock variable, etc.
+				NSLog(@"%s failed to instantiate nib (%@)", _cmd, [e reason]);
+			}
+
+			if(didInstantiate)
+			{
+				[topLevelObjects retain];
+				enumerate(topLevelObjects, id object)
+				{
+					if([object isKindOfClass:[NSWindow class]])
+						[self setWindow:object];
+				}
+
+				if(window)
+					return self;
+
+				NSLog(@"%s failed to find window in nib: %@", _cmd, aPath);
+			}
+		}
+		else
+		{
+			NSLog(@"%s failed loading nib: %@", _cmd, aPath);
+		}
+		[self release];
+	}
+	return nil;
 }
 
-+ (void)removeControllerForToken:(NSString *)token
+- (void)dealloc
 {
-	[Nibs removeObjectForKey:token];
+	[self setWindow:nil];
+	[self setParameters:nil];
+
+	enumerate(topLevelObjects, id object)
+		[object release];
+	[topLevelObjects release];
+
+	[clientFileHandles release];
+	[super dealloc];
 }
 
-+ (NSDictionary *)controllers;
-{
-	return [[Nibs copy] autorelease];
-}
-
-- (NSWindow*)window					{ return window; }
-- (id)parameters						{ return parameters; }
-- (NSString*)token					{ return [NSString stringWithFormat:@"%u", token]; }
-- (BOOL)autoCloses					{ return autoCloses; }
-
-- (void)setAutoCloses:(BOOL)flag	{ autoCloses = flag; }
+- (NSWindow*)window    { return window; }
+- (id)parameters       { return parameters; }
 
 - (void)setWindow:(NSWindow*)aWindow
 {
@@ -76,36 +112,9 @@ static unsigned int NibTokenCount = 0;
 		[parameters setValue:[plist valueForKey:key] forKey:key];
 }
 
-- (void)instantiateNib:(NSNib*)aNib
-{
-	BOOL didInstantiate = NO;
-	isRunningModal      = NO;
-	@try {
-	 	didInstantiate = [aNib instantiateNibWithOwner:self topLevelObjects:&topLevelObjects];
-	}
-	@catch(NSException* e) {
-		// our retain count is too high if we reach this branch (<rdar://4803521>) so no RAII idioms for Cocoa, which is why we have the didLock variable, etc.
-		NSLog(@"%s failed to instantiate nib (%@)", _cmd, [e reason]);
-		return;
-	}
-
-	[topLevelObjects retain];
-	enumerate(topLevelObjects, id object)
-	{
-		if([object isKindOfClass:[NSWindow class]])
-			[self setWindow:object];
-	}
-	
-	if(!window)
-	{
-		NSLog(@"%s didn't find a window in nib", _cmd);
-		return;
-	}
-}
-
 - (void)showWindowAndCenter:(BOOL)shouldCenter
 {
-	if (shouldCenter)
+	if(shouldCenter)
 	{
 		if(NSWindow* keyWindow = [NSApp keyWindow])
 		{
@@ -117,46 +126,7 @@ static unsigned int NibTokenCount = 0;
 			[window center];
 		}
 	}
-
 	[window makeKeyAndOrderFront:self];
-}
-
-- (void)runModal
-{
-	// TODO: When TextMate is capable of running script I/O in it's own thread(s), modal blocking
-	// can go away altogether.
-	isRunningModal = YES;
-	[NSApp runModalForWindow:window];
-}
-
-- (id)initWithNibName:(NSString*)aName
-{
-	if(self = [self init])
-	{
-		if(![[NSFileManager defaultManager] fileExistsAtPath:aName])
-		{
-			NSLog(@"%s nib file not found: %@", _cmd, aName);
-			[self release];
-			return nil;
-		}
-
-		parameters = [[NSMutableDictionary dictionaryWithObjectsAndKeys:
-			self, @"controller",
-			nil] retain];
-
-		NSNib* nib = [[[NSNib alloc] initWithContentsOfURL:[NSURL fileURLWithPath:aName]] autorelease];
-		if(!nib)
-		{
-			NSLog(@"%s failed loading nib: %@", _cmd, aName);
-			[self release];
-			return nil;
-		}
-
-		token = ++NibTokenCount;
-		[TMDNibController addController:self];
-		[self instantiateNib:nib];
-	}
-	return self;
 }
 
 - (void)makeControllersCommitEditing
@@ -172,13 +142,7 @@ static unsigned int NibTokenCount = 0;
 
 - (void)tearDown
 {
-	if (isRunningModal)
-		[NSApp stopModal];
-
-	[[self retain] autorelease];
-
 	[parameters removeObjectForKey:@"controller"];
-	// [self return:parameters]; // only if the non-async version is used
 
 	// if we do not manually unbind, the object in the nib will keep us retained, and thus we will never reach dealloc
 	enumerate(topLevelObjects, id object)
@@ -186,67 +150,46 @@ static unsigned int NibTokenCount = 0;
 		if([object isKindOfClass:[NSObjectController class]])
 			[object unbind:@"contentObject"];
 	}
-
-	[TMDNibController removeControllerForToken:[self token]];
-}
-
-- (void)dealloc
-{
-	[self setWindow:nil];
-	[self setParameters:nil];
-
-	enumerate(topLevelObjects, id object)
-		[object release];
-	[topLevelObjects release];
-
-	[fileHandles release];
-	[super dealloc];
-}
-
-- (void)windowWillClose:(NSNotification*)aNotification
-{
-	[self return:nil];
 }
 
 // ==================================
 // = Getting stuff from this window =
 // ==================================
-- (void)notifyFileHandle:(NSFileHandle*)aFileHandle
+- (void)addClientFileHandle:(NSFileHandle*)aFileHandle
 {
-	if(!fileHandles)
-		fileHandles = [NSMutableArray new];
-	[fileHandles addObject:aFileHandle];
+	[clientFileHandles addObject:aFileHandle];
 }
 
-- (void)return:(id)res
+- (void)return:(NSDictionary*)eventInfo
 {
-	id result = res;
-	
-	// Async dialogs return just the result, other dialogs return parameters too
-	if([self autoCloses])
-	{
-		result = [parameters mutableCopy];
-		if (res)
-			[result setObject:res forKey:@"result"];
-		[result removeObjectForKey:@"controller"];
-	}
-	
 	[self makeControllersCommitEditing];
 
-	enumerate(fileHandles, NSFileHandle* fileHandle)
-		[TMDCommand writePropertyList:result toFileHandle:fileHandle];
+	id model = [[parameters mutableCopy] autorelease];
+	[model removeObjectForKey:@"controller"];
 
-	[fileHandles release];
-	fileHandles = nil;
+	NSDictionary* res = [NSDictionary dictionaryWithObjectsAndKeys:
+		model,     @"model",
+		eventInfo, @"eventInfo",
+		nil];
 
-	if([self autoCloses])
-		[self tearDown];
+	enumerate(clientFileHandles, NSFileHandle* fileHandle)
+		[TMDCommand writePropertyList:res toFileHandle:fileHandle];
+
+	[clientFileHandles removeAllObjects];
+}
+
+// ================================================
+// = Events which return data to clients waiting  =
+// ================================================
+- (void)windowWillClose:(NSNotification*)aNotification
+{
+	[self return:[NSDictionary dictionaryWithObject:@"closeWindow" forKey:@"type"]];
 }
 
 // ================================================
 // = Faking a returnArgument:[…:]* implementation =
 // ================================================
-// returnArgument: implementation. See <http://lists.macromates.com/pipermail/textmate/2006-November/015321.html>
+// returnArgument: implementation. See <http://lists.macromates.com/textmate/2006-November/015321.html>
 - (NSMethodSignature*)methodSignatureForSelector:(SEL)aSelector
 {
 	NSLog(@"[%@ methodSignatureForSelector:%@]", [self class], NSStringFromSelector(aSelector));
@@ -276,6 +219,8 @@ static unsigned int NibTokenCount = 0;
 		NSArray* argNames = [str componentsSeparatedByString:@":"];
 
 		NSMutableDictionary* res = [NSMutableDictionary dictionary];
+		[res setObject:@"bindingAction" forKey:@"type"];
+
 		for(size_t i = 2; i < [[invocation methodSignature] numberOfArguments]; ++i)
 		{
 			id arg = nil;
@@ -296,13 +241,13 @@ static unsigned int NibTokenCount = 0;
 // ===============================
 - (IBAction)performButtonClick:(id)sender
 {
-	NSMutableDictionary* res = [[parameters mutableCopy] autorelease];
-	[res removeObjectForKey:@"controller"];
+	NSMutableDictionary* res = [NSMutableDictionary dictionary];
+	[res setObject:@"buttonClick" forKey:@"type"];
 
 	if([sender respondsToSelector:@selector(title)])
-		[res setObject:[sender title] forKey:@"returnButton"];
+		[res setObject:[sender title] forKey:@"title"];
 	if([sender respondsToSelector:@selector(tag)])
-		[res setObject:[NSNumber numberWithInt:[sender tag]] forKey:@"returnCode"];
+		[res setObject:[NSNumber numberWithInt:[sender tag]] forKey:@"tag"];
 
 	[self return:res];
 }
