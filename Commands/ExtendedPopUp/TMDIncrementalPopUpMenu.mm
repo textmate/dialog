@@ -581,7 +581,7 @@
 	NSArray *arguments = [NSArray arrayWithObjects:@"-c", command, nil];
 	[task setArguments:arguments];
 
-	[task setStandardInput:[[NSPipe alloc ] init]];
+	[task setStandardInput:[NSPipe pipe]];
 	NSPipe *pipe = [NSPipe pipe];
 	[task setStandardOutput:pipe];
 
