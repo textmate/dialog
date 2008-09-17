@@ -8,7 +8,7 @@
 #import "../Utilities/TextMate.h" // -insertSnippetWithOptions
 #import "../../TMDCommand.h" // -writeString:
 #import "../../Dialog2.h"
-	
+
 @interface NSTableView (MovingSelectedRow)
 - (BOOL)canHandleKeyCode:(unichar)keyCode;
 @end
@@ -148,6 +148,11 @@
 	return self;
 }
 
+- (NSString*)filterString
+{
+	return [staticPrefix stringByAppendingString:mutablePrefix];
+}
+
 - (void)orderFront:(id)sender
 {
 	[super orderFront:sender];
@@ -280,20 +285,15 @@
 		NSEnumerator *enumerator = [filtered objectEnumerator];
 		id firstObject = [enumerator nextObject];
 		id eachString;
-		id previousString = [firstObject objectForKey:@"match"];
-		if(!previousString)
-			 previousString = [firstObject objectForKey:@"display"];
-		id dict;
-		while(dict = [enumerator nextObject])
+		id previousString = [firstObject objectForKey:@"match"] ?: [firstObject objectForKey:@"display"];
+		while(id dict = [enumerator nextObject])
 		{
-			eachString = [dict objectForKey:@"match"];
-			if(!eachString)
-				 eachString = [dict objectForKey:@"display"];
+			eachString = [dict objectForKey:@"match"] ?: [dict objectForKey:@"display"];
 			NSString *commonPrefix = [eachString commonPrefixWithString:previousString options:NSLiteralSearch];
 			previousString = commonPrefix;
 		}
 		NSString* tStatic;// = [staticPrefix copy];
-		NSString* temp = [staticPrefix stringByAppendingString:mutablePrefix];
+		NSString* temp = [self filterString];
 		//[tStatic release];
 		if([previousString length] > [temp length])
 		{
@@ -343,9 +343,9 @@
 	{
 		NSPredicate* predicate;
 		if(caseSensitive)
-			predicate = [NSPredicate predicateWithFormat:@"match BEGINSWITH %@ OR (match == NULL AND display BEGINSWITH %@)", [staticPrefix stringByAppendingString:mutablePrefix], [staticPrefix stringByAppendingString:mutablePrefix]];
+			predicate = [NSPredicate predicateWithFormat:@"match BEGINSWITH %@ OR (match == NULL AND display BEGINSWITH %@)", [self filterString], [self filterString]];
 		else
-			predicate = [NSPredicate predicateWithFormat:@"match BEGINSWITH[c] %@ OR (match == NULL AND display BEGINSWITH[c] %@)", [staticPrefix stringByAppendingString:mutablePrefix], [staticPrefix stringByAppendingString:mutablePrefix]];
+			predicate = [NSPredicate predicateWithFormat:@"match BEGINSWITH[c] %@ OR (match == NULL AND display BEGINSWITH[c] %@)", [self filterString], [self filterString]];
 		newFiltered = [suggestions filteredArrayUsingPredicate:predicate];
 	}
 	else
@@ -463,7 +463,7 @@
 		NSString* aString = [selection valueForKey:@"match"];
 		if(!aString)
 			aString = [selection valueForKey:@"display"];
-		NSString* temp = [staticPrefix stringByAppendingString:mutablePrefix];
+		NSString* temp = [self filterString];
 		if([aString length] > [temp length])
 		{
 			NSString* temp2 = [aString substringFromIndex:[temp length]];
@@ -507,14 +507,6 @@
 			[mutablePrefix deleteCharactersInRange:NSMakeRange([mutablePrefix length]-1,1)];
 			[self filter];
 			//[self close];
-		}
-		else if(key == NSUpArrowFunctionKey || key == NSDownArrowFunctionKey)
-		{
-			; // we need to catch this since an empty tableView passes the event on here.
-		}
-		else if (key == NSPageUpFunctionKey || key == NSPageDownFunctionKey)
-		{
-			; // we need to catch this since an empty tableView passes the event on here.
 		}
 		else if(key == NSCarriageReturnCharacter)
 		{
