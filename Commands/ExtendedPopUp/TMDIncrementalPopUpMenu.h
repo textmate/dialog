@@ -16,18 +16,18 @@
 	NSArray* suggestions;
 	NSMutableDictionary* images;
 	NSMutableString* mutablePrefix;
-	NSString* extraChars;
 	NSString* staticPrefix;
 	NSArray* filtered;
 	NSString* shell;
 	NSDictionary* extraOptions;
 	NSDictionary* env;
 	NSTableView* theTableView;
-	float stringWidth;
 	NSPoint caretPos;
 	BOOL isAbove;
 	BOOL closeMe;
 	BOOL caseSensitive;
+
+	NSMutableCharacterSet* textualInputCharacters;	
 }
 - (id)initWithProxy:(CLIProxy*)proxy;
 - (void)filter;
@@ -35,7 +35,6 @@
 - (id)theTableView;
 - (void)keyDown:(NSEvent*)anEvent;
 - (void)tab;
-- (int)stringWidth;
 - (NSString*)executeShellCommand:(NSString*)command WithDictionary:(NSDictionary*)dict;
 - (NSArray*)filtered;
 - (void)setFiltered:(NSArray*)aValue;

@@ -49,7 +49,6 @@
 @end
 
 @interface TMDIncrementalPopUpMenu (Private)
-- (NSFont*)font;
 - (NSRect)rectOfMainScreen;
 @end
 
@@ -63,9 +62,9 @@
 			initialFilter = @"";
 		mutablePrefix = [initialFilter mutableCopy];
 
-		stringWidth   = [mutablePrefix sizeWithAttributes:[NSDictionary dictionaryWithObject:[self font] forKey:NSFontAttributeName]].width;
-
-		extraChars = [[proxy valueForOption:@"extra-chars"] retain];
+		textualInputCharacters = [[NSMutableCharacterSet alphanumericCharacterSet] retain];
+		if(NSString* extraChars = [proxy valueForOption:@"extra-chars"])
+			[textualInputCharacters addCharactersInString:extraChars];
 
 		NSDictionary* initialValues = [proxy readPropertyListFromInput];
 
@@ -161,10 +160,6 @@
 
 - (void)watchUserEvents
 {
-	NSCharacterSet* whiteList = nil;
-	if(extraChars)
-		whiteList = [NSCharacterSet characterSetWithCharactersInString:extraChars];
-
 	do
 	{
 		NSEvent* event = [NSApp nextEventMatchingMask:NSAnyEventMask
@@ -227,7 +222,7 @@
 						}
 						[self keyDown:event];
 					}
-					else if([[NSCharacterSet alphanumericCharacterSet] characterIsMember:key] || (whiteList && [whiteList characterIsMember:key]))
+					else if([textualInputCharacters characterIsMember:key])
 					{
 						[NSApp sendEvent:event];
 						[self keyDown:event];
@@ -374,17 +369,6 @@
 	[self setFiltered:newFiltered];
 }
 
-- (NSFont*)font
-{
-	return [NSFont fontWithName:[[NSUserDefaults standardUserDefaults] stringForKey:@"OakTextViewNormalFontName"] ?:[[NSFont userFixedPitchFontOfSize:12.0] fontName]
-                          size:[[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"] ?: 12 ];
-}
-
-- (int) stringWidth;
-{
-	return stringWidth;
-}
-
 - (NSRect)rectOfMainScreen;
 {
 	NSRect mainScreen = [[NSScreen mainScreen] frame];
@@ -407,7 +391,6 @@
 	int offx = (caretPos.x/mainScreen.size.width) + 1;
 	if((caretPos.x + [self frame].size.width) > (mainScreen.size.width*offx))
 		caretPos.x = caretPos.x - [self frame].size.width;
-	caretPos.x = caretPos.x - [self stringWidth];
 
 	if(caretPos.y>=0 && caretPos.y<[self frame].size.height)
 	{

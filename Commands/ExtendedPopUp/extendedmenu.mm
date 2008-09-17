@@ -39,6 +39,12 @@ static option_t const expectedOptions[] =
 	NSPoint pos = [NSEvent mouseLocation];
 	if(id textView = [NSApp targetForAction:@selector(positionForWindowUnderCaret)])
 		pos = [textView positionForWindowUnderCaret];
+	
+	if(NSString* initialFilter = [proxy valueForOption:@"initial-filter"])
+	{
+		NSFont* font = [NSFont fontWithName:[[NSUserDefaults standardUserDefaults] stringForKey:@"OakTextViewNormalFontName"] ?: [[NSFont userFixedPitchFontOfSize:12.0] fontName] size:[[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"] ?: 12];
+		pos.x -= [initialFilter sizeWithAttributes:[NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName]].width;
+	}
 
 	TMDIncrementalPopUpMenu* xPopUp = [[TMDIncrementalPopUpMenu alloc] initWithProxy:proxy];
 
