@@ -8,6 +8,40 @@
 #import "../Utilities/TextMate.h" // -insertSnippetWithOptions
 #import "../../TMDCommand.h" // -writeString:
 #import "../../Dialog2.h"
+	
+@interface NSTableView (MovingSelectedRow)
+- (BOOL)canHandleKeyCode:(unichar)keyCode;
+@end
+
+@implementation NSTableView (MovingSelectedRow)
+- (BOOL)canHandleKeyCode:(unichar)keyCode
+{
+	int visibleRows = (int)floorf(NSHeight([self visibleRect]) / ([self rowHeight]+[self intercellSpacing].height)) - 1;
+	struct { unichar key; int rows; } const key_movements[] =
+	{
+		{ NSUpArrowFunctionKey,              -1 },
+		{ NSDownArrowFunctionKey,            +1 },
+		{ NSPageUpFunctionKey,     -visibleRows },
+		{ NSPageDownFunctionKey,   +visibleRows },
+		{ NSHomeFunctionKey,    -(INT_MAX >> 1) },
+		{ NSEndFunctionKey,     +(INT_MAX >> 1) },
+	};
+
+	for(size_t i = 0; i < sizeofA(key_movements); ++i)
+	{
+		if(keyCode == key_movements[i].key)
+		{
+			int row = std::max(0, std::min([self selectedRow] + key_movements[i].rows, [self numberOfRows]-1));
+			[self selectRow:row byExtendingSelection:NO];
+			[self scrollRowToVisible:row];
+
+			return YES;
+		}
+	}
+
+	return NO;
+}
+@end
 
 @interface NSEvent (DeviceDelta)
 - (float)deviceDeltaX;
@@ -149,7 +183,11 @@
 				else if([aString length] == 1)
 				{
 					key = [aString characterAtIndex:0];
-					if(key == NSCarriageReturnCharacter)
+					if([[self theTableView] canHandleKeyCode:key])
+					{
+						// skip the rest
+					}
+					else if(key == NSCarriageReturnCharacter)
 					{
 						[self keyDown:event];
 						break;
@@ -166,7 +204,7 @@
 							break;
 						}
 					}
-					else if ([event keyCode] == 53)
+					else if ([event keyCode] == 53) // escape
 					{
 						break;
 					}
@@ -183,26 +221,6 @@
 							break;
 						}
 						[self keyDown:event];
-					}   
-					else if(key == NSUpArrowFunctionKey || key == NSDownArrowFunctionKey)
-					{ 
-						[[self theTableView] keyDown:event];
-					}
-					else if(key == NSEndFunctionKey)
-					{ 
-						[self moveToEndOfDocument:self];
-					}
-					else if(key == NSHomeFunctionKey)
-					{ 
-						[self moveToBeginningOfDocument:self];
-					}
-					else if(key == NSPageDownFunctionKey)
-					{ 
-						[self pageDown:self];
-					}
-					else if(key == NSPageUpFunctionKey)
-					{ 
-						[self pageUp:self];
 					}
 					else if([[NSCharacterSet alphanumericCharacterSet] characterIsMember:key] || (whiteList && [whiteList characterIsMember:key]))
 					{
@@ -477,57 +495,6 @@
 }
 
 
-- (void)selectRow:(int)row
-{
-	[theTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
-	[[self theTableView] scrollRowToVisible:row];
-}
-
-- (void)scrollLineUp:(id)sender
-{
-	int row = [theTableView selectedRow];
-	if (--row >= 0) [self selectRow:row];
-}
--(void)scrollLineDown:(id)sender
-{
-	int row = [theTableView selectedRow];
-	if (++row < [filtered count]) [self selectRow:row];
-}
-- (void)moveToBeginningOfDocument:(id)sender 
-{
-	[self selectRow:0];
-}
-- (void)moveToEndOfDocument:(id)sender 
-{
-	[self selectRow:[filtered count]-1];
-}
-- (void)pageDown:(id)sender
-{
-	int oldIndex = [theTableView selectedRow];
-	if([filtered count]<(MAX_ROWS+1))
-		[self selectRow:[filtered count]-1];
-	else
-	{
-		if(oldIndex+MAX_ROWS>=[filtered count])
-			[self selectRow:[filtered count]-1];
-		else 
-			[self selectRow:oldIndex+MAX_ROWS-1];
-		[[self theTableView] scrollRowToVisible:[theTableView selectedRow]];
-	}
-
-}
-- (void)pageUp:(id)sender 
-{
-	int oldIndex = [theTableView selectedRow];
-	if(oldIndex<MAX_ROWS)
-		[self selectRow:0];
-	else
-	{
-		[self selectRow:oldIndex-MAX_ROWS+1];
-		[[self theTableView] scrollRowToVisible:[theTableView selectedRow]];
-	}
-	
-}
 - (void)keyDown:(NSEvent*)anEvent
 {
 	NSString* aString = [anEvent characters];
