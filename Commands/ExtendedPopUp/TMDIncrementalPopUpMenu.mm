@@ -285,10 +285,8 @@
 		return;
 
 	id cur = [filtered objectAtIndex:row];
-	id next = [filtered objectAtIndex:row+1];
-
-	NSString* prefix = [([cur objectForKey:@"match"] ?: [cur objectForKey:@"display"]) commonPrefixWithString:([next objectForKey:@"match"] ?: [next objectForKey:@"display"]) options:NSLiteralSearch];
-	for(int i = row+2; i < [filtered count]; ++i)
+	NSString* prefix = [cur objectForKey:@"match"] ?: [cur objectForKey:@"display"];
+	for(int i = row+1; i < [filtered count]; ++i)
 	{
 		cur = [filtered objectAtIndex:i];
 		prefix = [prefix commonPrefixWithString:([cur objectForKey:@"match"] ?: [cur objectForKey:@"display"]) options:NSLiteralSearch];
