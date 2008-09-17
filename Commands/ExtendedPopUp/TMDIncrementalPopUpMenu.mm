@@ -280,40 +280,27 @@
 // osascript -e 'tell application "TextMate" to activate'$'\n''tell application "System Events" to keystroke (ASCII character 8)'
 - (void)tab
 {
-	if([filtered count]>1)
-	{
-		NSEnumerator *enumerator = [filtered objectEnumerator];
-		id firstObject = [enumerator nextObject];
-		id eachString;
-		id previousString = [firstObject objectForKey:@"match"] ?: [firstObject objectForKey:@"display"];
-		while(id dict = [enumerator nextObject])
-		{
-			eachString = [dict objectForKey:@"match"] ?: [dict objectForKey:@"display"];
-			NSString *commonPrefix = [eachString commonPrefixWithString:previousString options:NSLiteralSearch];
-			previousString = commonPrefix;
-		}
-		NSString* tStatic;// = [staticPrefix copy];
-		NSString* temp = [self filterString];
-		//[tStatic release];
-		if([previousString length] > [temp length])
-		{
-			if(previousString)
-			{
-				tStatic = [previousString substringFromIndex:[temp length]];
-				[mutablePrefix appendString:tStatic];
-			}
-			else
-			{
-				//NSLog(@"previousString was nil !!!: []", temp);
-				//[temp release];
-			}
-			
-			insert_text(tStatic);
-			[self filter];
-		}
+	int row = [theTableView selectedRow];
+	if(row == -1 || row == [filtered count]-1)
+		return;
 
+	id cur = [filtered objectAtIndex:row];
+	id next = [filtered objectAtIndex:row+1];
+
+	NSString* prefix = [([cur objectForKey:@"match"] ?: [cur objectForKey:@"display"]) commonPrefixWithString:([next objectForKey:@"match"] ?: [next objectForKey:@"display"]) options:NSLiteralSearch];
+	for(int i = row+2; i < [filtered count]; ++i)
+	{
+		cur = [filtered objectAtIndex:i];
+		prefix = [prefix commonPrefixWithString:([cur objectForKey:@"match"] ?: [cur objectForKey:@"display"]) options:NSLiteralSearch];
 	}
-	// [self close];
+
+	if([[self filterString] length] < [prefix length])
+	{
+		NSString* toInsert = [prefix substringFromIndex:[[self filterString] length]];
+		[mutablePrefix appendString:toInsert];
+		insert_text(toInsert);
+		[self filter];
+	}
 }
 
 - (int)numberOfRowsInTableView:(NSTableView *)aTableView
