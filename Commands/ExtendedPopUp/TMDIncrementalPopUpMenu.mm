@@ -345,7 +345,7 @@
 	}
 	if(caretPos.y>=0 && (isAbove || caretPos.y<newHeight))
 	{
-		[self setAbove:YES];
+		isAbove = YES;
 		old.y = caretPos.y + (newHeight + [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"]*1.5);
 	}
 	if(caretPos.y<0 && (isAbove || (mainScreen.size.height-newHeight)<(caretPos.y*-1)))
@@ -374,8 +374,7 @@
 - (void)setCaretPos:(NSPoint)aPos
 {
 	caretPos = aPos;
-
-	[self setAbove:NO];
+	isAbove = NO;
 
 	NSRect mainScreen = [self rectOfMainScreen];
 
@@ -386,19 +385,14 @@
 	if(caretPos.y>=0 && caretPos.y<[self frame].size.height)
 	{
 		caretPos.y = caretPos.y + ([self frame].size.height + [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"]*1.5);
-		[self setAbove:YES];
+		isAbove = YES;
 	}
 	if(caretPos.y<0 && (mainScreen.size.height-[self frame].size.height)<(caretPos.y*-1))
 	{
 		caretPos.y = caretPos.y + ([self frame].size.height + [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"]*1.5);
-		[self setAbove:YES];
+		isAbove = YES;
 	}
 	[self setFrameTopLeftPoint:caretPos];
-}
-
-- (void)setAbove:(BOOL)aBool
-{
-	isAbove = aBool;
 }
 
 - (void)completeAndInsertSnippet:(id)nothing

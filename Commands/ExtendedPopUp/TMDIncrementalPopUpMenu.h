@@ -31,6 +31,5 @@
 - (void)tab;
 - (void)setFiltered:(NSArray*)aValue;
 - (void)setCaretPos:(NSPoint)aPos;
-- (void)setAbove:(BOOL)aBool;
 - (void)completeAndInsertSnippet:(id)nothing;
 @end
