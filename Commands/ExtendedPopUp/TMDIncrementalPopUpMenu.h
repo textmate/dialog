@@ -31,12 +31,9 @@
 }
 - (id)initWithProxy:(CLIProxy*)proxy;
 - (void)filter;
-- (NSMutableString*)mutablePrefix;
-- (id)theTableView;
 - (void)keyDown:(NSEvent*)anEvent;
 - (void)tab;
 - (NSString*)executeShellCommand:(NSString*)command WithDictionary:(NSDictionary*)dict;
-- (NSArray*)filtered;
 - (void)setFiltered:(NSArray*)aValue;
 - (void)setCaretPos:(NSPoint)aPos;
 - (void)setAbove:(BOOL)aBool;

@@ -183,7 +183,7 @@
 				else if([aString length] == 1)
 				{
 					key = [aString characterAtIndex:0];
-					if([[self theTableView] canHandleKeyCode:key])
+					if([theTableView canHandleKeyCode:key])
 					{
 						// skip the rest
 					}
@@ -195,7 +195,7 @@
 					else if(key == NSBackspaceCharacter || key == NSDeleteCharacter)
 					{
 						[NSApp sendEvent:event];
-						if([[self mutablePrefix] length] > 0)
+						if([mutablePrefix length] > 0)
 						{
 							[self keyDown:event];
 						}
@@ -210,12 +210,12 @@
 					}
 					else if(key == NSTabCharacter)
 					{
-						if([[self filtered] count] == 0)
+						if([filtered count] == 0)
 						{
 							[NSApp sendEvent:event];
 							break;
 						}
-						if([[self filtered] count] == 1)
+						if([filtered count] == 1)
 						{
 							[self keyDown:event];
 							break;
@@ -264,14 +264,6 @@
 	[self close];
 }
 
-- (NSMutableString*)mutablePrefix;
-{
-	return mutablePrefix;
-}
-- (id)theTableView
-{	
-	return theTableView;
-}
 // osascript -e 'tell application "TextMate" to activate'$'\n''tell application "System Events" to keystroke (ASCII character 8)'
 - (void)tab
 {
@@ -525,11 +517,6 @@
 	[task release];
 
 	return [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
-}
-
-- (NSArray*)filtered
-{
-    return filtered;
 }
 
 - (void)setFiltered:(NSArray*)aValue
