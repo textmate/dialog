@@ -38,6 +38,4 @@
 - (void)setCaretPos:(NSPoint)aPos;
 - (void)setAbove:(BOOL)aBool;
 - (void)completeAndInsertSnippet:(id)nothing;
-- (BOOL)getCloseStatus;
-
 @end

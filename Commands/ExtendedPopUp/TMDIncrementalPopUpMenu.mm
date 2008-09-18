@@ -401,10 +401,7 @@
 {
 	isAbove = aBool;
 }
-- (BOOL)getCloseStatus
-{
-	return closeMe;
-}
+
 - (void)awakeFromNib
 {
   //  [theTableView setNextResponder: self];
