@@ -18,7 +18,6 @@
 	NSMutableString* mutablePrefix;
 	NSString* staticPrefix;
 	NSArray* filtered;
-	NSString* shell;
 	NSDictionary* extraOptions;
 	NSDictionary* env;
 	NSTableView* theTableView;
@@ -33,7 +32,6 @@
 - (void)filter;
 - (void)keyDown:(NSEvent*)anEvent;
 - (void)tab;
-- (NSString*)executeShellCommand:(NSString*)command WithDictionary:(NSDictionary*)dict;
 - (void)setFiltered:(NSArray*)aValue;
 - (void)setCaretPos:(NSPoint)aPos;
 - (void)setAbove:(BOOL)aBool;

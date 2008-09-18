@@ -99,8 +99,6 @@
 		else
 			staticPrefix = @"";
 
-		shell = [[proxy valueForOption:@"shell-cmd"] retain];
-
 		// Window setup
 		[self setReleasedWhenClosed:YES];
 		[self setLevel:NSStatusWindowLevel];
@@ -441,12 +439,6 @@
 		{
 			insert_snippet([selection valueForKey:@"insert"]);
 		}
-		else if(shell)
-		{
-			// This is to be removed in place of the Ruby API using --wait once the Obj-C completion is updated
-			NSString* fromShell = [self executeShellCommand:shell WithDictionary:selection];
-			insert_snippet(fromShell);
-		}
 		closeMe = YES;
 	}
 }
@@ -488,34 +480,6 @@
 	}
 }
 
-- (NSString*)executeShellCommand:(NSString*)command WithDictionary:(NSDictionary*)dict
-{
-	NSString* stdIn = [dict description];
-	NSTask* task    = [NSTask new];
-	[task setLaunchPath:@"/bin/sh"];
-
-	NSArray *arguments = [NSArray arrayWithObjects:@"-c", command, nil];
-	[task setArguments:arguments];
-
-	[task setStandardInput:[NSPipe pipe]];
-	NSPipe *pipe = [NSPipe pipe];
-	[task setStandardOutput:pipe];
-
-	NSFileHandle* taskInput = [[task standardInput] fileHandleForWriting];
-	[taskInput writeString:stdIn];
-	[taskInput closeFile];
-
-	NSFileHandle* taskOutput = [pipe fileHandleForReading];
-
-	[task launch];
-
-	NSData *data = [taskOutput readDataToEndOfFile];
-
-	[task release];
-
-	return [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
-}
-
 - (void)setFiltered:(NSArray*)aValue
 {
 	[aValue retain];
@@ -530,7 +494,6 @@
 	[staticPrefix release];
 	[mutablePrefix release];
 	[suggestions release];
-	[shell release];
 	[super dealloc];
 }
 @end
