@@ -196,13 +196,10 @@
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex
 {
 	NSImage* image = nil;
-	
-	NSString* imageName = [[filtered objectAtIndex:rowIndex] objectForKey:@"image"];
-	if(imageName)
+	if(NSString* imageName = [[filtered objectAtIndex:rowIndex] objectForKey:@"image"])
 		image = [images objectForKey:imageName];
-	
 	[[aTableColumn dataCell] setImage:image];
-	
+
 	return [[filtered objectAtIndex:rowIndex] objectForKey:@"display"];
 }
 
@@ -276,7 +273,7 @@
 	return staticPrefix ? [staticPrefix stringByAppendingString:mutablePrefix] : mutablePrefix;
 }
 
-- (NSRect)rectOfMainScreen;
+- (NSRect)rectOfMainScreen
 {
 	NSRect mainScreen = [[NSScreen mainScreen] frame];
 	enumerate([NSScreen screens], NSScreen* candidate)
@@ -391,23 +388,38 @@
 - (void)insertCommonPrefix
 {
 	int row = [theTableView selectedRow];
-	if(row == -1 || row == [filtered count]-1)
+	if(row == -1)
 		return;
 
 	id cur = [filtered objectAtIndex:row];
-	NSString* prefix = [cur objectForKey:@"match"] ?: [cur objectForKey:@"display"];
-	for(int i = row+1; i < [filtered count]; ++i)
+	NSString* curMatch = [cur objectForKey:@"match"] ?: [cur objectForKey:@"display"];
+	if([[self filterString] length] + 1 < [curMatch length])
 	{
-		cur = [filtered objectAtIndex:i];
-		prefix = [prefix commonPrefixWithString:([cur objectForKey:@"match"] ?: [cur objectForKey:@"display"]) options:NSLiteralSearch];
-	}
+		NSString* prefix = [curMatch substringToIndex:[[self filterString] length] + 1];
+		NSMutableArray* candidates = [NSMutableArray array];
+		for(int i = row; i < [filtered count]; ++i)
+		{
+			id candidate = [filtered objectAtIndex:i];
+			NSString* candidateMatch = [candidate objectForKey:@"match"] ?: [candidate objectForKey:@"display"];
+			if([candidateMatch hasPrefix:prefix])
+				[candidates addObject:candidateMatch];
+		}
 
-	if([[self filterString] length] < [prefix length])
+		NSString* commonPrefix = curMatch;
+		enumerate(candidates, NSString* candidateMatch)
+			commonPrefix = [commonPrefix commonPrefixWithString:candidateMatch options:NSLiteralSearch];
+
+		if([[self filterString] length] < [commonPrefix length])
+		{
+			NSString* toInsert = [commonPrefix substringFromIndex:[[self filterString] length]];
+			[mutablePrefix appendString:toInsert];
+			insert_text(toInsert);
+			[self filter];
+		}
+	}
+	else
 	{
-		NSString* toInsert = [prefix substringFromIndex:[[self filterString] length]];
-		[mutablePrefix appendString:toInsert];
-		insert_text(toInsert);
-		[self filter];
+		[self completeAndInsertSnippet];
 	}
 }
 
