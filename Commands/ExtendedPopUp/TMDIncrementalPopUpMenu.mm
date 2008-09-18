@@ -50,112 +50,117 @@
 
 @interface TMDIncrementalPopUpMenu (Private)
 - (NSRect)rectOfMainScreen;
+- (void)setupInterface;
 @end
 
 @implementation TMDIncrementalPopUpMenu
+- (id)init
+{
+	if(self = [super initWithContentRect:NSZeroRect styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO])
+	{
+		mutablePrefix = [NSMutableString new];
+		textualInputCharacters = [[NSMutableCharacterSet alphanumericCharacterSet] retain];
+		caseSensitive = YES;
+		images = [NSMutableDictionary new];
+
+		[self setupInterface];	
+	}
+	return self;
+}
+
+- (void)dealloc
+{
+	[staticPrefix release];
+	[mutablePrefix release];
+	[textualInputCharacters release];
+	[images release];
+
+	[outputHandle release];
+	[suggestions release];
+
+	[super dealloc];
+}
+
 - (id)initWithProxy:(CLIProxy*)proxy;
 {
-	if(self = [self initWithContentRect:NSZeroRect styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO])
+	if(self = [self init])
 	{
-		NSString* initialFilter = [proxy valueForOption:@"initial-filter"];
-		if(!initialFilter)
-			initialFilter = @"";
-		mutablePrefix = [initialFilter mutableCopy];
+		if(NSString* prefix = [proxy valueForOption:@"static-prefix"])
+			staticPrefix = [prefix retain];
 
-		textualInputCharacters = [[NSMutableCharacterSet alphanumericCharacterSet] retain];
-		if(NSString* extraChars = [proxy valueForOption:@"extra-chars"])
-			[textualInputCharacters addCharactersInString:extraChars];
+		if(NSString* filter = [proxy valueForOption:@"initial-filter"])
+			[mutablePrefix appendString:filter];
 
-		NSDictionary* initialValues = [proxy readPropertyListFromInput];
+		if(NSString* allow = [proxy valueForOption:@"extra-chars"])
+			[textualInputCharacters addCharactersInString:allow];
 
-		suggestions = [[initialValues objectForKey:@"suggestions"] retain];
-
-		wait = [[proxy valueForOption:@"wait"] boolValue];
-		if(wait)
+		if([[proxy valueForOption:@"wait"] boolValue])
 			outputHandle = [[proxy outputHandle] retain];
 
-		caseSensitive = YES;
 		if([[proxy valueForOption:@"case-insensitive"] boolValue])
 			caseSensitive = NO;
 
-		// Convert image paths to NSImages
-		NSDictionary* imagePaths = [[[initialValues objectForKey:@"images"] retain] autorelease];
-		images                   = [[NSMutableDictionary alloc] initWithCapacity:[imagePaths count]];
+		NSDictionary* initialValues = [proxy readPropertyListFromInput];
+		suggestions = [[initialValues objectForKey:@"suggestions"] retain];
 
-		NSEnumerator *imageEnum = [imagePaths keyEnumerator];
-		while (NSString* imageName = [imageEnum nextObject]) {
-			NSString* imagePath = [imagePaths objectForKey:imageName];
-			NSImage* image      = [[NSImage alloc] initByReferencingFile:imagePath];
+		// Convert image paths to NSImages
+		NSDictionary* imagePaths = [initialValues objectForKey:@"images"];
+		enumerate([imagePaths allKeys], NSString* imageName)
+		{
+			NSImage* image = [[[NSImage alloc] initByReferencingFile:[imagePaths objectForKey:imageName]] autorelease];
 			if(image && [image isValid])
 				[images setObject:image forKey:imageName];
-			[image release];
 		}
-
-		if([proxy valueForOption:@"static-prefix"])
-			staticPrefix = [[proxy valueForOption:@"static-prefix"] retain];
-		else
-			staticPrefix = @"";
-
-		// Window setup
-		[self setReleasedWhenClosed:YES];
-		[self setLevel:NSStatusWindowLevel];
-		[self setHidesOnDeactivate:YES];
-		[self setHasShadow:YES];
-
-		NSScrollView* scrollView = [[NSScrollView alloc] initWithFrame:NSZeroRect];
-		{
-			[scrollView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
-			[scrollView setAutohidesScrollers:YES];
-			[scrollView setHasVerticalScroller:YES];
-			[[scrollView verticalScroller] setControlSize:NSSmallControlSize];
-
-			theTableView = [[NSTableView alloc] initWithFrame:NSZeroRect];
-			{
-				[theTableView setFocusRingType:NSFocusRingTypeNone];
-				[theTableView setAllowsEmptySelection:NO];
-				[theTableView setHeaderView:nil];
-
-				NSTableColumn *column = [[NSTableColumn alloc] initWithIdentifier:@"foo"];
-				{
-					[column setDataCell:[NSClassFromString(@"OakImageAndTextCell") new]];
-					[column setEditable:NO];
-					[theTableView addTableColumn:column];
-					[column setWidth:[theTableView bounds].size.width];
-				}
-				[column release];
-
-				[theTableView setDataSource:self];
-
-				[scrollView setDocumentView:theTableView];
-			}
-			[theTableView release];
-
-			[self setContentView:scrollView];
-
-
-			[self filter];
-			closeMe = NO;
-		}
-		[scrollView release];
 	}
-
 	return self;
+}
+
+- (void)setupInterface
+{
+	[self setReleasedWhenClosed:YES];
+	[self setLevel:NSStatusWindowLevel];
+	[self setHidesOnDeactivate:YES];
+	[self setHasShadow:YES];
+
+	NSScrollView* scrollView = [[[NSScrollView alloc] initWithFrame:NSZeroRect] autorelease];
+	[scrollView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
+	[scrollView setAutohidesScrollers:YES];
+	[scrollView setHasVerticalScroller:YES];
+	[[scrollView verticalScroller] setControlSize:NSSmallControlSize];
+
+	theTableView = [[[NSTableView alloc] initWithFrame:NSZeroRect] autorelease];
+	[theTableView setFocusRingType:NSFocusRingTypeNone];
+	[theTableView setAllowsEmptySelection:NO];
+	[theTableView setHeaderView:nil];
+
+	NSTableColumn *column = [[[NSTableColumn alloc] initWithIdentifier:@"foo"] autorelease];
+	[column setDataCell:[NSClassFromString(@"OakImageAndTextCell") new]];
+	[column setEditable:NO];
+	[theTableView addTableColumn:column];
+	[column setWidth:[theTableView bounds].size.width];
+
+	[theTableView setDataSource:self];
+	[scrollView setDocumentView:theTableView];
+
+	[self setContentView:scrollView];
 }
 
 - (NSString*)filterString
 {
-	return [staticPrefix stringByAppendingString:mutablePrefix];
+	return staticPrefix ? [staticPrefix stringByAppendingString:mutablePrefix] : mutablePrefix;
 }
 
 - (void)orderFront:(id)sender
 {
+	[self filter];
 	[super orderFront:sender];
 	[self performSelector:@selector(watchUserEvents) withObject:nil afterDelay:0.05];
 }
 
 - (void)watchUserEvents
 {
-	do
+	closeMe = NO;
+	while(!closeMe)
 	{
 		NSEvent* event = [NSApp nextEventMatchingMask:NSAnyEventMask
                                           untilDate:[NSDate distantFuture]
@@ -255,7 +260,6 @@
 			}
 		}
 	}
-	while(!closeMe);
 	[self close];
 }
 
@@ -415,7 +419,7 @@
 	if([[self filterString] length] < [candidateMatch length])
 		insert_text([candidateMatch substringFromIndex:[[self filterString] length]]);
 
-	if(wait)
+	if(outputHandle)
 	{
 		// We want to return the index of the selected item into the array which was passed in,
 		// but we can’t use the selected row index as the contents of the tablview is filtered down.
@@ -472,14 +476,5 @@
 	[filtered release];
 	filtered = aValue;
 	[theTableView reloadData];
-}
-
-- (void)dealloc
-{
-	[outputHandle release];
-	[staticPrefix release];
-	[mutablePrefix release];
-	[suggestions release];
-	[super dealloc];
 }
 @end
