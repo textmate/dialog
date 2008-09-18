@@ -91,9 +91,6 @@
 			[image release];
 		}
 
-		env          = [[proxy environment] retain];
-		extraOptions = [[initialValues objectForKey:@"extraOptions"] retain];
-        
 		if([proxy valueForOption:@"static-prefix"])
 			staticPrefix = [[proxy valueForOption:@"static-prefix"] retain];
 		else
@@ -406,43 +403,32 @@
 	[theTableView setTarget:self];
 	[theTableView setDoubleAction:@selector(completeAndInsertSnippet:)];
 }
+
 - (void)completeAndInsertSnippet:(id)nothing
 {
-	if([theTableView selectedRow] != -1)
+	if([theTableView selectedRow] == -1)
+		return;
+
+	NSMutableDictionary* selectedItem = [[[filtered objectAtIndex:[theTableView selectedRow]] mutableCopy] autorelease];
+
+	NSString* candidateMatch = [selectedItem objectForKey:@"match"] ?: [selectedItem objectForKey:@"display"];
+	if([[self filterString] length] < [candidateMatch length])
+		insert_text([candidateMatch substringFromIndex:[[self filterString] length]]);
+
+	if(wait)
 	{
-		NSMutableDictionary* selection = [NSMutableDictionary dictionary];
-		[selection addEntriesFromDictionary:[filtered objectAtIndex:[theTableView selectedRow]]];
-		[selection setObject:env forKey:@"environment"];
-		[selection setValue:extraOptions forKey:@"extraOptions"];
-
-		NSString* aString = [selection valueForKey:@"match"];
-		if(!aString)
-			aString = [selection valueForKey:@"display"];
-		NSString* temp = [self filterString];
-		if([aString length] > [temp length])
-		{
-			NSString* temp2 = [aString substringFromIndex:[temp length]];
-			insert_text(temp2);
-		}
-		if(wait)
-		{
-			NSMutableDictionary* selectedItem = [[filtered objectAtIndex:[theTableView selectedRow]] mutableCopy];
-			// We want to return the index of the selected item into the array which was passed in,
-			// but we can’t use the selected row index as the contents of the tablview is filtered down.
-			// I’m using indexOfObject to find the index of the selected item in the main arrray,
-			// but there may be a better way
-			[selectedItem setObject:[NSNumber numberWithInt:[suggestions indexOfObject:[filtered objectAtIndex:[theTableView selectedRow]]]] forKey:@"index"];
-			[outputHandle writeString:[selectedItem description]];
-			[selectedItem release];
-		}
-		else if([selection valueForKey:@"insert"])
-		{
-			insert_snippet([selection valueForKey:@"insert"]);
-		}
-		closeMe = YES;
+		// We want to return the index of the selected item into the array which was passed in,
+		// but we can’t use the selected row index as the contents of the tablview is filtered down.
+		[selectedItem setObject:[NSNumber numberWithInt:[suggestions indexOfObject:[filtered objectAtIndex:[theTableView selectedRow]]]] forKey:@"index"];
+		[outputHandle writeString:[selectedItem description]];
 	}
-}
+	else if(NSString* toInsert = [selectedItem objectForKey:@"insert"])
+	{
+		insert_snippet(toInsert);
+	}
 
+	closeMe = YES;
+}
 
 - (void)keyDown:(NSEvent*)anEvent
 {

@@ -18,8 +18,6 @@
 	NSMutableString* mutablePrefix;
 	NSString* staticPrefix;
 	NSArray* filtered;
-	NSDictionary* extraOptions;
-	NSDictionary* env;
 	NSTableView* theTableView;
 	NSPoint caretPos;
 	BOOL isAbove;
