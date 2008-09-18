@@ -10,11 +10,11 @@
 #import "../../Dialog2.h"
 
 @interface NSTableView (MovingSelectedRow)
-- (BOOL)canHandleKeyCode:(unichar)keyCode;
+- (BOOL)TMDcanHandleEvent:(NSEvent*)anEvent;
 @end
 
 @implementation NSTableView (MovingSelectedRow)
-- (BOOL)canHandleKeyCode:(unichar)keyCode
+- (BOOL)TMDcanHandleEvent:(NSEvent*)anEvent
 {
 	int visibleRows = (int)floorf(NSHeight([self visibleRect]) / ([self rowHeight]+[self intercellSpacing].height)) - 1;
 	struct { unichar key; int rows; } const key_movements[] =
@@ -26,6 +26,12 @@
 		{ NSHomeFunctionKey,    -(INT_MAX >> 1) },
 		{ NSEndFunctionKey,     +(INT_MAX >> 1) },
 	};
+
+	unichar keyCode = 0;
+	if([anEvent type] == NSScrollWheel)
+		keyCode = [anEvent deltaY] >= 0.0 ? NSUpArrowFunctionKey : NSDownArrowFunctionKey;
+	else if([anEvent type] == NSKeyDown && [[anEvent characters] length] == 1)
+		keyCode = [[anEvent characters] characterAtIndex:0];
 
 	for(size_t i = 0; i < sizeofA(key_movements); ++i)
 	{
@@ -301,95 +307,88 @@
                                              inMode:NSDefaultRunLoopMode
                                             dequeue:YES];
 
-		if(event != nil)
+		if(!event)
+			continue;
+		
+		NSEventType t = [event type];
+		if([theTableView TMDcanHandleEvent:event])
 		{
-			NSEventType t = [event type];
-			if(t == NSKeyDown)
+			// skip the rest
+		}
+		else if(t == NSKeyDown)
+		{
+			NSString* aString  = [event characters];
+			unsigned int flags = [event modifierFlags];
+			unichar key        = 0;
+			if((flags & NSControlKeyMask) || (flags & NSAlternateKeyMask) || (flags & NSCommandKeyMask))
 			{
-				NSString* aString  = [event characters];
-				unsigned int flags = [event modifierFlags];
-				unichar key        = 0;
-				if((flags & NSControlKeyMask) || (flags & NSAlternateKeyMask) || (flags & NSCommandKeyMask))
+				[NSApp sendEvent:event];
+				break;
+			}
+			else if([aString length] == 1)
+			{
+				key = [aString characterAtIndex:0];
+				if(key == NSCarriageReturnCharacter)
 				{
-					[NSApp sendEvent:event];
+					[self keyDown:event];
 					break;
 				}
-				else if([aString length] == 1)
+				else if(key == NSBackspaceCharacter || key == NSDeleteCharacter)
 				{
-					key = [aString characterAtIndex:0];
-					if([theTableView canHandleKeyCode:key])
+					[NSApp sendEvent:event];
+					if([mutablePrefix length] > 0)
 					{
-						// skip the rest
-					}
-					else if(key == NSCarriageReturnCharacter)
-					{
-						[self keyDown:event];
-						break;
-					}
-					else if(key == NSBackspaceCharacter || key == NSDeleteCharacter)
-					{
-						[NSApp sendEvent:event];
-						if([mutablePrefix length] > 0)
-						{
-							[self keyDown:event];
-						}
-						else
-						{
-							break;
-						}
-					}
-					else if ([event keyCode] == 53) // escape
-					{
-						break;
-					}
-					else if(key == NSTabCharacter)
-					{
-						if([filtered count] == 0)
-						{
-							[NSApp sendEvent:event];
-							break;
-						}
-						if([filtered count] == 1)
-						{
-							[self keyDown:event];
-							break;
-						}
-						[self keyDown:event];
-					}
-					else if([textualInputCharacters characterIsMember:key])
-					{
-						[NSApp sendEvent:event];
 						[self keyDown:event];
 					}
 					else
 					{
-						[NSApp sendEvent:event];
 						break;
 					}
 				}
-				else
+				else if ([event keyCode] == 53) // escape
 				{
+					break;
+				}
+				else if(key == NSTabCharacter)
+				{
+					if([filtered count] == 0)
+					{
 						[NSApp sendEvent:event];
 						break;
+					}
+					if([filtered count] == 1)
+					{
+						[self keyDown:event];
+						break;
+					}
+					[self keyDown:event];
+				}
+				else if([textualInputCharacters characterIsMember:key])
+				{
+					[NSApp sendEvent:event];
+					[self keyDown:event];
+				}
+				else
+				{
+					[NSApp sendEvent:event];
+					break;
 				}
 			}
-			else if(t == NSScrollWheel)
-			{
- 				if([event deltaY] >= 0.0)
- 					[self scrollLineUp:self];
-				else
-					[self scrollLineDown:self];
-			}
-			else if(t == NSRightMouseDown || t == NSLeftMouseDown)
-			{
-				[NSApp sendEvent:event];
-				if(! NSPointInRect([NSEvent mouseLocation], [self frame]))
-					break;
-			}
 			else
-			{ 
+			{
 				[NSApp sendEvent:event];
+				break;
 			}
+		}
+		else if(t == NSRightMouseDown || t == NSLeftMouseDown)
+		{
+			[NSApp sendEvent:event];
+			if(! NSPointInRect([NSEvent mouseLocation], [self frame]))
+				break;
+		}
+		else
+		{ 
+			[NSApp sendEvent:event];
 		}
 	}
 	[self close];
