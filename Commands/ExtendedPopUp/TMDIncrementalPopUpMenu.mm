@@ -91,6 +91,8 @@
 	[outputHandle release];
 	[suggestions release];
 
+	[filtered release];
+
 	[super dealloc];
 }
 
