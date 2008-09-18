@@ -401,13 +401,6 @@
 	isAbove = aBool;
 }
 
-- (void)awakeFromNib
-{
-  //  [theTableView setNextResponder: self];
-	[theTableView setTarget:self];
-	[theTableView setDoubleAction:@selector(completeAndInsertSnippet:)];
-}
-
 - (void)completeAndInsertSnippet:(id)nothing
 {
 	if([theTableView selectedRow] == -1)
