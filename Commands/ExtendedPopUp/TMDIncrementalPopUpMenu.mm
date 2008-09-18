@@ -50,10 +50,18 @@
 
 @interface TMDIncrementalPopUpMenu (Private)
 - (NSRect)rectOfMainScreen;
+- (NSString*)filterString;
 - (void)setupInterface;
+- (void)filter;
+- (void)keyDown:(NSEvent*)anEvent;
+- (void)tab;
+- (void)completeAndInsertSnippet:(id)nothing;
 @end
 
 @implementation TMDIncrementalPopUpMenu
+// =============================
+// = Setup/tear-down functions =
+// =============================
 - (id)init
 {
 	if(self = [super initWithContentRect:NSZeroRect styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO])
@@ -115,6 +123,30 @@
 	return self;
 }
 
+- (void)setCaretPos:(NSPoint)aPos
+{
+	caretPos = aPos;
+	isAbove = NO;
+	
+	NSRect mainScreen = [self rectOfMainScreen];
+	
+	int offx = (caretPos.x/mainScreen.size.width) + 1;
+	if((caretPos.x + [self frame].size.width) > (mainScreen.size.width*offx))
+		caretPos.x = caretPos.x - [self frame].size.width;
+	
+	if(caretPos.y>=0 && caretPos.y<[self frame].size.height)
+	{
+		caretPos.y = caretPos.y + ([self frame].size.height + [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"]*1.5);
+		isAbove = YES;
+	}
+	if(caretPos.y<0 && (mainScreen.size.height-[self frame].size.height)<(caretPos.y*-1))
+	{
+		caretPos.y = caretPos.y + ([self frame].size.height + [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"]*1.5);
+		isAbove = YES;
+	}
+	[self setFrameTopLeftPoint:caretPos];
+}
+
 - (void)setupInterface
 {
 	[self setReleasedWhenClosed:YES];
@@ -145,10 +177,112 @@
 	[self setContentView:scrollView];
 }
 
+// ========================
+// = TableView Datasource =
+// ========================
+
+- (int)numberOfRowsInTableView:(NSTableView *)aTableView
+{
+	return [filtered count];
+}
+
+- (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex
+{
+	NSImage* image = nil;
+	
+	NSString* imageName = [[filtered objectAtIndex:rowIndex] objectForKey:@"image"];
+	if(imageName)
+		image = [images objectForKey:imageName];
+	
+	[[aTableColumn dataCell] setImage:image];
+	
+	return [[filtered objectAtIndex:rowIndex] objectForKey:@"display"];
+}
+
+// ====================
+// = Filter the items =
+// ====================
+
+- (void)filter
+{
+	NSRect mainScreen = [self rectOfMainScreen];
+	
+	NSArray* newFiltered;
+	if([mutablePrefix length] > 0)
+	{
+		NSPredicate* predicate;
+		if(caseSensitive)
+			predicate = [NSPredicate predicateWithFormat:@"match BEGINSWITH %@ OR (match == NULL AND display BEGINSWITH %@)", [self filterString], [self filterString]];
+		else
+			predicate = [NSPredicate predicateWithFormat:@"match BEGINSWITH[c] %@ OR (match == NULL AND display BEGINSWITH[c] %@)", [self filterString], [self filterString]];
+		newFiltered = [suggestions filteredArrayUsingPredicate:predicate];
+	}
+	else
+	{
+		newFiltered = suggestions;
+	}
+	NSPoint old = NSMakePoint([self frame].origin.x, [self frame].origin.y + [self frame].size.height);
+	
+	int displayedRows = [newFiltered count] < MAX_ROWS ? [newFiltered count] : MAX_ROWS;
+	float newHeight   = ([theTableView rowHeight] + [theTableView intercellSpacing].height) * displayedRows;
+	
+	float maxLen = 1;
+	NSString* item;
+	int i;
+	float maxWidth = [self frame].size.width;
+	if([newFiltered count]>0)
+	{
+		for(i=0; i<[newFiltered count]; i++)
+		{
+			item = [[newFiltered objectAtIndex:i] objectForKey:@"display"];
+			if([item length]>maxLen)
+				maxLen = [item length];
+		}
+		maxWidth = maxLen*18;
+		maxWidth = (maxWidth>340) ? 340 : maxWidth;
+	}
+	if(caretPos.y>=0 && (isAbove || caretPos.y<newHeight))
+	{
+		isAbove = YES;
+		old.y = caretPos.y + (newHeight + [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"]*1.5);
+	}
+	if(caretPos.y<0 && (isAbove || (mainScreen.size.height-newHeight)<(caretPos.y*-1)))
+	{
+		old.y = caretPos.y + (newHeight + [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"]*1.5);
+	}
+	
+	// newHeight is currently the new height for theTableView, but we need to resize the whole window
+	// so here we use the difference in height to find the new height for the window
+	// newHeight = [[self contentView] frame].size.height + (newHeight - [theTableView frame].size.height);
+	[self setFrame:NSMakeRect(old.x,old.y-newHeight,maxWidth,newHeight) display:YES];
+	[filtered release];
+	filtered = [newFiltered retain];
+	[theTableView reloadData];
+}
+
+// =========================
+// = Convenience functions =
+// =========================
+
 - (NSString*)filterString
 {
 	return staticPrefix ? [staticPrefix stringByAppendingString:mutablePrefix] : mutablePrefix;
 }
+
+- (NSRect)rectOfMainScreen;
+{
+	NSRect mainScreen = [[NSScreen mainScreen] frame];
+	enumerate([NSScreen screens], NSScreen* candidate)
+	{
+		if(NSMinX([candidate frame]) == 0.0f && NSMinY([candidate frame]) == 0.0f)
+			mainScreen = [candidate frame];
+	}
+	return mainScreen;
+}
+
+// =============================
+// = Run the actual popup-menu =
+// =============================
 
 - (void)orderFront:(id)sender
 {
@@ -230,14 +364,12 @@
 					else
 					{
 						[NSApp sendEvent:event];
-						//[xPopUp keyDown:event];
 						break;
 					}
 				}
 				else
 				{
 						[NSApp sendEvent:event];
-						//[xPopUp keyDown:event];
 						break;
 				}
 			}
@@ -263,7 +395,41 @@
 	[self close];
 }
 
-// osascript -e 'tell application "TextMate" to activate'$'\n''tell application "System Events" to keystroke (ASCII character 8)'
+// ==================
+// = Action methods =
+// ==================
+
+- (void)keyDown:(NSEvent*)anEvent
+{
+	NSString* aString = [anEvent characters];
+	unichar key       = 0;
+	if([aString length] == 1)
+	{
+		key = [aString characterAtIndex:0];
+		if(key == NSBackspaceCharacter || key == NSDeleteCharacter)
+		{
+			[mutablePrefix deleteCharactersInRange:NSMakeRange([mutablePrefix length]-1,1)];
+			[self filter];
+		}
+		else if(key == NSCarriageReturnCharacter)
+		{
+			[self completeAndInsertSnippet:nil];
+		}
+		else if([aString isEqualToString:@"\t"])
+		{
+			if([filtered count] == 1)
+				[self completeAndInsertSnippet:nil];
+			else
+				[self tab];
+		}
+		else
+		{
+			[mutablePrefix appendString:aString];
+			[self filter];
+		}
+	}
+}
+
 - (void)tab
 {
 	int row = [theTableView selectedRow];
@@ -285,114 +451,6 @@
 		insert_text(toInsert);
 		[self filter];
 	}
-}
-
-- (int)numberOfRowsInTableView:(NSTableView *)aTableView
-{
-	return [filtered count];
-}
-
-- (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex
-{
-	NSImage* image = nil;
-	
-	NSString* imageName = [[filtered objectAtIndex:rowIndex] objectForKey:@"image"];
-	if(imageName)
-		image = [images objectForKey:imageName];
-	
-	[[aTableColumn dataCell] setImage:image];
-
-	return [[filtered objectAtIndex:rowIndex] objectForKey:@"display"];
-}
-
-- (void)filter
-{
-	NSRect mainScreen = [self rectOfMainScreen];
-
-	NSArray* newFiltered;
-	if([mutablePrefix length] > 0)
-	{
-		NSPredicate* predicate;
-		if(caseSensitive)
-			predicate = [NSPredicate predicateWithFormat:@"match BEGINSWITH %@ OR (match == NULL AND display BEGINSWITH %@)", [self filterString], [self filterString]];
-		else
-			predicate = [NSPredicate predicateWithFormat:@"match BEGINSWITH[c] %@ OR (match == NULL AND display BEGINSWITH[c] %@)", [self filterString], [self filterString]];
-		newFiltered = [suggestions filteredArrayUsingPredicate:predicate];
-	}
-	else
-	{
-		newFiltered = suggestions;
-	}
-	NSPoint old = NSMakePoint([self frame].origin.x, [self frame].origin.y + [self frame].size.height);
-
-	int displayedRows = [newFiltered count] < MAX_ROWS ? [newFiltered count] : MAX_ROWS;
-	float newHeight   = ([theTableView rowHeight] + [theTableView intercellSpacing].height) * displayedRows;
-
-	float maxLen = 1;
-	NSString* item;
-	int i;
-	float maxWidth = [self frame].size.width;
-	if([newFiltered count]>0)
-	{
-		for(i=0; i<[newFiltered count]; i++)
-		{
-			item = [[newFiltered objectAtIndex:i] objectForKey:@"display"];
-			if([item length]>maxLen)
-				maxLen = [item length];
-		}
-		maxWidth = maxLen*18;
-		maxWidth = (maxWidth>340) ? 340 : maxWidth;
-	}
-	if(caretPos.y>=0 && (isAbove || caretPos.y<newHeight))
-	{
-		isAbove = YES;
-		old.y = caretPos.y + (newHeight + [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"]*1.5);
-	}
-	if(caretPos.y<0 && (isAbove || (mainScreen.size.height-newHeight)<(caretPos.y*-1)))
-	{
-		old.y = caretPos.y + (newHeight + [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"]*1.5);
-	}
-
-	// newHeight is currently the new height for theTableView, but we need to resize the whole window
-	// so here we use the difference in height to find the new height for the window
-	// newHeight = [[self contentView] frame].size.height + (newHeight - [theTableView frame].size.height);
-	[self setFrame:NSMakeRect(old.x,old.y-newHeight,maxWidth,newHeight) display:YES];
-	[self setFiltered:newFiltered];
-}
-
-- (NSRect)rectOfMainScreen;
-{
-	NSRect mainScreen = [[NSScreen mainScreen] frame];
-	enumerate([NSScreen screens], NSScreen* candidate)
-	{
-		if(NSMinX([candidate frame]) == 0.0f && NSMinY([candidate frame]) == 0.0f)
-			mainScreen = [candidate frame];
-	}
-	return mainScreen;
-}
-
-- (void)setCaretPos:(NSPoint)aPos
-{
-	caretPos = aPos;
-	isAbove = NO;
-
-	NSRect mainScreen = [self rectOfMainScreen];
-
-	int offx = (caretPos.x/mainScreen.size.width) + 1;
-	if((caretPos.x + [self frame].size.width) > (mainScreen.size.width*offx))
-		caretPos.x = caretPos.x - [self frame].size.width;
-
-	if(caretPos.y>=0 && caretPos.y<[self frame].size.height)
-	{
-		caretPos.y = caretPos.y + ([self frame].size.height + [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"]*1.5);
-		isAbove = YES;
-	}
-	if(caretPos.y<0 && (mainScreen.size.height-[self frame].size.height)<(caretPos.y*-1))
-	{
-		caretPos.y = caretPos.y + ([self frame].size.height + [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"]*1.5);
-		isAbove = YES;
-	}
-	[self setFrameTopLeftPoint:caretPos];
 }
 
 - (void)completeAndInsertSnippet:(id)nothing
@@ -419,49 +477,5 @@
 	}
 
 	closeMe = YES;
-}
-
-- (void)keyDown:(NSEvent*)anEvent
-{
-	NSString* aString = [anEvent characters];
-	unichar key       = 0;
-	if([aString length] == 1)
-	{
-		key = [aString characterAtIndex:0];
-		if(key == NSBackspaceCharacter || key == NSDeleteCharacter)
-		{
-			[mutablePrefix deleteCharactersInRange:NSMakeRange([mutablePrefix length]-1,1)];
-			[self filter];
-			//[self close];
-		}
-		else if(key == NSCarriageReturnCharacter)
-		{
-			[self completeAndInsertSnippet:nil];
-			//[self close];
-		}
-		else if([aString isEqualToString:@"\t"])
-		{
-			if([filtered count] == 1)
-				[self completeAndInsertSnippet:nil];
-			else
-				[self tab];
-		}
-		else
-		{
-			//[self interpretKeyEvents:[NSArray arrayWithObject:anEvent]];
-			[mutablePrefix appendString:aString];
-			//[mutablePrefix retain];
-			//insert_text(aString);
-			[self filter];
-		}
-	}
-}
-
-- (void)setFiltered:(NSArray*)aValue
-{
-	[aValue retain];
-	[filtered release];
-	filtered = aValue;
-	[theTableView reloadData];
 }
 @end

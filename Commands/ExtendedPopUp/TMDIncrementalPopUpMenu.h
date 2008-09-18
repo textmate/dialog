@@ -26,10 +26,5 @@
 	NSMutableCharacterSet* textualInputCharacters;	
 }
 - (id)initWithProxy:(CLIProxy*)proxy;
-- (void)filter;
-- (void)keyDown:(NSEvent*)anEvent;
-- (void)tab;
-- (void)setFiltered:(NSArray*)aValue;
 - (void)setCaretPos:(NSPoint)aPos;
-- (void)completeAndInsertSnippet:(id)nothing;
 @end
