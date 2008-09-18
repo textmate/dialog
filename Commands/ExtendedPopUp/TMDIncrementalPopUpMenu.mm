@@ -59,9 +59,8 @@
 - (NSString*)filterString;
 - (void)setupInterface;
 - (void)filter;
-- (void)keyDown:(NSEvent*)anEvent;
-- (void)tab;
-- (void)completeAndInsertSnippet:(id)nothing;
+- (void)insertCommonPrefix;
+- (void)completeAndInsertSnippet;
 @end
 
 @implementation TMDIncrementalPopUpMenu
@@ -184,7 +183,7 @@
 }
 
 // ========================
-// = TableView Datasource =
+// = TableView DataSource =
 // ========================
 
 - (int)numberOfRowsInTableView:(NSTableView *)aTableView
@@ -317,62 +316,51 @@
 		}
 		else if(t == NSKeyDown)
 		{
-			NSString* aString  = [event characters];
 			unsigned int flags = [event modifierFlags];
-			unichar key        = 0;
+			unichar key        = [[event characters] length] == 1 ? [[event characters] characterAtIndex:0] : 0;
 			if((flags & NSControlKeyMask) || (flags & NSAlternateKeyMask) || (flags & NSCommandKeyMask))
 			{
 				[NSApp sendEvent:event];
 				break;
 			}
-			else if([aString length] == 1)
+			else if([event keyCode] == 53) // escape
 			{
-				key = [aString characterAtIndex:0];
-				if(key == NSCarriageReturnCharacter)
-				{
-					[self keyDown:event];
+				break;
+			}
+			else if(key == NSCarriageReturnCharacter)
+			{
+				[self completeAndInsertSnippet];
+			}
+			else if(key == NSBackspaceCharacter || key == NSDeleteCharacter)
+			{
+				[NSApp sendEvent:event];
+				if([mutablePrefix length] == 0)
 					break;
-				}
-				else if(key == NSBackspaceCharacter || key == NSDeleteCharacter)
+
+				[mutablePrefix deleteCharactersInRange:NSMakeRange([mutablePrefix length]-1, 1)];
+				[self filter];
+			}
+			else if(key == NSTabCharacter)
+			{
+				if([filtered count] == 0)
 				{
 					[NSApp sendEvent:event];
-					if([mutablePrefix length] > 0)
-					{
-						[self keyDown:event];
-					}
-					else
-					{
-						break;
-					}
-				}
-				else if ([event keyCode] == 53) // escape
-				{
 					break;
 				}
-				else if(key == NSTabCharacter)
+				else if([filtered count] == 1)
 				{
-					if([filtered count] == 0)
-					{
-						[NSApp sendEvent:event];
-						break;
-					}
-					if([filtered count] == 1)
-					{
-						[self keyDown:event];
-						break;
-					}
-					[self keyDown:event];
-				}
-				else if([textualInputCharacters characterIsMember:key])
-				{
-					[NSApp sendEvent:event];
-					[self keyDown:event];
+					[self completeAndInsertSnippet];
 				}
 				else
 				{
-					[NSApp sendEvent:event];
-					break;
+					[self insertCommonPrefix];
 				}
+			}
+			else if([textualInputCharacters characterIsMember:key])
+			{
+				[NSApp sendEvent:event];
+				[mutablePrefix appendString:[event characters]];
+				[self filter];
 			}
 			else
 			{
@@ -383,11 +371,11 @@
 		else if(t == NSRightMouseDown || t == NSLeftMouseDown)
 		{
 			[NSApp sendEvent:event];
-			if(! NSPointInRect([NSEvent mouseLocation], [self frame]))
+			if(!NSPointInRect([NSEvent mouseLocation], [self frame]))
 				break;
 		}
 		else
-		{ 
+		{
 			[NSApp sendEvent:event];
 		}
 	}
@@ -398,38 +386,7 @@
 // = Action methods =
 // ==================
 
-- (void)keyDown:(NSEvent*)anEvent
-{
-	NSString* aString = [anEvent characters];
-	unichar key       = 0;
-	if([aString length] == 1)
-	{
-		key = [aString characterAtIndex:0];
-		if(key == NSBackspaceCharacter || key == NSDeleteCharacter)
-		{
-			[mutablePrefix deleteCharactersInRange:NSMakeRange([mutablePrefix length]-1,1)];
-			[self filter];
-		}
-		else if(key == NSCarriageReturnCharacter)
-		{
-			[self completeAndInsertSnippet:nil];
-		}
-		else if([aString isEqualToString:@"\t"])
-		{
-			if([filtered count] == 1)
-				[self completeAndInsertSnippet:nil];
-			else
-				[self tab];
-		}
-		else
-		{
-			[mutablePrefix appendString:aString];
-			[self filter];
-		}
-	}
-}
-
-- (void)tab
+- (void)insertCommonPrefix
 {
 	int row = [theTableView selectedRow];
 	if(row == -1 || row == [filtered count]-1)
@@ -452,7 +409,7 @@
 	}
 }
 
-- (void)completeAndInsertSnippet:(id)nothing
+- (void)completeAndInsertSnippet
 {
 	if([theTableView selectedRow] == -1)
 		return;
