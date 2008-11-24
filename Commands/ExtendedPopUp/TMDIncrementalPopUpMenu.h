@@ -13,7 +13,6 @@
 {
 	NSFileHandle* outputHandle;
 	NSArray* suggestions;
-	NSMutableDictionary* images;
 	NSMutableString* mutablePrefix;
 	NSString* staticPrefix;
 	NSArray* filtered;
@@ -25,6 +24,6 @@
 
 	NSMutableCharacterSet* textualInputCharacters;	
 }
-- (id)initWithProxy:(CLIProxy*)proxy;
+- (id)initWithItems:(NSArray*)someSuggestions alreadyTyped:(NSString*)aUserString staticPrefix:(NSString*)aStaticPrefix additionalWordCharacters:(NSString*)someAdditionalWordCharacters caseSensitive:(BOOL)isCaseSensitive writeChoiceToFileDescriptor:(NSFileHandle*)aFileDescriptor;
 - (void)setCaretPos:(NSPoint)aPos;
 @end

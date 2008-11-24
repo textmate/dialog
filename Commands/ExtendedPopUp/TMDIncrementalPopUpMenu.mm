@@ -49,11 +49,6 @@
 }
 @end
 
-@interface NSEvent (DeviceDelta)
-- (float)deviceDeltaX;
-- (float)deviceDeltaY;
-@end
-
 @interface TMDIncrementalPopUpMenu (Private)
 - (NSRect)rectOfMainScreen;
 - (NSString*)filterString;
@@ -74,7 +69,6 @@
 		mutablePrefix = [NSMutableString new];
 		textualInputCharacters = [[NSMutableCharacterSet alphanumericCharacterSet] retain];
 		caseSensitive = YES;
-		images = [NSMutableDictionary new];
 
 		[self setupInterface];	
 	}
@@ -86,7 +80,6 @@
 	[staticPrefix release];
 	[mutablePrefix release];
 	[textualInputCharacters release];
-	[images release];
 
 	[outputHandle release];
 	[suggestions release];
@@ -96,36 +89,23 @@
 	[super dealloc];
 }
 
-- (id)initWithProxy:(CLIProxy*)proxy;
+- (id)initWithItems:(NSArray*)someSuggestions alreadyTyped:(NSString*)aUserString staticPrefix:(NSString*)aStaticPrefix additionalWordCharacters:(NSString*)someAdditionalWordCharacters caseSensitive:(BOOL)isCaseSensitive writeChoiceToFileDescriptor:(NSFileHandle*)aFileDescriptor
 {
 	if(self = [self init])
 	{
-		if(NSString* prefix = [proxy valueForOption:@"static-prefix"])
-			staticPrefix = [prefix retain];
+		suggestions = [someSuggestions retain];
 
-		if(NSString* filter = [proxy valueForOption:@"initial-filter"])
-			[mutablePrefix appendString:filter];
+		if(aUserString)
+			[mutablePrefix appendString:aUserString];
 
-		if(NSString* allow = [proxy valueForOption:@"extra-chars"])
-			[textualInputCharacters addCharactersInString:allow];
+		if(aStaticPrefix)
+			staticPrefix = [aStaticPrefix retain];
 
-		if([[proxy valueForOption:@"wait"] boolValue])
-			outputHandle = [[proxy outputHandle] retain];
+		if(someAdditionalWordCharacters)
+			[textualInputCharacters addCharactersInString:someAdditionalWordCharacters];
 
-		if([[proxy valueForOption:@"case-insensitive"] boolValue])
-			caseSensitive = NO;
-
-		NSDictionary* initialValues = [proxy readPropertyListFromInput];
-		suggestions = [[initialValues objectForKey:@"suggestions"] retain];
-
-		// Convert image paths to NSImages
-		NSDictionary* imagePaths = [initialValues objectForKey:@"images"];
-		enumerate([imagePaths allKeys], NSString* imageName)
-		{
-			NSImage* image = [[[NSImage alloc] initByReferencingFile:[imagePaths objectForKey:imageName]] autorelease];
-			if(image && [image isValid])
-				[images setObject:image forKey:imageName];
-		}
+		caseSensitive = isCaseSensitive;
+		outputHandle = [aFileDescriptor retain];
 	}
 	return self;
 }
@@ -197,7 +177,7 @@
 {
 	NSImage* image = nil;
 	if(NSString* imageName = [[filtered objectAtIndex:rowIndex] objectForKey:@"image"])
-		image = [images objectForKey:imageName];
+		image = [NSImage imageNamed:imageName];
 	[[aTableColumn dataCell] setImage:image];
 
 	return [[filtered objectAtIndex:rowIndex] objectForKey:@"display"];

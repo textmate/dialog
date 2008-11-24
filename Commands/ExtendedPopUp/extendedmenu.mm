@@ -4,7 +4,7 @@
 #import "../Utilities/TextMate.h" // -positionForWindowUnderCaret
 
 /*
-echo '{suggestions = ({title = "**law**";filterOn = "law";},{title = "**laws**";filterOn = "laws";snippet = "(${1:hello}, ${2:again})";}); mutablePrefix = ""; currentWord = "la";shell = "ruby -e \"puts STDIN.read\""; }' |"$DIALOG" popup
+"$DIALOG" popup --suggestions '( { display = "**law**"; image = NSRefreshTemplate; match = "law"; }, { display = "**laws**"; match = "laws"; insert = "(${1:hello}, ${2:again})"; } )'
 */
 
 // ==================
@@ -21,31 +21,46 @@ echo '{suggestions = ({title = "**law**";filterOn = "law";},{title = "**laws**";
 	[TMDCommand registerObject:[self new] forCommand:@"popup"];
 }
 
-static option_t const expectedOptions[] =
-{
-	{ "f", "initial-filter",	option_t::required_argument, option_t::string,	"Sets the text which will be used for initial filtering of the suggestions."},
-	{ "s", "static-prefix",		option_t::required_argument, option_t::string,	"A prefix which is used when filtering suggestions."},
-	{ "e", "extra-chars",		option_t::required_argument, option_t::string,	"A string of extra characters which are allowed while typing."},
-	{ "i", "case-insensitive",	option_t::no_argument, option_t::none,				"Case is ignored when comparing typed characters."},
-	{ "w", "wait",					option_t::no_argument, option_t::none,				"Causes the command to not return until the user has selected an item (or cancelled)."},
-};
-
-
 - (void)handleCommand:(CLIProxy*)proxy
 {
-	SetOptionTemplate(proxy, expectedOptions);
+	NSDictionary* args = [proxy parameters];
+	
+	NSString* filter     = [args objectForKey:@"alreadyTyped"];
+	NSString* prefix     = [args objectForKey:@"staticPrefix"];
+	NSString* allow      = [args objectForKey:@"additionalWordCharacters"];
+	BOOL wait            = [args objectForKey:@"returnChoice"] ? YES : NO;
+	BOOL caseInsensitive = [args objectForKey:@"caseInsensitive"] ? YES : NO;
+	
+	NSArray* suggestions = [args objectForKey:@"suggestions"];
+	if([suggestions isKindOfClass:[NSString class]])
+		suggestions = [NSPropertyListSerialization propertyListFromData:[(NSString*)suggestions dataUsingEncoding:NSUTF8StringEncoding] mutabilityOption:NSPropertyListImmutable format:nil errorDescription:NULL];
+
+	// Convert image paths to NSImages
+	NSDictionary* imagePaths = [args objectForKey:@"images"];
+	if([imagePaths isKindOfClass:[NSString class]])
+		imagePaths = [NSPropertyListSerialization propertyListFromData:[(NSString*)imagePaths dataUsingEncoding:NSUTF8StringEncoding] mutabilityOption:NSPropertyListImmutable format:nil errorDescription:NULL];
+
+	enumerate([imagePaths allKeys], NSString* imageName)
+	{
+		if([NSImage imageNamed:imageName]) // presumably this is not the first time the menu is invoked with this image, so skip loading it to avoid potential leaks
+			continue;
+
+		NSImage* image = [[NSImage alloc] initByReferencingFile:[imagePaths objectForKey:imageName]];
+		if(image && [image isValid])
+			[image setName:imageName];
+	}
+	
+	TMDIncrementalPopUpMenu* xPopUp = [[TMDIncrementalPopUpMenu alloc] initWithItems:suggestions alreadyTyped:filter staticPrefix:prefix additionalWordCharacters:allow caseSensitive:!caseInsensitive writeChoiceToFileDescriptor:(wait ? [proxy outputHandle] : nil)];
 
 	NSPoint pos = [NSEvent mouseLocation];
 	if(id textView = [NSApp targetForAction:@selector(positionForWindowUnderCaret)])
 		pos = [textView positionForWindowUnderCaret];
 	
-	if(NSString* initialFilter = [proxy valueForOption:@"initial-filter"])
+	if(filter)
 	{
 		NSFont* font = [NSFont fontWithName:[[NSUserDefaults standardUserDefaults] stringForKey:@"OakTextViewNormalFontName"] ?: [[NSFont userFixedPitchFontOfSize:12.0] fontName] size:[[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"] ?: 12];
-		pos.x -= [initialFilter sizeWithAttributes:[NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName]].width;
+		pos.x -= [filter sizeWithAttributes:[NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName]].width;
 	}
-
-	TMDIncrementalPopUpMenu* xPopUp = [[TMDIncrementalPopUpMenu alloc] initWithProxy:proxy];
 
 	[xPopUp setCaretPos:pos];
 	[xPopUp orderFront:self];
@@ -58,10 +73,7 @@ static option_t const expectedOptions[] =
 
 - (NSString *)usageForInvocation:(NSString *)invocation;
 {
-	return [NSString stringWithFormat:
-		@"%@ «options» <<<'{ suggestions = ( { title = \"foo\"; }, { title = \"bar\"; } ); }'\n"
-		@"\nOptions:\n%@",
-		invocation, GetOptionList(expectedOptions)];
+	return [NSString stringWithFormat:@"\t%1$@ --suggestions '( { display = law; }, { display = laws; insert = \"(${1:hello}, ${2:again})\"; } )'\n", invocation];
 }
 
 @end
