@@ -35,21 +35,6 @@
 	if([suggestions isKindOfClass:[NSString class]])
 		suggestions = [NSPropertyListSerialization propertyListFromData:[(NSString*)suggestions dataUsingEncoding:NSUTF8StringEncoding] mutabilityOption:NSPropertyListImmutable format:nil errorDescription:NULL];
 
-	// Convert image paths to NSImages
-	NSDictionary* imagePaths = [args objectForKey:@"images"];
-	if([imagePaths isKindOfClass:[NSString class]])
-		imagePaths = [NSPropertyListSerialization propertyListFromData:[(NSString*)imagePaths dataUsingEncoding:NSUTF8StringEncoding] mutabilityOption:NSPropertyListImmutable format:nil errorDescription:NULL];
-
-	enumerate([imagePaths allKeys], NSString* imageName)
-	{
-		if([NSImage imageNamed:imageName]) // presumably this is not the first time the menu is invoked with this image, so skip loading it to avoid potential leaks
-			continue;
-
-		NSImage* image = [[NSImage alloc] initByReferencingFile:[imagePaths objectForKey:imageName]];
-		if(image && [image isValid])
-			[image setName:imageName];
-	}
-	
 	TMDIncrementalPopUpMenu* xPopUp = [[TMDIncrementalPopUpMenu alloc] initWithItems:suggestions alreadyTyped:filter staticPrefix:prefix additionalWordCharacters:allow caseSensitive:!caseInsensitive writeChoiceToFileDescriptor:(wait ? [proxy outputHandle] : nil)];
 
 	NSPoint pos = [NSEvent mouseLocation];

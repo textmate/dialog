@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		175614490EDEA3B80053AC52 /* register_images.mm in Sources */ = {isa = PBXBuildFile; fileRef = 175614480EDEA3B80053AC52 /* register_images.mm */; };
 		177E4DA309132A0F0064163D /* Dialog2.mm in Sources */ = {isa = PBXBuildFile; fileRef = 177E4DA209132A0F0064163D /* Dialog2.mm */; };
 		8D5B49B0048680CD000E48DA /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
 		8D5B49B4048680CD000E48DA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */; };
@@ -47,11 +48,12 @@
 		089C167EFE841241C02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		089C167FFE841241C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		175614480EDEA3B80053AC52 /* register_images.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = register_images.mm; path = Commands/register_images.mm; sourceTree = "<group>"; };
 		177E4DA109132A0F0064163D /* Dialog2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Dialog2.h; sourceTree = "<group>"; };
 		177E4DA209132A0F0064163D /* Dialog2.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Dialog2.mm; sourceTree = "<group>"; };
 		32DBCF630370AF2F00C91783 /* Dialog2_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Dialog2_Prefix.pch; sourceTree = "<group>"; };
 		8D5B49B6048680CD000E48DA /* Dialog2.tmplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Dialog2.tmplugin; sourceTree = BUILT_PRODUCTS_DIR; };
-		8D5B49B7048680CD000E48DA /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Info.plist; sourceTree = "<group>"; };
+		8D5B49B7048680CD000E48DA /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		910713750D99768B0091C83C /* TextMate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = TextMate.mm; path = Commands/Utilities/TextMate.mm; sourceTree = "<group>"; };
 		91234F950D9A84E900E346BA /* insert.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = insert.mm; path = Commands/insert.mm; sourceTree = "<group>"; };
 		9192ECB30CF7AF39003D9967 /* TMDNibController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TMDNibController.h; path = Commands/Utilities/TMDNibController.h; sourceTree = "<group>"; };
@@ -198,6 +200,7 @@
 		91D6F8FC0CF23E46000F8170 /* Commands */ = {
 			isa = PBXGroup;
 			children = (
+				175614480EDEA3B80053AC52 /* register_images.mm */,
 				91D6F9930CF33A7A000F8170 /* window.mm */,
 				91D6F94E0CF2BCEC000F8170 /* ExtendedPopUp */,
 				91D6F9680CF2C7E5000F8170 /* HTMLTips */,
@@ -326,7 +329,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "mkdir -p \"$HOME/Library/Application Support/TextMate/PlugIns\"\ncp -pR \"${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME}\" \"$HOME/Library/Application Support/TextMate/PlugIns\"";
+			shellScript = "echo \"Copy ‘${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME}’…\"\n\nmkdir -p \"$HOME/Library/Application Support/TextMate/PlugIns\"\nif cp -pR \"${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME}\" \"$HOME/Library/Application Support/TextMate/PlugIns\"; then\n   echo \"Installed in ‘$HOME/Library/Application Support/TextMate/PlugIns’.\"\n   ls -lAd \"${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME}\"\n   ls -lAd \"$HOME/Library/Application Support/TextMate/PlugIns/${FULL_PRODUCT_NAME}\"\nelse\n   echo \"Failed to install Dialog plug-in.\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -352,6 +355,7 @@
 				91BF40BA0D6792CB001834B3 /* CLIProxy.mm in Sources */,
 				910713760D99768B0091C83C /* TextMate.mm in Sources */,
 				91234F960D9A84E900E346BA /* insert.mm in Sources */,
+				175614490EDEA3B80053AC52 /* register_images.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
