@@ -172,8 +172,7 @@ env|egrep 'DIALOG|TM_SUPPORT'|grep -v DIALOG_1|perl -pe 's/(.*?)=(.*)/export $1=
 		@"\nOptions:\n"
 		@"\t--center\n"
 		@"\t--model «plist»\n"
-		@"\t--prototypes «plist»\n"
-		@"\t--defaults «plist»\n",
+		@"\t--prototypes «plist»\n",
 		invocation];
 }
 @end
