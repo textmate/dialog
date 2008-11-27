@@ -136,15 +136,6 @@ env|egrep 'DIALOG|TM_SUPPORT'|grep -v DIALOG_1|perl -pe 's/(.*?)=(.*)/export $1=
 			[TMDChameleon createSubclassNamed:key withValues:[prototypes objectForKey:key]];
 	}
 
-	if(NSDictionary* defaults = [args objectForKey:@"defaults"])
-	{
-		// FIXME this is needed only because we presently can’t express argument constraints (CLIProxy would otherwise correctly validate/convert CLI arguments)
-		if([defaults isKindOfClass:[NSString class]])
-			defaults = [NSPropertyListSerialization propertyListFromData:[(NSString*)defaults dataUsingEncoding:NSUTF8StringEncoding] mutabilityOption:NSPropertyListImmutable format:nil errorDescription:NULL];
-
-		[[NSUserDefaults standardUserDefaults] registerDefaults:defaults];
-	}
-
 	if(NSString* nibName = [args objectForKey:@"open"])
 	{
 		// TODO we should let an option type be ‘filename’ and have CLIProxy resolve these (and error when file does not exist)
