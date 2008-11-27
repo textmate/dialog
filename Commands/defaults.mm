@@ -33,7 +33,7 @@
 
 - (NSString *)commandDescription
 {
-	return @"Register default values in for user settings.";
+	return @"Register default values for user settings.";
 }
 
 - (NSString *)usageForInvocation:(NSString *)invocation;
