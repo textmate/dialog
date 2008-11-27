@@ -1,15 +1,15 @@
 #import "../TMDCommand.h"
 #import "../Dialog2.h"
 
-@interface TMDRegisterImages : TMDCommand
+@interface TMDImages : TMDCommand
 {
 }
 @end
 
-@implementation TMDRegisterImages
+@implementation TMDImages
 + (void)load
 {
-	[TMDRegisterImages registerObject:[self new] forCommand:@"register_images"];
+	[TMDImages registerObject:[self new] forCommand:@"images"];
 }
 
 - (void)handleCommand:(CLIProxy*)proxy
@@ -17,7 +17,7 @@
 	NSDictionary* args = [proxy parameters];
 
 	// Convert image paths to NSImages
-	NSDictionary* imagePaths = [args objectForKey:@"images"];
+	NSDictionary* imagePaths = [args objectForKey:@"register"];
 	if([imagePaths isKindOfClass:[NSString class]])
 		imagePaths = [NSPropertyListSerialization propertyListFromData:[(NSString*)imagePaths dataUsingEncoding:NSUTF8StringEncoding] mutabilityOption:NSPropertyListImmutable format:nil errorDescription:NULL];
 
@@ -39,6 +39,6 @@
 
 - (NSString *)usageForInvocation:(NSString *)invocation;
 {
-	return [NSString stringWithFormat:@"\t%1$@ --images  \"{ macro = '$(find_app com.macromates.textmate)/Contents/Resources/Bundle Item Icons/Macros.png'; }\"\n", invocation];
+	return [NSString stringWithFormat:@"\t%1$@ --register  \"{ macro = '$(find_app com.macromates.textmate)/Contents/Resources/Bundle Item Icons/Macros.png'; }\"\n", invocation];
 }
 @end
