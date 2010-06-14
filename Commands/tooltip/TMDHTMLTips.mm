@@ -24,7 +24,7 @@ const NSString* TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 
 @interface TMDHTMLTip (Private)
 - (void)setContent:(NSString *)content transparent:(BOOL)transparent;
-- (void)runUntilUserActivity;
+- (void)runUntilUserActivity:(id)sender;
 - (void)stopAnimation:(id)sender;
 @end
 
@@ -148,11 +148,16 @@ const NSString* TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 	[self setFrameTopLeftPoint:pos];
 }
 
-- (void)webView:(WebView*)sender didFinishLoadForFrame:(WebFrame*)frame;
+- (void)delayedSizeAndShow:(id)sender
 {
 	[self sizeToContent];
 	[self orderFront:self];
-	[self performSelector:@selector(runUntilUserActivity) withObject:nil afterDelay:0];
+	[self runUntilUserActivity:self];
+}
+
+- (void)webView:(WebView*)sender didFinishLoadForFrame:(WebFrame*)frame;
+{
+	[self performSelector:@selector(delayedSizeAndShow:) withObject:self afterDelay:0];
 }
 
 // ==================
@@ -179,7 +184,7 @@ const NSString* TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 	return dist > moveThreshold;
 }
 
-- (void)runUntilUserActivity;
+- (void)runUntilUserActivity:(id)sender
 {
 	[self setValue:[NSDate date] forKey:@"didOpenAtDate"];
 	mousePositionWhenOpened = NSZeroPoint;
