@@ -62,7 +62,7 @@ int open_pipe (char const* name, int oflag)
 
 char const* revision ()
 {
-	char res[32];
+	static char res[32];
 	return sscanf("$Revision$", "$%*[^:]: %s $", res) == 1 ? res : "???";
 }
 
