@@ -1,0 +1,11 @@
+TARGET_NAME         = Dialog2
+
+SOURCES             = CLIProxy.mm Dialog2.mm OptionParser.mm TMDCommand.mm Commands/**/*.mm
+CP_Resources        = Info.plist English.lproj @tm_dialog2
+
+PLIST_FLAGS        += -d'EXECUTABLE_NAME=Dialog2' -d'PRODUCT_NAME=Dialog2'
+
+BUNDLE_EXTENSION    = tmplugin
+LN_FLAGS           += -bundle
+
+FRAMEWORKS          = Cocoa Carbon WebKit
