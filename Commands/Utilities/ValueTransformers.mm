@@ -1,5 +1,5 @@
 #import "ValueTransformers.h"
-#import "Dialog2.h"
+#import "../../Dialog2.h"
 
 // ===================================================
 // = Int Array To Index Path Array Value Transformer =
