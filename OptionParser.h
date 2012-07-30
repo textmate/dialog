@@ -9,7 +9,7 @@
 struct option_t
 {
 	std::string short_option, long_option;
-	enum { no_argument, optional_argument, required_argument } argument;
+	int argument;
 	enum type_t { none, string, integer, plist } type;
 	char *description;
 };

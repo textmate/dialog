@@ -5,6 +5,7 @@
 
 #import <map>
 #import <string>
+#import <getopt.h>
 #import "OptionParser.h"
 #import "Dialog2.h"
 
@@ -183,10 +184,10 @@ NSDictionary* ParseOptions (NSArray* arguments, option_t const* available, size_
 				{
 					NSString* key = [NSString stringWithUTF8String:it->second->long_option.c_str()];
 
-					token_t const& val = tokenizer.get(it->second->argument != option_t::no_argument);
+					token_t const& val = tokenizer.get(it->second->argument != no_argument);
 					if(val.type == token_t::value)
 					{
-						if(it->second->argument != option_t::no_argument)
+						if(it->second->argument != no_argument)
 						{
 							NSString* err = nil;
 							if(id value = create_type(val.word, it->second->type, &err))
@@ -195,7 +196,7 @@ NSDictionary* ParseOptions (NSArray* arguments, option_t const* available, size_
 						}
 						else	asprintf(&error, "no argument allowed after %s, found %s", t.word.c_str(), val.word.c_str());
 					}
-					else if(it->second->argument == option_t::required_argument)
+					else if(it->second->argument == required_argument)
 					{
 						asprintf(&error, "required argument for option %s is missing", t.word.c_str());
 					}
