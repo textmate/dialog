@@ -9,7 +9,7 @@
 
 #define MAX_ROWS 15
 
-@interface TMDIncrementalPopUpMenu : NSWindow
+@interface TMDIncrementalPopUpMenu : NSWindow<NSTableViewDataSource>
 {
 	NSFileHandle* outputHandle;
 	NSArray* suggestions;

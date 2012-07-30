@@ -44,7 +44,7 @@
 	{
 		if(keyCode == key_movements[i].key)
 		{
-			int row = std::max(0, std::min([self selectedRow] + key_movements[i].rows, [self numberOfRows]-1));
+			int row = std::max<NSInteger>(0, std::min([self selectedRow] + key_movements[i].rows, [self numberOfRows]-1));
 			[self selectRow:row byExtendingSelection:NO];
 			[self scrollRowToVisible:row];
 

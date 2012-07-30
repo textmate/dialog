@@ -20,7 +20,7 @@ static float slow_in_out (float t)
 	return std::min(t, 1.0f);
 }
 
-const NSString* TMDTooltipPreferencesIdentifier = @"TM Tooltip";
+NSString* const TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 
 @interface TMDHTMLTip (Private)
 - (void)setContent:(NSString *)content transparent:(BOOL)transparent;
