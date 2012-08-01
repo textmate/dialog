@@ -75,7 +75,7 @@
 - (id)reverseTransformedValue:(id)value
 {
 	NSMutableArray* array = [NSMutableArray array];
-	NSUInteger buf[[value count]];
+	NSUInteger buf[([value count])];
 	[(NSIndexSet*)value getIndexes:buf maxCount:[value count] inIndexRange:nil];
 	for(unsigned int i = 0; i != [value count]; i++)
 		[array addObject:[NSNumber numberWithUnsignedInt:buf[i]]];
