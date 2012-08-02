@@ -45,7 +45,7 @@
 		if(keyCode == key_movements[i].key)
 		{
 			int row = std::max<NSInteger>(0, std::min([self selectedRow] + key_movements[i].rows, [self numberOfRows]-1));
-			[self selectRow:row byExtendingSelection:NO];
+			[self selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
 			[self scrollRowToVisible:row];
 
 			return YES;
@@ -182,12 +182,12 @@
 // = TableView DataSource =
 // ========================
 
-- (int)numberOfRowsInTableView:(NSTableView *)aTableView
+- (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
 {
 	return [filtered count];
 }
 
-- (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex
+- (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
 {
 	NSImage* image = nil;
 	if(NSString* imageName = [[filtered objectAtIndex:rowIndex] objectForKey:@"image"])

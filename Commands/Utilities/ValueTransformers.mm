@@ -106,8 +106,8 @@ static NSString* NSStringFromColor (NSColor* aColor)
 
 	aColor = [aColor colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
 	if([aColor alphaComponent] != 1.0f)
-			return [NSString stringWithFormat:@"#%02X%02X%02X%02X", lroundf(255.0f*[aColor redComponent]), lroundf(255.0f*[aColor greenComponent]), lroundf(255.0f*[aColor blueComponent]), lroundf(255.0f*[aColor alphaComponent])];
-	else	return [NSString stringWithFormat:@"#%02X%02X%02X", lroundf(255.0f*[aColor redComponent]), lroundf(255.0f*[aColor greenComponent]), lroundf(255.0f*[aColor blueComponent])];
+			return [NSString stringWithFormat:@"#%02lX%02lX%02lX%02lX", lroundf(255.0f*[aColor redComponent]), lroundf(255.0f*[aColor greenComponent]), lroundf(255.0f*[aColor blueComponent]), lroundf(255.0f*[aColor alphaComponent])];
+	else	return [NSString stringWithFormat:@"#%02lX%02lX%02lX", lroundf(255.0f*[aColor redComponent]), lroundf(255.0f*[aColor greenComponent]), lroundf(255.0f*[aColor blueComponent])];
 }
 
 @implementation OakStringToColorTransformer

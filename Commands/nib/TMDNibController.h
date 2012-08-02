@@ -3,7 +3,7 @@
 //  Dialog2
 //
 
-@interface TMDNibController : NSObject
+@interface TMDNibController : NSObject <NSWindowDelegate>
 {
 	NSMutableDictionary* parameters;
 	NSMutableArray* clientFileHandles;
