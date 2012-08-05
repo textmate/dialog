@@ -1,7 +1,3 @@
-/*
-	g++ -o /tmp/test "$TM_FILEPATH" -framework Foundation
-*/
-
 //
 //  client.mm
 //  Created by Allan Odgaard on 2007-09-22.
@@ -24,6 +20,9 @@
 
 #import <Foundation/Foundation.h>
 #import "Dialog2.h"
+
+static double const AppVersion  = 2.0;
+static size_t const AppRevision = APP_REVISION;
 
 id connect ()
 {
@@ -60,17 +59,11 @@ int open_pipe (char const* name, int oflag)
 	return fd;
 }
 
-char const* revision ()
-{
-	static char res[32];
-	return sscanf("$Revision$", "$%*[^:]: %s $", res) == 1 ? res : "???";
-}
-
 int main (int argc, char const* argv[])
 {
 	if(argc == 2 && strcmp(argv[1], "--version") == 0)
 	{
-		fprintf(stderr, "tm_dialog, version 2.1 (r%s)\n", revision());
+		fprintf(stderr, "%1$s %2$.1f (" COMPILE_DATE " revision %3$zu)\n", getprogname(), AppVersion, AppRevision);
 		return 0;
 	}
 
