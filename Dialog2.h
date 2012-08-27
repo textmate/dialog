@@ -23,7 +23,7 @@ template <class T> typename T::iterator beginof (T& c)					{ return c.begin(); }
 template <class T> typename T::iterator endof (T& c)						{ return c.end(); }
 
 #ifndef foreach
-#define foreach(v,f,l) for(typeof(f) v = (f), _end = (l); v != _end; ++v)
+#define foreach(v,f,l) for(decltype(f) v = (f), _end = (l); v != _end; ++v)
 #endif
 
 #ifndef iterate
