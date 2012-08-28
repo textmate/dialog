@@ -42,7 +42,7 @@
 			}
 			@catch(NSException* e) {
 				// our retain count is too high if we reach this branch (<rdar://4803521>) so no RAII idioms for Cocoa, which is why we have the didLock variable, etc.
-				NSLog(@"%s failed to instantiate nib (%@)", SELNAME(_cmd), [e reason]);
+				NSLog(@"%s failed to instantiate nib (%@)", sel_getName(_cmd), [e reason]);
 			}
 
 			if(didInstantiate)
@@ -57,12 +57,12 @@
 				if(window)
 					return self;
 
-				NSLog(@"%s failed to find window in nib: %@", SELNAME(_cmd), aPath);
+				NSLog(@"%s failed to find window in nib: %@", sel_getName(_cmd), aPath);
 			}
 		}
 		else
 		{
-			NSLog(@"%s failed loading nib: %@", SELNAME(_cmd), aPath);
+			NSLog(@"%s failed loading nib: %@", sel_getName(_cmd), aPath);
 		}
 		[self release];
 	}
