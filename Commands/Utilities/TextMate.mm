@@ -29,39 +29,23 @@ id frontMostTextViewForSelector(SEL selector, BOOL *isNew, NSWindow* *winForText
 	// Find the front most OakTextView
 	for(NSWindow* win in [NSApp orderedWindows])
 	{
+		NSMutableArray* views = [NSMutableArray array];
+		if(id firstResponder = [win firstResponder])
+			[views addObject:firstResponder];
+		[views addObject:[win contentView]];
 
-		// Check the firstResponder to speed up the search
-		if([[win firstResponder] respondsToSelector:checkSelector] 
-				&& [[win firstResponder] respondsToSelector:selector])
+		for(NSUInteger i = 0; i < [views count]; ++i)
 		{
-			if(winForTextView) *winForTextView = win;
-			return [win firstResponder];
-		}
-
-		// Look for it in first level subViews
-		NSMutableArray* allViews = [[[[win contentView] subviews] mutableCopy] autorelease];
-		for(NSView* view in allViews)
-		{
+			id view = [views objectAtIndex:i];
 			if([view respondsToSelector:checkSelector] && [view respondsToSelector:selector])
 			{
 				if(winForTextView) *winForTextView = win;
 				return view;
 			}
-		}
 
-		// Look deeper for it in the second level subViews
-		NSMutableArray* allSubViews = [NSMutableArray array];
-		for(NSUInteger i = 0; i < [allViews count]; ++i)
-			[allSubViews addObjectsFromArray:[(id)CFArrayGetValueAtIndex((CFArrayRef)allViews, i) subviews]];
-		for(NSView* view in allSubViews)
-		{
-			if([view respondsToSelector:checkSelector] && [view respondsToSelector:selector])
-			{
-				if(winForTextView) *winForTextView = win;
-				return view;
-			}
+			if([view respondsToSelector:@selector(subviews)])
+				[views addObjectsFromArray:[view performSelector:@selector(subviews)]];
 		}
-
 	}
 
 	// If no textView was found create a new document
