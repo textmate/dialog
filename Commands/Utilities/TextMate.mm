@@ -8,7 +8,7 @@ static CGFloat insertionDelayForNewDoc = 0.1f;
 @interface NSObject (OakTextViewPrivate)
 - (id)insertSnippetWithOptions:(NSDictionary*)options;
 - (void)makeTextViewFirstResponder:(id)sender;
-- (void)newDocumentAndActivate:(id)sender;
+- (void)newDocument:(id)sender;
 @end
 
 /**
@@ -24,7 +24,7 @@ id frontMostTextViewForSelector(SEL selector, BOOL *isNew, NSWindow* *winForText
 	if(isNew) *isNew = false;
 
 	// unique method for identifying a OakTextView
-	SEL checkSelector = @selector(scopeContext);
+	SEL checkSelector = @selector(insertSnippetWithOptions:);
 
 	// Find the front most OakTextView
 	for(NSWindow* win in [NSApp orderedWindows])
@@ -68,7 +68,7 @@ id frontMostTextViewForSelector(SEL selector, BOOL *isNew, NSWindow* *winForText
 	if(id tmApp = [NSApp targetForAction:@selector(newDocument:)])
 	{
 
-		[tmApp newDocumentAndActivate:nil];
+		[tmApp newDocument:nil];
 
 		if([[NSApp orderedWindows] count]
 			&& [[[[NSApp orderedWindows] objectAtIndex:0] windowController] tryToPerform:
