@@ -34,7 +34,7 @@
 
 - (NSString *)commandDescription
 {
-	return @"Add image files as named images for use by other commands/nibs.";
+	return @"Adds image files as named images for use by other commands/NIBs/XIBs.";
 }
 
 - (NSString *)usageForInvocation:(NSString *)invocation;

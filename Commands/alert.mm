@@ -57,7 +57,7 @@ NSAlertStyle alert_style_from_string (NSString* str)
 
 - (NSString *)commandDescription
 {
-	return @"Show an alert box.";
+	return @"Shows a customizable alert box.";
 }
 
 - (NSString *)usageForInvocation:(NSString *)invocation;

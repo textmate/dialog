@@ -4,5 +4,5 @@
 - (NSPoint)positionForWindowUnderCaret;
 @end
 
-void insert_text (NSString* someText);
-void insert_snippet (NSString* aSnippet);
+BOOL insert_text (NSString* someText);
+BOOL insert_snippet (NSString* aSnippet);

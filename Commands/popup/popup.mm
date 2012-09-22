@@ -53,7 +53,7 @@
 
 - (NSString *)commandDescription
 {
-	return @"Presents the user with a list of items which can be filtered down by typing to select the item they want.";
+	return @"Presents the user with a list of items which can be filtered down by typing.";
 }
 
 - (NSString *)usageForInvocation:(NSString *)invocation;

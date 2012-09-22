@@ -37,7 +37,7 @@
 
 - (NSString *)commandDescription
 {
-	return @"Register classes for use with NSArrayController.";
+	return @"Registers classes for usage with NSArrayController.";
 }
 
 - (NSString *)usageForInvocation:(NSString *)invocation;
