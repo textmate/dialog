@@ -73,8 +73,9 @@ id frontMostTextViewForSelector(SEL selector, BOOL *isNew, NSWindow* *winForText
 
 /**
  Tries to insert “someText” as text into the front most text view.
+ Returns success status.
 */
-void insert_text (NSString* someText)
+BOOL insert_text (NSString* someText)
 {
 	BOOL isNewDocument = false;
 	if(id textView = frontMostTextViewForSelector(@selector(insertText:), &isNewDocument, NULL))
@@ -83,14 +84,16 @@ void insert_text (NSString* someText)
 			[textView performSelector:@selector(insertText:) withObject:someText afterDelay:insertionDelayForNewDoc];
 		else
 			[textView insertText:someText];
+		return true;
 	}
+	return false;
 }
 
 /**
  Tries to insert “aSnippet” as snippet into the front most text view
- and set the key focus to the current document.
+ and set the key focus to the current document. Returns success status.
 */
-void insert_snippet (NSString* aSnippet)
+BOOL insert_snippet (NSString* aSnippet)
 {
 	BOOL isNewDocument = false;
 	NSWindow *win = nil;
@@ -106,5 +109,7 @@ void insert_snippet (NSString* aSnippet)
 		// Since after inserting a snippet the user should interact with the snippet
 		// set key focus to current textView
 		[win makeKeyWindow];
+		return true;
 	}
+	return false;
 }
