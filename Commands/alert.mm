@@ -57,7 +57,7 @@ NSAlertStyle alert_style_from_string (NSString* str)
 
 - (NSString *)commandDescription
 {
-	return @"Show an alert box.";
+	return @"Shows a customizable alert box and returns the index of the chosen button - counting from the right.";
 }
 
 - (NSString *)usageForInvocation:(NSString *)invocation;

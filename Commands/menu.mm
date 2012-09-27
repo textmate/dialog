@@ -53,7 +53,7 @@ echo '{ items = ({title = "foo"; header = 1;},{title = "bar";}); }' | "$DIALOG" 
 
 - (NSString *)commandDescription
 {
-	return @"Presents a menu using the given structure and returns the option chosen by the user";
+	return @"Presents a menu using the given structure and returns the option chosen by the user.";
 }
 
 - (NSString *)usageForInvocation:(NSString *)invocation;

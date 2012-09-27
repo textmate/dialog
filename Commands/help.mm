@@ -28,21 +28,22 @@
 - (NSString *)commandSummaryText
 {
 	NSDictionary *commands = [TMDCommand registeredCommands];
-	
+	NSArray *sortedItems   = [[commands allKeys] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
+
 	NSMutableString *help = [NSMutableString stringWithCapacity:100];
 
-	int commandCount = 0;
-	for(NSEnumerator *enumerator = [commands keyEnumerator]; NSString *commandName = [enumerator nextObject]; )
+	NSInteger commandCount = 0;
+	for(NSString *commandName in sortedItems)
 	{
 		if(![commandName hasPrefix:@"x-"])
 		{
 			++commandCount;
-			TMDCommand *command = [commands objectForKey:commandName];
-			NSString *description = [command commandDescription];
-			[help appendFormat:@"\t%@: %@\n", commandName, description];
+			NSString *description = [[(TMDCommand*)[commands objectForKey:commandName] commandDescription] 
+												stringByReplacingOccurrencesOfString:@"\n" withString:@"\n\t\t"];
+			[help appendFormat:@"\t%@\n\t\t%@\n", commandName, description];
 		}
 	}
-	[help insertString:[NSString stringWithFormat:@"%d commands registered:\n", commandCount] atIndex:0];
+	[help insertString:[NSString stringWithFormat:@"%ld commands registered:\n", commandCount] atIndex:0];
 
 	[help appendString:@"Use `\"$DIALOG\" help command` for detailed help\n"];
 
@@ -57,7 +58,7 @@
 	if(![commandName hasPrefix:@"x-"] && (command = [TMDCommand objectForCommand:commandName]))
 	{
 		[help appendFormat:@"%@\n\n",[command commandDescription]];
-		[help appendFormat:@"%@ usage:\n",commandName];
+		[help appendFormat:@"'%@' usage:\n",commandName];
 		[help appendFormat:@"%@\n",[command usageForInvocation:[NSString stringWithFormat:@"\"$DIALOG\" %@", commandName]]];
 	}
 	else
