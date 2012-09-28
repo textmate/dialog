@@ -27,7 +27,7 @@
 	if(NSString* key = [args objectForKey:@"read"])
 	{
 		if(id obj = [[NSUserDefaults standardUserDefaults] objectForKey:key])
-			[TMDCommand writePropertyList:obj toFileHandle:[proxy outputHandle]];
+			[TMDCommand writePropertyList:obj toFileHandle:[proxy outputHandle] withProxy:proxy];
 	}
 }
 

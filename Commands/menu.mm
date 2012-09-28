@@ -175,7 +175,7 @@ echo '{ items = ({title = "foo"; header = 1;},{title = "bar";}); }' | "$DIALOG" 
 	
 
 	if([menu popUpMenuPositioningItem:nil atLocation:pos inView:nil] && menuTarget.selectedObject)
-		[TMDCommand writePropertyList:menuTarget.selectedObject toFileHandle:[proxy outputHandle]];
+		[TMDCommand writePropertyList:menuTarget.selectedObject toFileHandle:[proxy outputHandle] withProxy:proxy];
 
 }
 @end

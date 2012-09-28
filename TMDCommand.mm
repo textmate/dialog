@@ -31,11 +31,51 @@ static NSMutableDictionary* Commands = nil;
 	return plist;
 }
 
-+ (void)writePropertyList:(id)aPlist toFileHandle:(NSFileHandle*)aFileHandle
++ (void)writePropertyList:(id)aPlist toFileHandle:(NSFileHandle*)aFileHandle withProxy:(CLIProxy*)proxy
 {
 	NSString* error = nil;
+
 	if(NSData* data = [NSPropertyListSerialization dataFromPropertyList:aPlist format:NSPropertyListXMLFormat_v1_0 errorDescription:&error])
 	{
+
+		// check, if a proxy is passed, for --output <key> option
+		// if so then only return the passed 'key' value as a plain string
+		// or for --output '(array,of,keys)' then return the values of these keys
+		// separated by a new line \n
+		if(proxy)
+		{
+			NSDictionary *args = [proxy parameters];
+			if(NSString *outputKeys = [args objectForKey:@"output"])
+			{
+				// check argument and try to convert it to an array
+				id raw_keys = [NSPropertyListSerialization propertyListFromData:[(NSString*)outputKeys dataUsingEncoding:NSUTF8StringEncoding] mutabilityOption:NSPropertyListImmutable format:nil errorDescription:NULL];
+				NSArray *keys = nil;
+				if([raw_keys isKindOfClass:[NSString class]])
+					keys = [NSArray arrayWithObject:raw_keys];
+				else if([raw_keys isKindOfClass:[NSArray class]])
+					keys = raw_keys;
+				else
+				{
+					fprintf(stderr, "no single string or array passed as value for option '--output'\n");
+					return;
+				}
+				NSMutableArray *out = [NSMutableArray arrayWithCapacity:[keys count]];
+				for(NSString *outputKey in keys)
+				{
+					if(NSString *output = [aPlist objectForKey:outputKey])
+					{
+						[out addObject:output];
+					}
+					else
+					{
+						[out addObject:@""];
+						fprintf(stderr, "no key '%s' found in returned property list\n", [outputKey UTF8String]);
+					}
+				}
+				[aFileHandle writeString:[out componentsJoinedByString:@"\n"]];
+				return;
+			}
+		}
 		[aFileHandle writeData:data];
 	}
 	else

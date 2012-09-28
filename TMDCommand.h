@@ -7,7 +7,7 @@
 + (id)objectForCommand:(NSString*)aCommand;
 
 + (id)readPropertyList:(NSFileHandle*)aFileHandle error:(NSString**)error;
-+ (void)writePropertyList:(id)aPlist toFileHandle:(NSFileHandle*)aFileHandle;
++ (void)writePropertyList:(id)aPlist toFileHandle:(NSFileHandle*)aFileHandle withProxy:(CLIProxy*)proxy;
 
 - (NSString *)commandDescription;
 - (NSString *)usageForInvocation:(NSString *)invocation;

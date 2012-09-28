@@ -45,7 +45,13 @@
 	}
 	[help insertString:[NSString stringWithFormat:@"%ld commands registered:\n", commandCount] atIndex:0];
 
-	[help appendString:@"Use `\"$DIALOG\" help command` for detailed help\n"];
+	[help appendString:@"Use `\"$DIALOG\" help command` for detailed help\n\n"];
+	[help appendString:@"\
+Options:\n\
+	--output <key>\n\
+	--output <plist array of keys>\n\
+		For commands returning a property list as default specify the <key(s)> whose value(s) should be outputted as plain string\n\
+		separated by a new line character. If a passed <key> doesn't exist it returns an empty string."];
 
 	return help;
 }

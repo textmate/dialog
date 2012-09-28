@@ -173,7 +173,7 @@
 		nil];
 
 	enumerate(clientFileHandles, NSFileHandle* fileHandle)
-		[TMDCommand writePropertyList:res toFileHandle:fileHandle];
+		[TMDCommand writePropertyList:res toFileHandle:fileHandle withProxy:NULL];
 
 	[clientFileHandles removeAllObjects];
 }
