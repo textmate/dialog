@@ -38,14 +38,14 @@ static NSMutableDictionary* Commands = nil;
 	if(NSData* data = [NSPropertyListSerialization dataFromPropertyList:aPlist format:NSPropertyListXMLFormat_v1_0 errorDescription:&error])
 	{
 
-		// check, if a proxy is passed, for --output <key> option
+		// check, if a proxy is passed, for --filter <key> option
 		// if so then only return the passed 'key' value as a plain string
-		// or for --output '(array,of,keys)' then return the values of these keys
+		// or for --filter '(array,of,keys)' then return the values of these keys
 		// separated by a new line \n
 		if(proxy)
 		{
 			NSDictionary *args = [proxy parameters];
-			if(NSString *outputKeys = [args objectForKey:@"output"])
+			if(NSString *outputKeys = [args objectForKey:@"filter"])
 			{
 				// check argument and try to convert it to an array
 				id raw_keys = [NSPropertyListSerialization propertyListFromData:[(NSString*)outputKeys dataUsingEncoding:NSUTF8StringEncoding] mutabilityOption:NSPropertyListImmutable format:nil errorDescription:NULL];
@@ -56,7 +56,7 @@ static NSMutableDictionary* Commands = nil;
 					keys = raw_keys;
 				else
 				{
-					fprintf(stderr, "no single string or array passed as value for option '--output'\n");
+					fprintf(stderr, "no single string or array passed as value for option '--filter'\n");
 					return;
 				}
 				NSMutableArray *out = [NSMutableArray arrayWithCapacity:[keys count]];
