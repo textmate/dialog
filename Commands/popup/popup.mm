@@ -53,12 +53,21 @@
 
 - (NSString *)commandDescription
 {
-	return @"Presents the user with a list of items which can be filtered down by typing.\nThe chosen item will be inserted as text or snippet into the front-most document.";
+	return @"Presents the user with a list of items which can be filtered down by typing.";
 }
 
 - (NSString *)usageForInvocation:(NSString *)invocation;
 {
-	return [NSString stringWithFormat:@"\t%1$@ --suggestions '( { display = law; }, { display = laws; insert = \"(${1:hello}, ${2:again})\"; } )'\n", invocation];
+	return [NSString stringWithFormat:
+	@"\t%1$@ --suggestions '( { display = law; }, { display = laws; insert = \"(${1:hello}, ${2:again})\"; } )'\n\n"
+	@"\tThe chosen item given by the key “display” or, if the “insert” key is specified,\n"
+	@"\tthe content of that key which also can be a snippet will be inserted into the front-most document.\n\n"
+	@"Options:\n"
+	@"\t--alreadyTyped «string»\n"
+	@"\t--staticPrefix «string»\n"
+	@"\t--additionalWordCharacters «string»\n"
+	@"\t--returnChoice «boolean»\n"
+	@"\t--caseInsensitive «boolean»\n", invocation];
 }
 
 @end

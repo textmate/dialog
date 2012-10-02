@@ -62,9 +62,11 @@ NSAlertStyle alert_style_from_string (NSString* str)
 
 - (NSString *)usageForInvocation:(NSString *)invocation;
 {
-	return [NSString stringWithFormat:@"\
-	%1$@ --alertStyle warning --title 'Delete File?' --body 'You cannot undo this action.' --button1 Delete --button2 Cancel\n\
-	%1$@ --alertStyle warning --output buttonClicked --title 'Delete File?' --body 'You cannot undo this action.' --button1 Delete --button2 Cancel\n"
-		, invocation];
+	return [NSString stringWithFormat:
+	@"\t%1$@ --alertStyle warning --title 'Delete File?' --body 'You cannot undo this action.' --button1 Delete --button2 Cancel\n"
+	@"\t%1$@ --alertStyle critical --filter buttonClicked --title 'Delete File?' --body 'You cannot undo this action.' --button1 Delete --button2 Cancel\n"
+	@"\nOption:\n"
+	@"\t --alertStyle {informational, warning, critical}\n"
+	@"\t\t if not specified the default style is 'informational'\n", invocation];
 }
 @end

@@ -22,7 +22,7 @@
 
 - (NSString *)usageForInvocation:(NSString *)invocation;
 {
-	return [NSString stringWithFormat:@"%@ help [command]", invocation];
+	return [NSString stringWithFormat:@"\t%1$@ [«command»]\n", invocation];
 }
 
 - (NSString *)commandSummaryText
@@ -45,13 +45,15 @@
 	}
 	[help insertString:[NSString stringWithFormat:@"%ld commands registered:\n", commandCount] atIndex:0];
 
-	[help appendString:@"Use `\"$DIALOG\" help command` for detailed help\n\n"];
-	[help appendString:@"\
-Options:\n\
-	--output <key>\n\
-	--output <plist array of keys>\n\
-		For commands returning a property list as default specify the <key(s)> whose value(s) should be outputted as plain string\n\
-		separated by a new line character. If a passed <key> doesn't exist it returns an empty string."];
+	[help appendString:@"\nUse `\"$DIALOG\" help command` for detailed help\n\n"];
+	[help appendString:
+		@"Options:\n"
+		@"\t--filter <key>\n"
+		@"\t--filter <plist array of keys>\n"
+		@"\t\tFor commands returning a property list as default specify the <key(s)>\n"
+		@"\t\twhose value(s) should be outputted as plain string\n"
+		@"\t\tseparated by a new line character.\n"
+		@"\t\tIf a passed <key> doesn't exist it returns an empty string.\n"];
 
 	return help;
 }
