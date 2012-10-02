@@ -44,13 +44,45 @@ NSAlertStyle alert_style_from_string (NSString* str)
 		[alert setMessageText:msg];
 	if(NSString* txt = [args objectForKey:@"body"])
 		[alert setInformativeText:txt];
+	if(NSString* sup = [args objectForKey:@"suppression"])
+	{
+		[alert setShowsSuppressionButton:YES];
+		[[alert suppressionButton] setTitle:sup];
+	}
+
+	if(NSString* iconPath = [args objectForKey:@"icon"])
+	{
+		NSImage *icon = nil;
+		iconPath = [iconPath stringByResolvingSymlinksInPath];
+		BOOL isDir = NO;
+		if([[NSFileManager defaultManager] fileExistsAtPath:iconPath isDirectory:&isDir] && !isDir)
+		{
+			icon = [[NSImage alloc] initByReferencingFile:iconPath];
+			if(icon && [icon isValid])
+			{
+				[alert setIcon:icon];
+				[icon release];
+			}
+		}
+		else if(icon = [NSImage imageNamed:iconPath])
+			[alert setIcon:icon];
+		else if(icon = [NSImage imageNamed:[iconPath stringByReplacingOccurrencesOfString:@"ImageName" withString:@""]])
+			[alert setIcon:icon];
+
+		if(!icon)
+			fprintf(stderr, "Passed icon path or named image '%s' not found.\n", [iconPath UTF8String]);
+
+	}
 
 	int i = 0;
 	while(NSString* button = [args objectForKey:[NSString stringWithFormat:@"button%d", ++i]])
 		[alert addButtonWithTitle:button];
 
 	int alertResult = ([alert runModal] - NSAlertFirstButtonReturn);
-	NSDictionary* resultDict = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:alertResult] forKey:@"buttonClicked"];
+	NSMutableDictionary* resultDict = [NSMutableDictionary dictionary];
+	[resultDict setObject:[NSNumber numberWithInt:alertResult] forKey:@"buttonClicked"];
+	if([args objectForKey:@"suppression"])
+		[resultDict setObject:[NSNumber numberWithInt:[[alert suppressionButton] state]] forKey:@"suppressionButtonState"];
 
 	[TMDCommand writePropertyList:resultDict toFileHandle:[proxy outputHandle] withProxy:proxy];
 }
@@ -63,10 +95,14 @@ NSAlertStyle alert_style_from_string (NSString* str)
 - (NSString *)usageForInvocation:(NSString *)invocation;
 {
 	return [NSString stringWithFormat:
-	@"\t%1$@ --alertStyle warning --title 'Delete File?' --body 'You cannot undo this action.' --button1 Delete --button2 Cancel\n"
-	@"\t%1$@ --alertStyle critical --filter buttonClicked --title 'Delete File?' --body 'You cannot undo this action.' --button1 Delete --button2 Cancel\n"
+	@"\t%1$@ --alertStyle critical --title 'Delete File?' --body 'You cannot undo this action.' --button1 Delete --button2 Cancel\n"
+	@"\t%1$@ --filter buttonClicked --title 'Delete File?' --body 'You cannot undo this action.' --button1 Delete --button2 Cancel\n"
+	@"\t%1$@ --icon NSUserAccounts --title 'Delete Account?' --body 'You cannot undo this action.' --button1 Delete --button2 Cancel\n"
+	@"\t%1$@ --icon '~/Pictures/iChat Icons/Flags/Denmark.png' --title 'First Run?' --body 'Please note this.' --suppression 'Do not show this again'\n"
 	@"\nOption:\n"
-	@"\t --alertStyle {informational, warning, critical}\n"
-	@"\t\t if not specified the default style is 'informational'\n", invocation];
+	@"\t--alertStyle {informational, warning, critical}\n"
+	@"\t\t if not specified the default style is 'informational'\n"
+	@"\t--icon «image path or known image name»\n"
+	@"\t--suppression «title»\n", invocation];
 }
 @end
