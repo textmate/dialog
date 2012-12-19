@@ -6,6 +6,7 @@ CP_Resources        = Info.plist English.lproj @tm_dialog2
 PLIST_FLAGS        += -d'EXECUTABLE_NAME=Dialog2' -d'PRODUCT_NAME=Dialog2'
 
 BUNDLE_EXTENSION    = tmplugin
+OBJCXX_FLAGS       += -fno-objc-arc
 LN_FLAGS           += -bundle
 
 FRAMEWORKS          = Cocoa Carbon WebKit
