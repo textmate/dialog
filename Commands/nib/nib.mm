@@ -153,11 +153,11 @@ env|egrep 'DIALOG|TM_SUPPORT'|grep -v DIALOG_1|perl -pe 's/(.*?)=(.*)/export $1=
 - (NSString *)usageForInvocation:(NSString *)invocation;
 {
 	return [NSString stringWithFormat:
-		@"%1$@ --load «nib file» [«options»]\n"
-		@"%1$@ --update «token» [«options»]\n"
-		@"%1$@ --wait «token»\n"
-		@"%1$@ --dispose «token»\n"
-		@"%1$@ --list\n"
+		@"\t%1$@ --load «nib file» [«options»]\n"
+		@"\t%1$@ --update «token» [«options»]\n"
+		@"\t%1$@ --wait «token»\n"
+		@"\t%1$@ --dispose «token»\n"
+		@"\t%1$@ --list\n"
 		@"\nOptions:\n"
 		@"\t--center\n"
 		@"\t--model «plist»\n",

@@ -22,29 +22,38 @@
 
 - (NSString *)usageForInvocation:(NSString *)invocation;
 {
-	return [NSString stringWithFormat:@"%@ help [command]", invocation];
+	return [NSString stringWithFormat:@"\t%1$@ [«command»]\n", invocation];
 }
 
 - (NSString *)commandSummaryText
 {
 	NSDictionary *commands = [TMDCommand registeredCommands];
-	
+	NSArray *sortedItems   = [[commands allKeys] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
+
 	NSMutableString *help = [NSMutableString stringWithCapacity:100];
 
-	int commandCount = 0;
-	for(NSEnumerator *enumerator = [commands keyEnumerator]; NSString *commandName = [enumerator nextObject]; )
+	NSInteger commandCount = 0;
+	for(NSString *commandName in sortedItems)
 	{
 		if(![commandName hasPrefix:@"x-"])
 		{
 			++commandCount;
-			TMDCommand *command = [commands objectForKey:commandName];
-			NSString *description = [command commandDescription];
-			[help appendFormat:@"\t%@: %@\n", commandName, description];
+			NSString *description = [[(TMDCommand*)[commands objectForKey:commandName] commandDescription] 
+												stringByReplacingOccurrencesOfString:@"\n" withString:@"\n\t\t"];
+			[help appendFormat:@"\t%@\n\t\t%@\n", commandName, description];
 		}
 	}
-	[help insertString:[NSString stringWithFormat:@"%d commands registered:\n", commandCount] atIndex:0];
+	[help insertString:[NSString stringWithFormat:@"%ld commands registered:\n", commandCount] atIndex:0];
 
-	[help appendString:@"Use `\"$DIALOG\" help command` for detailed help\n"];
+	[help appendString:@"\nUse `\"$DIALOG\" help command` for detailed help\n\n"];
+	[help appendString:
+		@"Options:\n"
+		@"\t--filter <key>\n"
+		@"\t--filter <plist array of keys>\n"
+		@"\t\tFor commands returning a property list as default specify the <key(s)>\n"
+		@"\t\twhose value(s) should be outputted as plain string\n"
+		@"\t\tseparated by a new line character.\n"
+		@"\t\tIf a passed <key> doesn't exist it returns an empty string.\n"];
 
 	return help;
 }
@@ -57,7 +66,7 @@
 	if(![commandName hasPrefix:@"x-"] && (command = [TMDCommand objectForCommand:commandName]))
 	{
 		[help appendFormat:@"%@\n\n",[command commandDescription]];
-		[help appendFormat:@"%@ usage:\n",commandName];
+		[help appendFormat:@"'%@' usage:\n",commandName];
 		[help appendFormat:@"%@\n",[command usageForInvocation:[NSString stringWithFormat:@"\"$DIALOG\" %@", commandName]]];
 	}
 	else

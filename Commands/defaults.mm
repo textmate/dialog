@@ -27,13 +27,13 @@
 	if(NSString* key = [args objectForKey:@"read"])
 	{
 		if(id obj = [[NSUserDefaults standardUserDefaults] objectForKey:key])
-			[TMDCommand writePropertyList:obj toFileHandle:[proxy outputHandle]];
+			[TMDCommand writePropertyList:obj toFileHandle:[proxy outputHandle] withProxy:proxy];
 	}
 }
 
 - (NSString *)commandDescription
 {
-	return @"Register default values for user settings.";
+	return @"Registers default values for user settings.";
 }
 
 - (NSString *)usageForInvocation:(NSString *)invocation;

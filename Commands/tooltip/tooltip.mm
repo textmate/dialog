@@ -21,7 +21,11 @@
 
 - (NSString *)usageForInvocation:(NSString *)invocation;
 {
-	return [NSString stringWithFormat:@"\t%1$@ --text 'regular text'\n\t%1$@ --html '<some>html</some>'\nUse --transparent to give the tooltip window a transparent background (10.5+ only)", invocation];
+	return [NSString stringWithFormat:
+		@"\t%1$@ --text 'regular text'\n"
+		@"\t%1$@ --html '<b>html</b>'\n"
+		@"\nOption:\n"
+		@"\t--transparent transparent background\n", invocation];
 }
 
 - (void)handleCommand:(CLIProxy*)proxy
