@@ -13,36 +13,23 @@ echo '{ items = ({title = "foo"; header = 1;},{title = "bar";}); }' | "$DIALOG" 
 */
 
 @interface DialogPopupMenuTarget : NSObject
-{
-	NSInteger selectedIndex;
-}
-@property NSInteger selectedIndex;
+@property (nonatomic, retain) NSDictionary* selectedItem;
 @end
 
 @implementation DialogPopupMenuTarget
-@synthesize selectedIndex;
-- (id)init
-{
-	if((self = [super init]))
-		self.selectedIndex = NSNotFound;
-	return self;
-}
-
 - (BOOL)validateMenuItem:(NSMenuItem*)menuItem
 {
-	return [menuItem action] == @selector(takeSelectedItemIndexFrom:);
+	return [menuItem action] == @selector(takeRepresentedObjectFrom:);
 }
 
-- (void)takeSelectedItemIndexFrom:(id)sender
+- (void)takeRepresentedObjectFrom:(NSMenuItem*)sender
 {
 	NSAssert([sender isKindOfClass:[NSMenuItem class]], @"Unexpected sender for menu target");
-	self.selectedIndex = [(NSMenuItem*)sender tag];
+	self.selectedItem = [sender representedObject];
 }
 @end
 
 @interface TMDMenuCommand : TMDCommand
-{
-}
 @end
 
 @implementation TMDMenuCommand
@@ -76,7 +63,7 @@ echo '{ items = ({title = "foo"; header = 1;},{title = "bar";}); }' | "$DIALOG" 
 
 	int item_id = 0;
 	bool in_section = false;
-	enumerate(menuItems, NSDictionary* menuItem)
+	for(NSDictionary* menuItem : menuItems)
 	{
 		if([[menuItem objectForKey:@"separator"] intValue])
 		{
@@ -89,9 +76,9 @@ echo '{ items = ({title = "foo"; header = 1;},{title = "bar";}); }' | "$DIALOG" 
 		}
 		else
 		{
-			NSMenuItem* theItem = [menu addItemWithTitle:[menuItem objectForKey:@"title"] action:@selector(takeSelectedItemIndexFrom:) keyEquivalent:@""];
+			NSMenuItem* theItem = [menu addItemWithTitle:[menuItem objectForKey:@"title"] action:@selector(takeRepresentedObjectFrom:) keyEquivalent:@""];
 			[theItem setTarget:menuTarget];
-			[theItem setTag:item_id];
+			[theItem setRepresentedObject:menuItem];
 			if(++item_id <= 10)
 			{
 				[theItem setKeyEquivalent:[NSString stringWithFormat:@"%d", item_id % 10]];
@@ -107,7 +94,7 @@ echo '{ items = ({title = "foo"; header = 1;},{title = "bar";}); }' | "$DIALOG" 
 		pos = [textView positionForWindowUnderCaret];
 	
 
-	if([menu popUpMenuPositioningItem:nil atLocation:pos inView:nil] && menuTarget.selectedIndex != NSNotFound)
-		[TMDCommand writePropertyList:[menuItems objectAtIndex:menuTarget.selectedIndex] toFileHandle:[proxy outputHandle]];
+	if([menu popUpMenuPositioningItem:nil atLocation:pos inView:nil] && menuTarget.selectedItem)
+		[TMDCommand writePropertyList:menuTarget.selectedItem toFileHandle:[proxy outputHandle]];
 }
 @end
