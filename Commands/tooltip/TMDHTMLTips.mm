@@ -122,11 +122,14 @@ NSString* const TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 	NSPoint pos = NSMakePoint([self frame].origin.x, [self frame].origin.y + [self frame].size.height);
 
 	// Find the screen which we are displaying on
-	NSRect screenFrame = [[NSScreen mainScreen] frame];
+	NSRect screenFrame = [[NSScreen mainScreen] visibleFrame];
 	enumerate([NSScreen screens], NSScreen* candidate)
 	{
-		if(NSMinX([candidate frame]) < pos.x && NSMinX([candidate frame]) > NSMinX(screenFrame))
-			screenFrame = [candidate frame];
+		if(NSPointInRect(pos, [candidate frame]))
+		{
+			screenFrame = [candidate visibleFrame];
+			break;
+		}
 	}
 
 	// The webview is set to a large initial size and then sized down to fit the content
