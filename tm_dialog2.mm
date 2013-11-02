@@ -88,7 +88,7 @@ int main (int argc, char const* argv[])
 	for(size_t i = 0; i < argc; ++i)
 		[args addObject:[NSString stringWithUTF8String:argv[i]]];
 
-	NSMutableDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:
+	NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:
 		[NSString stringWithUTF8String:stdin_name],			@"stdin",
 		[NSString stringWithUTF8String:stdout_name],			@"stdout",
 		[NSString stringWithUTF8String:stderr_name],			@"stderr",
