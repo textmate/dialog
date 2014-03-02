@@ -19,7 +19,7 @@
 - (NSIndexPath*)arrayToIndexPath:(NSArray*)anArray
 {
 	NSIndexPath* indexPath = [[NSIndexPath new] autorelease];
-	enumerate(anArray, id index)
+	for(id index in anArray)
 		indexPath = [indexPath indexPathByAddingIndex:[index intValue]];
 	return indexPath;
 }
@@ -27,7 +27,7 @@
 - (id)transformedValue:(id)value
 {
 	NSMutableArray* res = [NSMutableArray array];
-	enumerate(value, NSArray* intArray)
+	for(NSArray* intArray in value)
 		[res addObject:[self arrayToIndexPath:intArray]];
 	return res;
 }
@@ -43,7 +43,7 @@
 - (id)reverseTransformedValue:(id)value
 {
 	NSMutableArray* array = [NSMutableArray array];
-	enumerate(value, NSIndexPath* indexPath)
+	for(NSIndexPath* indexPath in value)
 		[array addObject:[self indexPathToArray:indexPath]];
 	return array;
 }
@@ -67,7 +67,7 @@
 - (id)transformedValue:(id)value
 {
 	NSMutableIndexSet* indexSet = [NSMutableIndexSet indexSet];
-	enumerate(value, NSNumber* integer)
+	for(NSNumber* integer in value)
 		[indexSet addIndex:[integer intValue]];
 	return indexSet;
 }

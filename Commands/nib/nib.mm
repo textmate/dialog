@@ -118,7 +118,7 @@ env|egrep 'DIALOG|TM_SUPPORT'|grep -v DIALOG_1|perl -pe 's/(.*?)=(.*)/export $1=
 	{
 		[proxy writeStringToOutput:@"Loaded nibs:\n"];
 
-		enumerate([Nibs allKeys], NSString* token)
+		for(NSString* token in [Nibs allKeys])
 		{
 			TMDNibController* nibController = [Nibs objectForKey:token];
 			[proxy writeStringToOutput:[NSString stringWithFormat:@"%@ (%@)\n", token, [[nibController window] title]]];

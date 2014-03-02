@@ -7,10 +7,6 @@
 - (void)connectFromClientWithOptions:(id)anArgument;
 @end
 
-#ifndef enumerate
-#define enumerate(container,var) for(NSEnumerator* _enumerator = [container objectEnumerator]; var = [_enumerator nextObject]; )
-#endif
-
 #ifndef sizeofA
 #define sizeofA(a) (sizeof(a)/sizeof(a[0]))
 #endif

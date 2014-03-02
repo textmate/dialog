@@ -21,7 +21,7 @@
 	if([imagePaths isKindOfClass:[NSString class]])
 		imagePaths = [NSPropertyListSerialization propertyListFromData:[(NSString*)imagePaths dataUsingEncoding:NSUTF8StringEncoding] mutabilityOption:NSPropertyListImmutable format:nil errorDescription:NULL];
 
-	enumerate([imagePaths allKeys], NSString* imageName)
+	for(NSString* imageName in [imagePaths allKeys])
 	{
 		if([NSImage imageNamed:imageName]) // presumably this is not the first time the menu is invoked with this image, so skip loading it to avoid potential leaks
 			continue;

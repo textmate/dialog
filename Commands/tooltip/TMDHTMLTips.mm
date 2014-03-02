@@ -5,7 +5,6 @@
 //
 
 #import "TMDHTMLTips.h"
-#import "../../Dialog2.h" // enumerate()
 #import <algorithm>
 
 /*
@@ -123,7 +122,7 @@ NSString* const TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 
 	// Find the screen which we are displaying on
 	NSRect screenFrame = [[NSScreen mainScreen] visibleFrame];
-	enumerate([NSScreen screens], NSScreen* candidate)
+	for(NSScreen* candidate in [NSScreen screens])
 	{
 		if(NSPointInRect(pos, [candidate frame]))
 		{

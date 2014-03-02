@@ -282,7 +282,7 @@
 - (NSRect)rectOfMainScreen
 {
 	NSRect mainScreen = [[NSScreen mainScreen] frame];
-	enumerate([NSScreen screens], NSScreen* candidate)
+	for(NSScreen* candidate in [NSScreen screens])
 	{
 		if(NSMinX([candidate frame]) == 0.0f && NSMinY([candidate frame]) == 0.0f)
 			mainScreen = [candidate frame];
@@ -420,7 +420,7 @@
 		}
 
 		NSString* commonPrefix = curMatch;
-		enumerate(candidates, NSString* candidateMatch)
+		for(NSString* candidateMatch in candidates)
 			commonPrefix = [commonPrefix commonPrefixWithString:candidateMatch options:NSLiteralSearch];
 
 		if([[self filterString] length] < [commonPrefix length])

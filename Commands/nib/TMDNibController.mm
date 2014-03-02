@@ -48,7 +48,7 @@
 			if(didInstantiate)
 			{
 				[topLevelObjects retain];
-				enumerate(topLevelObjects, id object)
+				for(id object in topLevelObjects)
 				{
 					if([object isKindOfClass:[NSWindow class]])
 						[self setWindow:object];
@@ -74,7 +74,7 @@
 	[self setWindow:nil];
 	[self setParameters:nil];
 
-	enumerate(topLevelObjects, id object)
+	for(id object in topLevelObjects)
 		[object release];
 	[topLevelObjects release];
 
@@ -108,7 +108,7 @@
 
 - (void)updateParametersWith:(id)plist
 {
-	enumerate([plist allKeys], id key)
+	for(id key in [plist allKeys])
 		[parameters setValue:[plist valueForKey:key] forKey:key];
 }
 
@@ -131,7 +131,7 @@
 
 - (void)makeControllersCommitEditing
 {
-	enumerate(topLevelObjects, id object)
+	for(id object in topLevelObjects)
 	{
 		if([object respondsToSelector:@selector(commitEditing)])
 			[object commitEditing];
@@ -145,7 +145,7 @@
 	[parameters removeObjectForKey:@"controller"];
 
 	// if we do not manually unbind, the object in the nib will keep us retained, and thus we will never reach dealloc
-	enumerate(topLevelObjects, id object)
+	for(id object in topLevelObjects)
 	{
 		if([object isKindOfClass:[NSObjectController class]])
 			[object unbind:@"contentObject"];
@@ -172,7 +172,7 @@
 		eventInfo, @"eventInfo",
 		nil];
 
-	enumerate(clientFileHandles, NSFileHandle* fileHandle)
+	for(NSFileHandle* fileHandle in clientFileHandles)
 		[TMDCommand writePropertyList:res toFileHandle:fileHandle];
 
 	[clientFileHandles removeAllObjects];

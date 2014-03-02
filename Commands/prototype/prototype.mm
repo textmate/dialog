@@ -23,7 +23,7 @@
 		if([values isKindOfClass:[NSString class]])
 			values = [NSPropertyListSerialization propertyListFromData:[(NSString*)values dataUsingEncoding:NSUTF8StringEncoding] mutabilityOption:NSPropertyListImmutable format:nil errorDescription:NULL];
 
-		enumerate([values allKeys], id key)
+		for(id key in [values allKeys])
 			[TMD2Chameleon createSubclassNamed:key withValues:[values objectForKey:key]];
 	}
 
