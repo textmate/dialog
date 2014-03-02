@@ -121,10 +121,10 @@ int main (int argc, char const* argv[])
 		FD_ZERO(&readfds); FD_ZERO(&writefds);
 
 		int num_fds = 0;
-		iterate(it, fd_map)
+		for(auto const& pair : fd_map)
 		{
-			FD_SET(it->first, &readfds);
-			num_fds = std::max(num_fds, it->first + 1);
+			FD_SET(pair.first, &readfds);
+			num_fds = std::max(num_fds, pair.first + 1);
 		}
 
 		int i = select(num_fds, &readfds, &writefds, NULL, NULL);
@@ -134,25 +134,25 @@ int main (int argc, char const* argv[])
 			continue;
 		}
 
-		std::vector<std::map<int, int>::iterator> to_remove;
-		iterate(it, fd_map)
+		std::vector<int> to_remove;
+		for(auto const& pair : fd_map)
 		{
-			if(FD_ISSET(it->first, &readfds))
+			if(FD_ISSET(pair.first, &readfds))
 			{
 				char buf[1024];
-				ssize_t len = read(it->first, buf, sizeof(buf));
+				ssize_t len = read(pair.first, buf, sizeof(buf));
 
 				if(len == 0)
-						to_remove.push_back(it); // we can’t remove as long as we need the iterator for the ++
-				else	write(it->second, buf, len);
+						to_remove.push_back(pair.first); // we can’t remove as long as we need the iterator for the ++
+				else	write(pair.second, buf, len);
 			}
 		}
 
-		iterate(it, to_remove)
+		for(int key : to_remove)
 		{
-			if((*it)->second == stdin_fd)
-				close((*it)->second);
-			fd_map.erase(*it);
+			if(fd_map[key] == stdin_fd)
+				close(stdin_fd);
+			fd_map.erase(key);
 		}
 	}
 

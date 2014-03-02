@@ -41,11 +41,11 @@ std::string find_nib (std::string nibName, std::string currentDirectory, NSDicti
 		candidates.push_back(nibName);
 	}
 
-	iterate(it, candidates)
+	for(std::string const& path : candidates)
 	{
 		struct stat sb;
-		if(stat(it->c_str(), &sb) == 0)
-			return *it;
+		if(stat(path.c_str(), &sb) == 0)
+			return path;
 	}
 
 	fprintf(stderr, "nib could not be loaded: %s (does not exist)\n", nibName.c_str());
