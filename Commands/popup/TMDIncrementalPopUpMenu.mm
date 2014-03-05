@@ -224,25 +224,23 @@
 	{
 		newFiltered = suggestions;
 	}
+
+	[filtered release];
+	filtered = [newFiltered retain];
+	[theTableView reloadData];
+
 	NSPoint old = NSMakePoint([self frame].origin.x, [self frame].origin.y + [self frame].size.height);
 	
 	int displayedRows = [newFiltered count] < MAX_ROWS ? [newFiltered count] : MAX_ROWS;
 	float newHeight   = ([theTableView rowHeight] + [theTableView intercellSpacing].height) * displayedRows;
-	
-	float maxLen = 1;
-	NSString* item;
 
-	float maxWidth = [self frame].size.width;
+	float maxWidth = 60;
 	if([newFiltered count]>0)
 	{
-		for(i=0; i<[newFiltered count]; i++)
-		{
-			item = [[newFiltered objectAtIndex:i] objectForKey:@"display"];
-			if([item length]>maxLen)
-				maxLen = [item length];
-		}
-		maxWidth = maxLen*18;
-		maxWidth = (maxWidth>340) ? 340 : maxWidth;
+		CGFloat const kTableViewPadding = 16;
+		for(NSInteger i = 0; i < theTableView.numberOfRows; ++i)
+			maxWidth = MAX(maxWidth, kTableViewPadding + [[theTableView preparedCellAtColumn:0 row:i] cellSizeForBounds:NSMakeRect(0, 0, CGFLOAT_MAX, theTableView.rowHeight)].width);
+		maxWidth = MIN(maxWidth, 600);
 	}
 	if(caretPos.y>=0 && (isAbove || caretPos.y<newHeight))
 	{
@@ -258,9 +256,6 @@
 	// so here we use the difference in height to find the new height for the window
 	// newHeight = [[self contentView] frame].size.height + (newHeight - [theTableView frame].size.height);
 	[self setFrame:NSMakeRect(old.x,old.y-newHeight,maxWidth,newHeight) display:YES];
-	[filtered release];
-	filtered = [newFiltered retain];
-	[theTableView reloadData];
 }
 
 // =========================
