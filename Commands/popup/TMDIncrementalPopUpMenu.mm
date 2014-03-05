@@ -16,6 +16,9 @@
 @implementation NSTableView (MovingSelectedRow)
 - (BOOL)TMDcanHandleEvent:(NSEvent*)anEvent
 {
+	if([anEvent type] != NSKeyDown || [[anEvent characters] length] != 1)
+		return NO;
+
 	int visibleRows = (int)floorf(NSHeight([self visibleRect]) / ([self rowHeight]+[self intercellSpacing].height)) - 1;
 	struct { unichar key; int rows; } const key_movements[] =
 	{
@@ -27,19 +30,7 @@
 		{ NSEndFunctionKey,     +(INT_MAX >> 1) },
 	};
 
-	unichar keyCode = 0;
-	if([anEvent type] == NSScrollWheel)
-	{
-		if([anEvent deltaY] > 0.5)
-			keyCode = NSUpArrowFunctionKey;
-		else if([anEvent deltaY] < -0.5)
-			keyCode = NSDownArrowFunctionKey;
-		else
-			return YES; // we don’t want this event to fallback to TextMate (and cause the text to scroll)
-	}
-	else if([anEvent type] == NSKeyDown && [[anEvent characters] length] == 1)
-		keyCode = [[anEvent characters] characterAtIndex:0];
-
+	unichar keyCode = [[anEvent characters] characterAtIndex:0];
 	for(size_t i = 0; i < sizeofA(key_movements); ++i)
 	{
 		if(keyCode == key_movements[i].key)
@@ -388,6 +379,10 @@
 			[NSApp sendEvent:event];
 			if(!NSPointInRect([NSEvent mouseLocation], [self frame]))
 				break;
+		}
+		else if(t == NSScrollWheel)
+		{
+			[self sendEvent:event];
 		}
 		else
 		{
