@@ -161,7 +161,9 @@
 	//[theTableView setBackgroundColor:[NSColor blackColor]];
 	 
 	NSTableColumn *column = [[[NSTableColumn alloc] initWithIdentifier:@"foo"] autorelease];
-	[column setDataCell:[NSClassFromString(@"OakImageAndTextCell") new]];
+	NSTextFieldCell* cell = [NSClassFromString(@"OakImageAndTextCell") new];
+	cell.lineBreakMode = NSLineBreakByTruncatingTail;
+	[column setDataCell:cell];
 	[column setEditable:NO];
 	[theTableView addTableColumn:column];
 	[column setWidth:[theTableView bounds].size.width];
