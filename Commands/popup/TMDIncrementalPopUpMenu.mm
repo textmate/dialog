@@ -150,6 +150,8 @@
 	[theTableView setAllowsEmptySelection:NO];
 	[theTableView setHeaderView:nil];
 	//[theTableView setBackgroundColor:[NSColor blackColor]];
+	[theTableView setDoubleAction:@selector(didDoubleClickRow:)];
+	[theTableView setTarget:self];
 	 
 	NSTableColumn *column = [[[NSTableColumn alloc] initWithIdentifier:@"foo"] autorelease];
 	NSTextFieldCell* cell = [NSClassFromString(@"OakImageAndTextCell") new];
@@ -385,6 +387,11 @@
 		}
 	}
 	[self close];
+}
+
+- (void)didDoubleClickRow:(id)sender
+{
+	[self completeAndInsertSnippet];
 }
 
 // ==================
