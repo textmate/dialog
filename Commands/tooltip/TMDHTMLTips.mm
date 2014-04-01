@@ -58,6 +58,9 @@ NSString* const TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 
 		webPreferences = [[WebPreferences alloc] initWithIdentifier:TMDTooltipPreferencesIdentifier];
 		[webPreferences setJavaScriptEnabled:YES];
+		[webPreferences setPlugInsEnabled:NO];
+		[webPreferences setUsesPageCache:NO];
+		[webPreferences setCacheModel:WebCacheModelDocumentViewer];
 		NSString *fontName = [[NSUserDefaults standardUserDefaults] stringForKey:@"fontName"];
 		int fontSize = [[NSUserDefaults standardUserDefaults] integerForKey:@"fontSize"] ?: 11;
 		NSFont* font = fontName ? [NSFont fontWithName:fontName size:fontSize] : [NSFont userFixedPitchFontOfSize:fontSize];
