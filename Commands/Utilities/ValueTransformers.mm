@@ -6,8 +6,8 @@
 // ===================================================
 
 @implementation OakIntArrayToIndexPathTransformer
-+ (Class)transformedValueClass			{ return [NSArray class]; }
-+ (BOOL)allowsReverseTransformation		{ return YES; }
++ (Class)transformedValueClass      { return [NSArray class]; }
++ (BOOL)allowsReverseTransformation { return YES; }
 
 + (void)load
 {
@@ -54,8 +54,8 @@
 // ============================================
 
 @implementation OakIntArrayToIndexSetTransformer
-+ (Class)transformedValueClass			{ return [NSIndexSet class]; }
-+ (BOOL)allowsReverseTransformation		{ return YES; }
++ (Class)transformedValueClass      { return [NSIndexSet class]; }
++ (BOOL)allowsReverseTransformation { return YES; }
 
 + (void)load
 {
@@ -111,11 +111,11 @@ static NSString* NSStringFromColor (NSColor* aColor)
 }
 
 @implementation OakStringToColorTransformer
-+ (Class)transformedValueClass				{ return [NSColor class]; }
-+ (BOOL)allowsReverseTransformation			{ return YES; }
++ (Class)transformedValueClass      { return [NSColor class]; }
++ (BOOL)allowsReverseTransformation { return YES; }
 
-- (id)transformedValue:(id)value				{ return NSColorFromString(value); }
-- (id)reverseTransformedValue:(id)value	{ return NSStringFromColor(value); }
+- (id)transformedValue:(id)value        { return NSColorFromString(value); }
+- (id)reverseTransformedValue:(id)value { return NSStringFromColor(value); }
 
 + (void)load
 {

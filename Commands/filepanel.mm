@@ -11,8 +11,6 @@
 // =======================
 
 @interface TMDFilePanelCommand : TMDCommand
-{
-}
 @end
 
 @implementation TMDFilePanelCommand

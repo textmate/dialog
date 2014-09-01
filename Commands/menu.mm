@@ -38,12 +38,12 @@ echo '{ items = ({title = "foo"; header = 1;},{title = "bar";}); }' | "$DIALOG" 
 	[TMDCommand registerObject:[self new] forCommand:@"menu"];
 }
 
-- (NSString *)commandDescription
+- (NSString*)commandDescription
 {
 	return @"Presents a menu using the given structure and returns the option chosen by the user";
 }
 
-- (NSString *)usageForInvocation:(NSString *)invocation;
+- (NSString*)usageForInvocation:(NSString*)invocation;
 {
 	return [NSString stringWithFormat:@"\t%1$@ --items '({title = foo;}, {separator = 1;}, {header=1; title = bar;}, {title = baz;})'\n", invocation];
 }
@@ -92,7 +92,7 @@ echo '{ items = ({title = "foo"; header = 1;},{title = "bar";}); }' | "$DIALOG" 
 	NSPoint pos = [NSEvent mouseLocation];
 	if(id textView = [NSApp targetForAction:@selector(positionForWindowUnderCaret)])
 		pos = [textView positionForWindowUnderCaret];
-	
+
 
 	if([menu popUpMenuPositioningItem:nil atLocation:pos inView:nil] && menuTarget.selectedItem)
 		[TMDCommand writePropertyList:menuTarget.selectedItem toFileHandle:[proxy outputHandle]];

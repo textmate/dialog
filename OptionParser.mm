@@ -109,7 +109,7 @@ struct tokenizer_t
 		}
 		return current_token;
 	}
-	
+
 	void unget ()
 	{
 		assert(did_unget == false);
@@ -138,12 +138,16 @@ id create_type (std::string const& str, option_t::type_t const& type, NSString**
 		{
 			NSString* error = nil;
 
-			if (str.size() > 0) {
+			if (str.size() > 0)
+			{
 				res = [NSPropertyListSerialization propertyListFromData:[NSData dataWithBytes:str.data() length:str.size()] mutabilityOption:NSPropertyListMutableContainersAndLeaves format:nil errorDescription:&error];
 				if(error || !res)
 					*err_out = [NSString stringWithFormat:@"%@\n%s\n", (error ?: @"unknown error parsing property list"), str.c_str()];
-			} else
+			}
+			else
+			{
 				res = [NSMutableDictionary dictionary];
+			}
 		}
 		break;
 	}
@@ -228,13 +232,13 @@ NSDictionary* ParseOptions (NSArray* arguments, option_t const* available, size_
 	free(error);
 
 	return [NSDictionary dictionaryWithObjectsAndKeys:
-		options,		@"options",
-		literals,	@"literals",
-		errString,	@"error",
+		options,   @"options",
+		literals,  @"literals",
+		errString, @"error",
 		nil];
 }
 
-NSString *GetOptionList (option_t const *options, size_t optionCount)
+NSString* GetOptionList (option_t const* options, size_t optionCount)
 {
 	size_t longestOption = 0;
 	for(size_t i = 0; i < optionCount; ++i)

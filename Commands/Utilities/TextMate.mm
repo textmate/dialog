@@ -1,6 +1,4 @@
-
 #import "TextMate.h"
-
 
 static CGFloat insertionDelayForNewDoc = 0.1f;
 
@@ -17,11 +15,12 @@ static CGFloat insertionDelayForNewDoc = 0.1f;
  - “winForTextView” – the NSWindow which contains the the front most text view
  It returns “nil” if no text view could be found or created.
 */
-id frontMostTextViewForSelector(SEL selector, BOOL *isNew, NSWindow* *winForTextView)
+id frontMostTextViewForSelector(SEL selector, BOOL* isNew, NSWindow** winForTextView)
 {
 
 	// Return value if a new doc was created
-	if(isNew) *isNew = false;
+	if(isNew)
+		*isNew = false;
 
 	// unique method for identifying a OakTextView
 	SEL checkSelector = @selector(insertSnippetWithOptions:);
@@ -39,7 +38,8 @@ id frontMostTextViewForSelector(SEL selector, BOOL *isNew, NSWindow* *winForText
 			id view = [views objectAtIndex:i];
 			if([view respondsToSelector:checkSelector] && [view respondsToSelector:selector])
 			{
-				if(winForTextView) *winForTextView = win;
+				if(winForTextView)
+					*winForTextView = win;
 				return view;
 			}
 
@@ -59,9 +59,12 @@ id frontMostTextViewForSelector(SEL selector, BOOL *isNew, NSWindow* *winForText
 															@selector(makeTextViewFirstResponder:) with:nil])
 		{
 			id textView = [NSApp targetForAction:checkSelector];
-			if(textView && [textView respondsToSelector:selector]) {
-				if(isNew) *isNew = true;
-				if(winForTextView) *winForTextView = [[NSApp orderedWindows] objectAtIndex:0];
+			if(textView && [textView respondsToSelector:selector])
+			{
+				if(isNew)
+					*isNew = true;
+				if(winForTextView)
+					*winForTextView = [[NSApp orderedWindows] objectAtIndex:0];
 				return textView;
 			}
 		}
@@ -81,8 +84,7 @@ void insert_text (NSString* someText)
 	{
 		if(isNewDocument) // delay the insertion to let TM finish the initialization of the new doc
 			[textView performSelector:@selector(insertText:) withObject:someText afterDelay:insertionDelayForNewDoc];
-		else
-			[textView insertText:someText];
+		else	[textView insertText:someText];
 	}
 }
 
@@ -93,16 +95,13 @@ void insert_text (NSString* someText)
 void insert_snippet (NSString* aSnippet)
 {
 	BOOL isNewDocument = false;
-	NSWindow *win = nil;
+	NSWindow* win = nil;
 	if(id textView = frontMostTextViewForSelector(@selector(insertSnippetWithOptions:), &isNewDocument, &win))
 	{
 		if(isNewDocument) // delay the insertion to let TM finish the initialization of the new doc
-			[textView performSelector:@selector(insertSnippetWithOptions:)
-				withObject:[NSDictionary dictionaryWithObject:aSnippet forKey:@"content"] afterDelay:insertionDelayForNewDoc];
-		else
-			[textView insertSnippetWithOptions:
-				[NSDictionary dictionaryWithObject:aSnippet forKey:@"content"]];
-		
+			[textView performSelector:@selector(insertSnippetWithOptions:) withObject:[NSDictionary dictionaryWithObject:aSnippet forKey:@"content"] afterDelay:insertionDelayForNewDoc];
+		else	[textView insertSnippetWithOptions: [NSDictionary dictionaryWithObject:aSnippet forKey:@"content"]];
+
 		// Since after inserting a snippet the user should interact with the snippet
 		// set key focus to current textView
 		[win makeKeyWindow];

@@ -22,7 +22,7 @@ static float slow_in_out (float t)
 NSString* const TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 
 @interface TMDHTMLTip (Private)
-- (void)setContent:(NSString *)content transparent:(BOOL)transparent;
+- (void)setContent:(NSString*)content transparent:(BOOL)transparent;
 - (void)runUntilUserActivity:(id)sender;
 - (void)stopAnimation:(id)sender;
 @end
@@ -61,7 +61,7 @@ NSString* const TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 		[webPreferences setPlugInsEnabled:NO];
 		[webPreferences setUsesPageCache:NO];
 		[webPreferences setCacheModel:WebCacheModelDocumentViewer];
-		NSString *fontName = [[NSUserDefaults standardUserDefaults] stringForKey:@"fontName"];
+		NSString* fontName = [[NSUserDefaults standardUserDefaults] stringForKey:@"fontName"];
 		int fontSize = [[NSUserDefaults standardUserDefaults] integerForKey:@"fontSize"] ?: 11;
 		NSFont* font = fontName ? [NSFont fontWithName:fontName size:fontSize] : [NSFont userFixedPitchFontOfSize:fontSize];
 		[webPreferences setStandardFontFamily:[font familyName]];
@@ -91,9 +91,9 @@ NSString* const TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 // ===========
 // = Webview =
 // ===========
-- (void)setContent:(NSString *)content transparent:(BOOL)transparent
+- (void)setContent:(NSString*)content transparent:(BOOL)transparent
 {
-	NSString *fullContent =	@"<html>"
+	NSString* fullContent =	@"<html>"
 				@"<head>"
 				@"  <style type='text/css' media='screen'>"
 				@"      body {"
@@ -135,7 +135,7 @@ NSString* const TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 
 	int height  = [[[webView windowScriptObject] evaluateWebScript:@"document.body.offsetHeight + document.body.offsetTop;"] intValue];
 	int width   = [[[webView windowScriptObject] evaluateWebScript:@"document.body.offsetWidth + document.body.offsetLeft;"] intValue];
-	
+
 	[webView setFrameSize:NSMakeSize(width, height)];
 
 	NSRect frame      = [self frameRectForContentRect:[webView frame]];

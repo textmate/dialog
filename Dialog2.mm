@@ -14,8 +14,6 @@
 @end
 
 @interface Dialog2 : NSObject <DialogServerProtocol>
-{
-}
 - (id)initWithPlugInController:(id <TMPlugInController>)aController;
 @end
 
@@ -27,7 +25,7 @@
 	NSApp = [NSApplication sharedApplication];
 	if(self = [self init])
 	{
-		NSConnection *connection = [NSConnection new];
+		NSConnection* connection = [NSConnection new];
 		[connection setRootObject:self];
 
 		NSString* portName = [NSString stringWithFormat:@"%@.%d", DialogServerConnectionName, getpid()];
@@ -58,8 +56,7 @@
 
 	if(id target = [TMDCommand objectForCommand:command])
 		[target performSelector:@selector(handleCommand:) withObject:interface];
-	else
-		[interface writeStringToError:@"unknown command, try help.\n"];
+	else	[interface writeStringToError:@"unknown command, try help.\n"];
 }
 
 - (void)connectFromClientWithOptions:(id)options

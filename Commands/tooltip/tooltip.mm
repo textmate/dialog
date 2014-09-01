@@ -14,12 +14,12 @@
 	[TMDCommand registerObject:[self new] forCommand:@"tooltip"];
 }
 
-- (NSString *)commandDescription
+- (NSString*)commandDescription
 {
 	return @"Shows a tooltip at the caret with the provided content, optionally rendered as HTML.";
 }
 
-- (NSString *)usageForInvocation:(NSString *)invocation;
+- (NSString*)usageForInvocation:(NSString*)invocation;
 {
 	return [NSString stringWithFormat:@"\t%1$@ --text 'regular text'\n\t%1$@ --html '<some>html</some>'\nUse --transparent to give the tooltip window a transparent background (10.5+ only)", invocation];
 }

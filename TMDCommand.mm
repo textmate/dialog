@@ -10,7 +10,7 @@ static NSMutableDictionary* Commands = nil;
 	[Commands setObject:anObject forKey:aCommand];
 }
 
-+ (NSDictionary *)registeredCommands
++ (NSDictionary*)registeredCommands
 {
 	return [[Commands copy] autorelease];
 }
@@ -45,19 +45,19 @@ static NSMutableDictionary* Commands = nil;
 	}
 }
 
-- (NSString *)commandDescription
+- (NSString*)commandDescription
 {
 	return @"No information available for this command";
 }
 
-- (NSString *)usageForInvocation:(NSString *)invocation;
+- (NSString*)usageForInvocation:(NSString*)invocation;
 {
 	return @"No usage information available for this command";
 }
 @end
 
 @implementation NSFileHandle (WriteString)
-- (void)writeString:(NSString *)string;
+- (void)writeString:(NSString*)string;
 {
 	[self writeData:[string dataUsingEncoding:NSUTF8StringEncoding]];
 }

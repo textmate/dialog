@@ -11,8 +11,6 @@
 // = Extended Popup =
 // ==================
 @interface TMDXPopUp : TMDCommand
-{
-}
 @end
 
 @implementation TMDXPopUp
@@ -24,13 +22,13 @@
 - (void)handleCommand:(CLIProxy*)proxy
 {
 	NSDictionary* args = [proxy parameters];
-	
+
 	NSString* filter     = [args objectForKey:@"alreadyTyped"];
 	NSString* prefix     = [args objectForKey:@"staticPrefix"];
 	NSString* allow      = [args objectForKey:@"additionalWordCharacters"];
 	BOOL wait            = [args objectForKey:@"returnChoice"] ? YES : NO;
 	BOOL caseInsensitive = [args objectForKey:@"caseInsensitive"] ? YES : NO;
-	
+
 	NSArray* suggestions = [args objectForKey:@"suggestions"];
 	if([suggestions isKindOfClass:[NSString class]])
 		suggestions = [NSPropertyListSerialization propertyListFromData:[(NSString*)suggestions dataUsingEncoding:NSUTF8StringEncoding] mutabilityOption:NSPropertyListImmutable format:nil errorDescription:NULL];
@@ -40,7 +38,7 @@
 	NSPoint pos = [NSEvent mouseLocation];
 	if(id textView = [NSApp targetForAction:@selector(positionForWindowUnderCaret)])
 		pos = [textView positionForWindowUnderCaret];
-	
+
 	if(filter)
 	{
 		NSFont* font = [NSFont fontWithName:[[NSUserDefaults standardUserDefaults] stringForKey:@"OakTextViewNormalFontName"] ?: [[NSFont userFixedPitchFontOfSize:12.0] fontName] size:[[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"] ?: 12];
@@ -51,12 +49,12 @@
 	[xPopUp orderFront:self];
 }
 
-- (NSString *)commandDescription
+- (NSString*)commandDescription
 {
 	return @"Presents the user with a list of items which can be filtered down by typing to select the item they want.";
 }
 
-- (NSString *)usageForInvocation:(NSString *)invocation;
+- (NSString*)usageForInvocation:(NSString*)invocation;
 {
 	return [NSString stringWithFormat:@"\t%1$@ --suggestions '( { display = law; }, { display = laws; insert = \"(${1:hello}, ${2:again})\"; } )'\n", invocation];
 }

@@ -3,8 +3,6 @@
 #import "../../TMDCommand.h"
 
 @interface TMDPrototype : TMDCommand
-{
-}
 @end
 
 @implementation TMDPrototype
@@ -35,12 +33,12 @@
 	}
 }
 
-- (NSString *)commandDescription
+- (NSString*)commandDescription
 {
 	return @"Register classes for use with NSArrayController.";
 }
 
-- (NSString *)usageForInvocation:(NSString *)invocation;
+- (NSString*)usageForInvocation:(NSString*)invocation;
 {
 	 return [NSString stringWithFormat:@"\t%1$@ --register \"{ SQL_New_Connection = { title = untitled; serverType = MySQL; hostName = localhost; userName = '$LOGNAME'; }; }\"\n\t%1$@ --show SQL_New_Connection\n", invocation];
 }

@@ -10,7 +10,7 @@
 @interface TMDHTMLTip : NSWindow
 {
 	WebView*	webView;
-	WebPreferences*	webPreferences;
+	WebPreferences* webPreferences;
 	NSTimer* animationTimer;
 	NSDate* animationStart;
 

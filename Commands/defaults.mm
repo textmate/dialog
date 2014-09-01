@@ -1,8 +1,6 @@
 #import "../TMDCommand.h"
 
 @interface TMDDefaults : TMDCommand
-{
-}
 @end
 
 @implementation TMDDefaults
@@ -31,12 +29,12 @@
 	}
 }
 
-- (NSString *)commandDescription
+- (NSString*)commandDescription
 {
 	return @"Register default values for user settings.";
 }
 
-- (NSString *)usageForInvocation:(NSString *)invocation;
+- (NSString*)usageForInvocation:(NSString*)invocation;
 {
 	return [NSString stringWithFormat:@"\t%1$@ --register '{ webOutputTheme = night; }'\n", invocation];
 }

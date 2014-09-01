@@ -6,7 +6,5 @@
 #import <Cocoa/Cocoa.h>
 
 @interface TMD2Chameleon : NSObject
-{
-}
 + (BOOL)createSubclassNamed:(NSString*)aName withValues:(NSDictionary*)values;
 @end

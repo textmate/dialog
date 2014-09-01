@@ -2,17 +2,17 @@
 
 @interface TMDCommand : NSObject
 + (void)registerObject:(id)anObject forCommand:(NSString*)aCommand;
-+ (NSDictionary *)registeredCommands;
++ (NSDictionary*)registeredCommands;
 
 + (id)objectForCommand:(NSString*)aCommand;
 
 + (id)readPropertyList:(NSFileHandle*)aFileHandle error:(NSString**)error;
 + (void)writePropertyList:(id)aPlist toFileHandle:(NSFileHandle*)aFileHandle;
 
-- (NSString *)commandDescription;
-- (NSString *)usageForInvocation:(NSString *)invocation;
+- (NSString*)commandDescription;
+- (NSString*)usageForInvocation:(NSString*)invocation;
 @end
 
 @interface NSFileHandle (WriteString)
-- (void)writeString:(NSString *)string;
+- (void)writeString:(NSString*)string;
 @end

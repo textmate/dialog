@@ -200,11 +200,11 @@
 		types += @encode(void);
 		types += @encode(id);
 		types += @encode(SEL);
-	
+
 		unsigned numberOfArgs = [[str componentsSeparatedByString:@":"] count];
 		while(numberOfArgs-- > 1)
 			types += @encode(id);
-	
+
 		return [NSMethodSignature signatureWithObjCTypes:types.c_str()];
 	}
 	return [super methodSignatureForSelector:aSelector];

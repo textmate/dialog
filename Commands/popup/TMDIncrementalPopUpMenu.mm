@@ -68,7 +68,7 @@
 		textualInputCharacters = [[NSMutableCharacterSet alphanumericCharacterSet] retain];
 		caseSensitive = YES;
 
-		[self setupInterface];	
+		[self setupInterface];
 	}
 	return self;
 }
@@ -112,13 +112,13 @@
 {
 	caretPos = aPos;
 	isAbove = NO;
-	
+
 	NSRect mainScreen = [self rectOfMainScreen];
-	
+
 	int offx = (caretPos.x/mainScreen.size.width) + 1;
 	if((caretPos.x + [self frame].size.width) > (mainScreen.size.width*offx))
 		caretPos.x = caretPos.x - [self frame].size.width;
-	
+
 	if(caretPos.y>=0 && caretPos.y<[self frame].size.height)
 	{
 		caretPos.y = caretPos.y + ([self frame].size.height + [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"]*1.5);
@@ -152,8 +152,8 @@
 	//[theTableView setBackgroundColor:[NSColor blackColor]];
 	[theTableView setDoubleAction:@selector(didDoubleClickRow:)];
 	[theTableView setTarget:self];
-	 
-	NSTableColumn *column = [[[NSTableColumn alloc] initWithIdentifier:@"foo"] autorelease];
+
+	NSTableColumn* column = [[[NSTableColumn alloc] initWithIdentifier:@"foo"] autorelease];
 	NSTextFieldCell* cell = [NSClassFromString(@"OakImageAndTextCell") new];
 	cell.lineBreakMode = NSLineBreakByTruncatingTail;
 	[column setDataCell:cell];
@@ -168,7 +168,7 @@
 	[self setContentView:scrollView];
 }
 
-//- (void)tableView:(NSTableView *)aTableView willDisplayCell:(id)aCell forTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex {
+//- (void)tableView:(NSTableView*)aTableView willDisplayCell:(id)aCell forTableColumn:(NSTableColumn*)aTableColumn row:(NSInteger)rowIndex {
 //	[aCell setTextColor:[NSColor blueColor]];
 //}
 
@@ -177,12 +177,12 @@
 // = TableView DataSource =
 // ========================
 
-- (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
+- (NSInteger)numberOfRowsInTableView:(NSTableView*)aTableView
 {
 	return [filtered count];
 }
 
-- (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
+- (id)tableView:(NSTableView*)aTableView objectValueForTableColumn:(NSTableColumn*)aTableColumn row:(NSInteger)rowIndex
 {
 	NSImage* image = nil;
 	if(NSString* imageName = [[filtered objectAtIndex:rowIndex] objectForKey:@"image"])
@@ -199,7 +199,7 @@
 - (void)filter
 {
 	NSRect mainScreen = [self rectOfMainScreen];
-	
+
 	int i;
 	NSArray* newFiltered;
 	NSArray* itemsWithChildren;
@@ -207,17 +207,22 @@
 	{
 		NSPredicate* matchesFilter;
 		NSPredicate* hasChildren;
+
 		if(caseSensitive)
 			matchesFilter = [NSPredicate predicateWithFormat:@"match BEGINSWITH %@ OR (match == NULL AND display BEGINSWITH %@)", [self filterString], [self filterString]];
-		else
-			matchesFilter = [NSPredicate predicateWithFormat:@"match BEGINSWITH[c] %@ OR (match == NULL AND display BEGINSWITH[c] %@)", [self filterString], [self filterString]];
+		else	matchesFilter = [NSPredicate predicateWithFormat:@"match BEGINSWITH[c] %@ OR (match == NULL AND display BEGINSWITH[c] %@)", [self filterString], [self filterString]];
+
 		newFiltered = [suggestions filteredArrayUsingPredicate:matchesFilter];
-		if ([newFiltered count] == 1){
+		if ([newFiltered count] == 1)
+		{
 			newFiltered = [newFiltered arrayByAddingObjectsFromArray:[[newFiltered lastObject] objectForKey:@"children"]];
-		} else if ([newFiltered count] == 0) {
+		}
+		else if ([newFiltered count] == 0)
+		{
 			hasChildren =  [NSPredicate predicateWithFormat:@"children != NULL"];
 			itemsWithChildren = [suggestions filteredArrayUsingPredicate:hasChildren];
-			for (i=0; i<[itemsWithChildren count]; i++) {
+			for (i=0; i<[itemsWithChildren count]; i++)
+			{
 				newFiltered=[newFiltered arrayByAddingObjectsFromArray:[[[itemsWithChildren objectAtIndex:i] objectForKey:@"children"] filteredArrayUsingPredicate:matchesFilter]];
 			}
 		}
@@ -232,7 +237,7 @@
 	[theTableView reloadData];
 
 	NSPoint old = NSMakePoint([self frame].origin.x, [self frame].origin.y + [self frame].size.height);
-	
+
 	int displayedRows = [newFiltered count] < MAX_ROWS ? [newFiltered count] : MAX_ROWS;
 	float newHeight   = ([theTableView rowHeight] + [theTableView intercellSpacing].height) * displayedRows;
 
@@ -253,7 +258,7 @@
 	{
 		old.y = caretPos.y + (newHeight + [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"]*1.5);
 	}
-	
+
 	// newHeight is currently the new height for theTableView, but we need to resize the whole window
 	// so here we use the difference in height to find the new height for the window
 	// newHeight = [[self contentView] frame].size.height + (newHeight - [theTableView frame].size.height);
@@ -296,14 +301,11 @@
 	closeMe = NO;
 	while(!closeMe)
 	{
-		NSEvent* event = [NSApp nextEventMatchingMask:NSAnyEventMask
-                                          untilDate:[NSDate distantFuture]
-                                             inMode:NSDefaultRunLoopMode
-                                            dequeue:YES];
+		NSEvent* event = [NSApp nextEventMatchingMask:NSAnyEventMask untilDate:[NSDate distantFuture] inMode:NSDefaultRunLoopMode dequeue:YES];
 
 		if(!event)
 			continue;
-		
+
 		NSEventType t = [event type];
 		if([theTableView TMDcanHandleEvent:event])
 		{

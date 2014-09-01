@@ -22,7 +22,7 @@
 	BOOL closeMe;
 	BOOL caseSensitive;
 
-	NSMutableCharacterSet* textualInputCharacters;	
+	NSMutableCharacterSet* textualInputCharacters;
 }
 - (id)initWithItems:(NSArray*)someSuggestions alreadyTyped:(NSString*)aUserString staticPrefix:(NSString*)aStaticPrefix additionalWordCharacters:(NSString*)someAdditionalWordCharacters caseSensitive:(BOOL)isCaseSensitive writeChoiceToFileDescriptor:(NSFileHandle*)aFileDescriptor;
 - (void)setCaretPos:(NSPoint)aPos;

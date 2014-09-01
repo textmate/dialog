@@ -89,12 +89,12 @@ int main (int argc, char const* argv[])
 		[args addObject:[NSString stringWithUTF8String:argv[i]]];
 
 	NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:
-		[NSString stringWithUTF8String:stdin_name],			@"stdin",
-		[NSString stringWithUTF8String:stdout_name],			@"stdout",
-		[NSString stringWithUTF8String:stderr_name],			@"stderr",
-		[NSString stringWithUTF8String:getcwd(NULL, 0)],	@"cwd",
-		[[NSProcessInfo processInfo] environment],			@"environment",
-		args,																@"arguments",
+		[NSString stringWithUTF8String:stdin_name],      @"stdin",
+		[NSString stringWithUTF8String:stdout_name],     @"stdout",
+		[NSString stringWithUTF8String:stderr_name],     @"stderr",
+		[NSString stringWithUTF8String:getcwd(NULL, 0)], @"cwd",
+		[[NSProcessInfo processInfo] environment],       @"environment",
+		args,                                            @"arguments",
 		nil
 	];
 

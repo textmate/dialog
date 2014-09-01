@@ -10,19 +10,19 @@
 
 @interface CLIProxy : NSObject
 {
-	NSDictionary* 	environment;
-	NSString* 		workingDirectory;
+	NSDictionary* environment;
+	NSString* workingDirectory;
 
 	NSFileHandle* inputHandle;
 	NSFileHandle* outputHandle;
 	NSFileHandle* errorHandle;
 
-	option_t const*	optionTemplate;
-	size_t				optionCount;
-	NSArray* 			arguments;
-	NSDictionary*		parsedOptions;
+	option_t const* optionTemplate;
+	size_t optionCount;
+	NSArray* arguments;
+	NSDictionary* parsedOptions;
 
-	NSDictionary*		parameters;
+	NSDictionary* parameters;
 }
 + (id)proxyWithOptions:(NSDictionary*)options;
 - (id)initWithOptions:(NSDictionary*)options;

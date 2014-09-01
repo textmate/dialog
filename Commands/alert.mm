@@ -14,8 +14,6 @@ echo '{alertStyle = warning; button1 = 'OK'; title = 'test'; body = 'Testing';}'
 // =========
 
 @interface TMDAlertCommand : TMDCommand
-{
-}
 @end
 
 NSAlertStyle alert_style_from_string (NSString* str)
@@ -38,7 +36,7 @@ NSAlertStyle alert_style_from_string (NSString* str)
 {
 	NSDictionary* args = [proxy parameters];
 
-	NSAlert *alert = [[[NSAlert alloc] init] autorelease];
+	NSAlert* alert = [[[NSAlert alloc] init] autorelease];
 	[alert setAlertStyle:alert_style_from_string([args objectForKey:@"alertStyle"])];
 	if(NSString* msg = [args objectForKey:@"title"])
 		[alert setMessageText:msg];
@@ -55,12 +53,12 @@ NSAlertStyle alert_style_from_string (NSString* str)
 	[TMDCommand writePropertyList:resultDict toFileHandle:[proxy outputHandle]];
 }
 
-- (NSString *)commandDescription
+- (NSString*)commandDescription
 {
 	return @"Show an alert box.";
 }
 
-- (NSString *)usageForInvocation:(NSString *)invocation;
+- (NSString*)usageForInvocation:(NSString*)invocation;
 {
 	return [NSString stringWithFormat:@"\t%1$@ --alertStyle warning --title 'Delete File?' --body 'You cannot undo this action.' --button1 Delete --button2 Cancel\n", invocation];
 }

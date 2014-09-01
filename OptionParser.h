@@ -11,7 +11,7 @@ struct option_t
 	std::string short_option, long_option;
 	int argument;
 	enum type_t { none, string, integer, plist } type;
-	char *description;
+	char* description;
 };
 
 NSDictionary* ParseOptions (NSArray* arguments, option_t const* available, size_t n);
@@ -21,9 +21,9 @@ template <size_t N> NSDictionary* ParseOptions (NSArray* arguments, option_t con
 	return ParseOptions(arguments, available, N);
 }
 
-NSString *GetOptionList(option_t const *options, size_t optionCount);
+NSString* GetOptionList(option_t const* options, size_t optionCount);
 
-template <size_t optionCount> NSString *GetOptionList(option_t const (&options)[optionCount])
+template <size_t optionCount> NSString* GetOptionList(option_t const (&options)[optionCount])
 {
 	return GetOptionList(options, optionCount);
 }

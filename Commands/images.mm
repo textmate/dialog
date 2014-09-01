@@ -2,8 +2,6 @@
 #import "../Dialog2.h"
 
 @interface TMDImages : TMDCommand
-{
-}
 @end
 
 @implementation TMDImages
@@ -32,12 +30,12 @@
 	}
 }
 
-- (NSString *)commandDescription
+- (NSString*)commandDescription
 {
 	return @"Add image files as named images for use by other commands/nibs.";
 }
 
-- (NSString *)usageForInvocation:(NSString *)invocation;
+- (NSString*)usageForInvocation:(NSString*)invocation;
 {
 	return [NSString stringWithFormat:@"\t%1$@ --register  \"{ macro = '$(find_app com.macromates.textmate)/Contents/Resources/Bundle Item Icons/Macros.png'; }\"\n", invocation];
 }

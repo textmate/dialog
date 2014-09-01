@@ -11,8 +11,6 @@
 // ==========
 
 @interface TMDWindowCommand : TMDCommand
-{
-}
 @end
 
 // ===================
@@ -145,12 +143,12 @@ env|egrep 'DIALOG|TM_SUPPORT'|grep -v DIALOG_1|perl -pe 's/(.*?)=(.*)/export $1=
 	}
 }
 
-- (NSString *)commandDescription
+- (NSString*)commandDescription
 {
 	return @"Displays custom dialogs from NIBs.";
 }
 
-- (NSString *)usageForInvocation:(NSString *)invocation;
+- (NSString*)usageForInvocation:(NSString*)invocation;
 {
 	return [NSString stringWithFormat:
 		@"%1$@ --load «nib file» [«options»]\n"
