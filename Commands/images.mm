@@ -17,7 +17,7 @@
 	// Convert image paths to NSImages
 	NSDictionary* imagePaths = [args objectForKey:@"register"];
 	if([imagePaths isKindOfClass:[NSString class]])
-		imagePaths = [NSPropertyListSerialization propertyListFromData:[(NSString*)imagePaths dataUsingEncoding:NSUTF8StringEncoding] mutabilityOption:NSPropertyListImmutable format:nil errorDescription:NULL];
+		imagePaths = [NSPropertyListSerialization propertyListWithData:[(NSString*)imagePaths dataUsingEncoding:NSUTF8StringEncoding] options:NSPropertyListImmutable format:NULL error:NULL];
 
 	for(NSString* imageName in [imagePaths allKeys])
 	{

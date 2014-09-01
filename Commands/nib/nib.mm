@@ -83,7 +83,7 @@ env|egrep 'DIALOG|TM_SUPPORT'|grep -v DIALOG_1|perl -pe 's/(.*?)=(.*)/export $1=
 
 	// FIXME this is needed only because we presently can’t express argument constraints (CLIProxy would otherwise correctly validate/convert CLI arguments)
 	if([model isKindOfClass:[NSString class]])
-		model = [NSPropertyListSerialization propertyListFromData:[(NSString*)model dataUsingEncoding:NSUTF8StringEncoding] mutabilityOption:NSPropertyListImmutable format:nil errorDescription:NULL];
+		model = [NSPropertyListSerialization propertyListWithData:[(NSString*)model dataUsingEncoding:NSUTF8StringEncoding] options:NSPropertyListImmutable format:NULL error:NULL];
 
 	if(NSString* updateToken = [args objectForKey:@"update"])
 	{

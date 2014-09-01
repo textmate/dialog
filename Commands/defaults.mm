@@ -17,7 +17,7 @@
 	{
 		// FIXME this is needed only because we presently can’t express argument constraints (CLIProxy would otherwise correctly validate/convert CLI arguments)
 		if([defaults isKindOfClass:[NSString class]])
-			defaults = [NSPropertyListSerialization propertyListFromData:[(NSString*)defaults dataUsingEncoding:NSUTF8StringEncoding] mutabilityOption:NSPropertyListImmutable format:nil errorDescription:NULL];
+			defaults = [NSPropertyListSerialization propertyListWithData:[(NSString*)defaults dataUsingEncoding:NSUTF8StringEncoding] options:NSPropertyListImmutable format:NULL error:NULL];
 
 		[[NSUserDefaults standardUserDefaults] registerDefaults:defaults];
 	}

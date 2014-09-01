@@ -19,7 +19,7 @@
 	{
 		// FIXME this is needed only because we presently can’t express argument constraints (CLIProxy would otherwise correctly validate/convert CLI arguments)
 		if([values isKindOfClass:[NSString class]])
-			values = [NSPropertyListSerialization propertyListFromData:[(NSString*)values dataUsingEncoding:NSUTF8StringEncoding] mutabilityOption:NSPropertyListImmutable format:nil errorDescription:NULL];
+			values = [NSPropertyListSerialization propertyListWithData:[(NSString*)values dataUsingEncoding:NSUTF8StringEncoding] options:NSPropertyListImmutable format:NULL error:NULL];
 
 		for(id key in [values allKeys])
 			[TMD2Chameleon createSubclassNamed:key withValues:[values objectForKey:key]];

@@ -55,7 +55,7 @@ echo '{ items = ({title = "foo"; header = 1;},{title = "bar";}); }' | "$DIALOG" 
 
 	// FIXME this is needed only because we presently can’t express argument constraints (CLIProxy would otherwise correctly validate/convert CLI arguments)
 	if([menuItems isKindOfClass:[NSString class]])
-		menuItems = [NSPropertyListSerialization propertyListFromData:[(NSString*)menuItems dataUsingEncoding:NSUTF8StringEncoding] mutabilityOption:NSPropertyListImmutable format:nil errorDescription:NULL];
+		menuItems = [NSPropertyListSerialization propertyListWithData:[(NSString*)menuItems dataUsingEncoding:NSUTF8StringEncoding] options:NSPropertyListImmutable format:NULL error:NULL];
 
 	NSMenu* menu = [[[NSMenu alloc] init] autorelease];
 	[menu setFont:[NSFont menuFontOfSize:([[NSUserDefaults standardUserDefaults] integerForKey:@"OakBundleManagerDisambiguateMenuFontSize"] ?: [NSFont smallSystemFontSize])]];

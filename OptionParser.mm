@@ -136,13 +136,13 @@ id create_type (std::string const& str, option_t::type_t const& type, NSString**
 
 		case option_t::plist:
 		{
-			NSString* error = nil;
+			NSError* error = nil;
 
 			if (str.size() > 0)
 			{
-				res = [NSPropertyListSerialization propertyListFromData:[NSData dataWithBytes:str.data() length:str.size()] mutabilityOption:NSPropertyListMutableContainersAndLeaves format:nil errorDescription:&error];
-				if(error || !res)
-					*err_out = [NSString stringWithFormat:@"%@\n%s\n", (error ?: @"unknown error parsing property list"), str.c_str()];
+				res = [NSPropertyListSerialization propertyListWithData:[NSData dataWithBytes:str.data() length:str.size()] options:NSPropertyListMutableContainersAndLeaves format:NULL error:&error];
+				if(!res)
+					*err_out = [NSString stringWithFormat:@"%@\n%s\n", ([error localizedDescription] ?: @"unknown error parsing property list"), str.c_str()];
 			}
 			else
 			{
