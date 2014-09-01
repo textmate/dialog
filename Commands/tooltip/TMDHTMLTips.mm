@@ -27,10 +27,6 @@ NSString* const TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 - (void)stopAnimation:(id)sender;
 @end
 
-@interface WebView (LeopardOnly)
-- (void)setDrawsBackground:(BOOL)drawsBackground;
-@end
-
 @implementation TMDHTMLTip
 // ==================
 // = Setup/teardown =
@@ -72,8 +68,7 @@ NSString* const TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 		[webView setPreferencesIdentifier:TMDTooltipPreferencesIdentifier];
 		[webView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
 		[webView setFrameLoadDelegate:self];
-		if ([webView respondsToSelector:@selector(setDrawsBackground:)])
-		    [webView setDrawsBackground:NO];
+		[webView setDrawsBackground:NO];
 
 		[self setContentView:webView];
 	}
