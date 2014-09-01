@@ -9,10 +9,6 @@
 #import "../../TMDCommand.h"
 #import "TMDNibController.h"
 
-@interface NSMethodSignature (Private)
-+ (NSMethodSignature*)signatureWithObjCTypes:(char const*)types;
-@end
-
 @interface TMDNibController (Private)
 - (void)setParameters:(id)someParameters;
 @end
