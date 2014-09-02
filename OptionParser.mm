@@ -14,7 +14,7 @@ using namespace std;
 struct tokenizer_t
 {
 	NSArray* array;
-	unsigned index;
+	NSUInteger index;
 
 	enum { between_words, in_short, in_long } state;
 	bool did_unget, disabled;

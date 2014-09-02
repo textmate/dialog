@@ -115,7 +115,7 @@
 
 	NSRect mainScreen = [self rectOfMainScreen];
 
-	int offx = (caretPos.x/mainScreen.size.width) + 1;
+	CGFloat offx = (caretPos.x/mainScreen.size.width) + 1.0;
 	if((caretPos.x + [self frame].size.width) > (mainScreen.size.width*offx))
 		caretPos.x = caretPos.x - [self frame].size.width;
 
@@ -124,7 +124,7 @@
 		caretPos.y = caretPos.y + ([self frame].size.height + [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"]*1.5);
 		isAbove = YES;
 	}
-	if(caretPos.y<0 && (mainScreen.size.height-[self frame].size.height)<(caretPos.y*-1))
+	if(caretPos.y<0 && (mainScreen.size.height-[self frame].size.height)<(caretPos.y*-1.0))
 	{
 		caretPos.y = caretPos.y + ([self frame].size.height + [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"]*1.5);
 		isAbove = YES;
@@ -200,7 +200,6 @@
 {
 	NSRect mainScreen = [self rectOfMainScreen];
 
-	int i;
 	NSArray* newFiltered;
 	NSArray* itemsWithChildren;
 	if([mutablePrefix length] > 0)
@@ -221,7 +220,7 @@
 		{
 			hasChildren =  [NSPredicate predicateWithFormat:@"children != NULL"];
 			itemsWithChildren = [suggestions filteredArrayUsingPredicate:hasChildren];
-			for (i=0; i<[itemsWithChildren count]; i++)
+			for (NSUInteger i = 0; i < [itemsWithChildren count]; i++)
 			{
 				newFiltered=[newFiltered arrayByAddingObjectsFromArray:[[[itemsWithChildren objectAtIndex:i] objectForKey:@"children"] filteredArrayUsingPredicate:matchesFilter]];
 			}
@@ -238,14 +237,14 @@
 
 	NSPoint old = NSMakePoint([self frame].origin.x, [self frame].origin.y + [self frame].size.height);
 
-	int displayedRows = [newFiltered count] < MAX_ROWS ? [newFiltered count] : MAX_ROWS;
-	float newHeight   = ([theTableView rowHeight] + [theTableView intercellSpacing].height) * displayedRows;
+	NSUInteger displayedRows = [newFiltered count] < MAX_ROWS ? [newFiltered count] : MAX_ROWS;
+	CGFloat newHeight   = ([theTableView rowHeight] + [theTableView intercellSpacing].height) * displayedRows;
 
-	float maxWidth = 60;
+	CGFloat maxWidth = 60;
 	if([newFiltered count]>0)
 	{
 		CGFloat const kTableViewPadding = 16;
-		for(NSInteger i = 0; i < theTableView.numberOfRows; ++i)
+		for(NSUInteger i = 0; i < theTableView.numberOfRows; ++i)
 			maxWidth = MAX(maxWidth, kTableViewPadding + [[theTableView preparedCellAtColumn:0 row:i] cellSizeForBounds:NSMakeRect(0, 0, CGFLOAT_MAX, theTableView.rowHeight)].width);
 		maxWidth = MIN(maxWidth, 600);
 	}
@@ -254,7 +253,7 @@
 		isAbove = YES;
 		old.y = caretPos.y + (newHeight + [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"]*1.5);
 	}
-	if(caretPos.y<0 && (isAbove || (mainScreen.size.height-newHeight)<(caretPos.y*-1)))
+	if(caretPos.y<0 && (isAbove || (mainScreen.size.height-newHeight)<(caretPos.y*-1.0)))
 	{
 		old.y = caretPos.y + (newHeight + [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"]*1.5);
 	}
@@ -279,7 +278,7 @@
 	NSRect mainScreen = [[NSScreen mainScreen] frame];
 	for(NSScreen* candidate in [NSScreen screens])
 	{
-		if(NSMinX([candidate frame]) == 0.0f && NSMinY([candidate frame]) == 0.0f)
+		if(NSMinX([candidate frame]) == 0 && NSMinY([candidate frame]) == 0)
 			mainScreen = [candidate frame];
 	}
 	return mainScreen;
@@ -402,7 +401,7 @@
 
 - (void)insertCommonPrefix
 {
-	int row = [theTableView selectedRow];
+	NSInteger row = [theTableView selectedRow];
 	if(row == -1)
 		return;
 
@@ -412,7 +411,7 @@
 	{
 		NSString* prefix = [curMatch substringToIndex:[[self filterString] length] + 1];
 		NSMutableArray* candidates = [NSMutableArray array];
-		for(int i = row; i < [filtered count]; ++i)
+		for(NSUInteger i = row; i < [filtered count]; ++i)
 		{
 			id candidate = [filtered objectAtIndex:i];
 			NSString* candidateMatch = [candidate objectForKey:@"match"] ?: [candidate objectForKey:@"display"];
@@ -453,7 +452,7 @@
 	{
 		// We want to return the index of the selected item into the array which was passed in,
 		// but we can’t use the selected row index as the contents of the tablview is filtered down.
-		[selectedItem setObject:[NSNumber numberWithInt:[suggestions indexOfObject:[filtered objectAtIndex:[theTableView selectedRow]]]] forKey:@"index"];
+		[selectedItem setObject:[NSNumber numberWithUnsignedInteger:[suggestions indexOfObject:[filtered objectAtIndex:[theTableView selectedRow]]]] forKey:@"index"];
 		[outputHandle writeString:[selectedItem description]];
 	}
 	else if(NSString* toInsert = [selectedItem objectForKey:@"insert"])

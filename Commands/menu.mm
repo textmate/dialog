@@ -61,7 +61,7 @@ echo '{ items = ({title = "foo"; header = 1;},{title = "bar";}); }' | "$DIALOG" 
 	[menu setFont:[NSFont menuFontOfSize:([[NSUserDefaults standardUserDefaults] integerForKey:@"OakBundleManagerDisambiguateMenuFontSize"] ?: [NSFont smallSystemFontSize])]];
 	DialogPopupMenuTarget* menuTarget = [[[DialogPopupMenuTarget alloc] init] autorelease];
 
-	int item_id = 0;
+	NSInteger item_id = 0;
 	bool in_section = false;
 	for(NSDictionary* menuItem : menuItems)
 	{
@@ -81,7 +81,7 @@ echo '{ items = ({title = "foo"; header = 1;},{title = "bar";}); }' | "$DIALOG" 
 			[theItem setRepresentedObject:menuItem];
 			if(++item_id <= 10)
 			{
-				[theItem setKeyEquivalent:[NSString stringWithFormat:@"%d", item_id % 10]];
+				[theItem setKeyEquivalent:[NSString stringWithFormat:@"%ld", item_id % 10]];
 				[theItem setKeyEquivalentModifierMask:0];
 			}
 			if (in_section)

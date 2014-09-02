@@ -10,7 +10,7 @@
 #import "CLIProxy.h"
 
 @protocol TMPlugInController
-- (float)version;
+- (CGFloat)version;
 @end
 
 @interface Dialog2 : NSObject <DialogServerProtocol>

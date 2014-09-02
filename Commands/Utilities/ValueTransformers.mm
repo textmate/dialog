@@ -35,8 +35,8 @@
 - (NSArray*)indexPathToArray:(NSIndexPath*)anIndexPath
 {
 	NSMutableArray* array = [NSMutableArray array];
-	for(size_t i = 0; i < [anIndexPath length]; ++i)
-		[array addObject:[NSNumber numberWithUnsignedInt:[anIndexPath indexAtPosition:i]]];
+	for(NSUInteger i = 0; i < [anIndexPath length]; ++i)
+		[array addObject:[NSNumber numberWithUnsignedInteger:[anIndexPath indexAtPosition:i]]];
 	return array;
 }
 
@@ -77,8 +77,8 @@
 	NSMutableArray* array = [NSMutableArray array];
 	NSUInteger buf[([value count])];
 	[(NSIndexSet*)value getIndexes:buf maxCount:[value count] inIndexRange:nil];
-	for(unsigned int i = 0; i != [value count]; i++)
-		[array addObject:[NSNumber numberWithUnsignedInt:buf[i]]];
+	for(NSUInteger i = 0; i != [value count]; i++)
+		[array addObject:[NSNumber numberWithUnsignedInteger:buf[i]]];
 	return array;
 }
 @end
@@ -96,7 +96,7 @@ static NSColor* NSColorFromString (NSString* aColor)
 	if(sscanf([aColor UTF8String], "#%02x%02x%02x%02x", &red, &green, &blue, &alpha) < 3)
 		return nil;
 
-	return [NSColor colorWithCalibratedRed:red/255.0f green:green/255.0f blue:blue/255.0f alpha:alpha/255.0f];
+	return [NSColor colorWithCalibratedRed:red/255.0 green:green/255.0 blue:blue/255.0 alpha:alpha/255.0];
 }
 
 static NSString* NSStringFromColor (NSColor* aColor)
@@ -105,9 +105,9 @@ static NSString* NSStringFromColor (NSColor* aColor)
 		return nil;
 
 	aColor = [aColor colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
-	if([aColor alphaComponent] != 1.0f)
-			return [NSString stringWithFormat:@"#%02lX%02lX%02lX%02lX", lroundf(255.0f*[aColor redComponent]), lroundf(255.0f*[aColor greenComponent]), lroundf(255.0f*[aColor blueComponent]), lroundf(255.0f*[aColor alphaComponent])];
-	else	return [NSString stringWithFormat:@"#%02lX%02lX%02lX", lroundf(255.0f*[aColor redComponent]), lroundf(255.0f*[aColor greenComponent]), lroundf(255.0f*[aColor blueComponent])];
+	if([aColor alphaComponent] != 1.0)
+			return [NSString stringWithFormat:@"#%02lX%02lX%02lX%02lX", lroundf(255.0*[aColor redComponent]), lroundf(255.0*[aColor greenComponent]), lroundf(255.0*[aColor blueComponent]), lroundf(255.0*[aColor alphaComponent])];
+	else	return [NSString stringWithFormat:@"#%02lX%02lX%02lX", lroundf(255.0*[aColor redComponent]), lroundf(255.0*[aColor greenComponent]), lroundf(255.0*[aColor blueComponent])];
 }
 
 @implementation OakStringToColorTransformer

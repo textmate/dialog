@@ -7,7 +7,7 @@
 #import <Cocoa/Cocoa.h>
 #import "../../CLIProxy.h"
 
-#define MAX_ROWS 15
+static NSUInteger const MAX_ROWS = 15;
 
 @interface TMDIncrementalPopUpMenu : NSWindow<NSTableViewDataSource>
 {

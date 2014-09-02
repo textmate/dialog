@@ -56,7 +56,7 @@
 		}
 
 		NSString* lastKey = nil;
-		for(size_t i = 2; i < [arguments count]; ++i)
+		for(NSUInteger i = 2; i < [arguments count]; ++i)
 		{
 			NSString* arg = [arguments objectAtIndex:i];
 			BOOL isOption = [arg hasPrefix:@"--"];
@@ -90,12 +90,12 @@
 	return [parsedOptions objectForKey:@"literals"];
 }
 
-- (int)numberOfArguments;
+- (NSUInteger)numberOfArguments;
 {
 	return [[self arguments] count];
 }
 
-- (NSString*)argumentAtIndex:(int)index;
+- (NSString*)argumentAtIndex:(NSUInteger)index;
 {
 	id argument = nil;
 	if([[self arguments] count] > index)

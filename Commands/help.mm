@@ -29,7 +29,7 @@
 
 	NSMutableString* help = [NSMutableString stringWithCapacity:100];
 
-	int commandCount = 0;
+	NSInteger commandCount = 0;
 	for(NSEnumerator* enumerator = [commands keyEnumerator]; NSString* commandName = [enumerator nextObject]; )
 	{
 		if(![commandName hasPrefix:@"x-"])
@@ -40,7 +40,7 @@
 			[help appendFormat:@"\t%@: %@\n", commandName, description];
 		}
 	}
-	[help insertString:[NSString stringWithFormat:@"%d commands registered:\n", commandCount] atIndex:0];
+	[help insertString:[NSString stringWithFormat:@"%ld commands registered:\n", commandCount] atIndex:0];
 
 	[help appendString:@"Use `\"$DIALOG\" help command` for detailed help\n"];
 

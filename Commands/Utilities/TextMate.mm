@@ -1,6 +1,6 @@
 #import "TextMate.h"
 
-static CGFloat insertionDelayForNewDoc = 0.1f;
+static CGFloat insertionDelayForNewDoc = 0.1;
 
 // Declarations to avoid compiler warnings
 @interface NSObject (OakTextViewPrivate)

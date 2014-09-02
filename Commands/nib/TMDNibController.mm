@@ -197,7 +197,7 @@
 		types += @encode(id);
 		types += @encode(SEL);
 
-		unsigned numberOfArgs = [[str componentsSeparatedByString:@":"] count];
+		NSUInteger numberOfArgs = [[str componentsSeparatedByString:@":"] count];
 		while(numberOfArgs-- > 1)
 			types += @encode(id);
 
@@ -217,7 +217,7 @@
 		NSMutableDictionary* res = [NSMutableDictionary dictionary];
 		[res setObject:@"bindingAction" forKey:@"type"];
 
-		for(size_t i = 2; i < [[invocation methodSignature] numberOfArguments]; ++i)
+		for(NSUInteger i = 2; i < [[invocation methodSignature] numberOfArguments]; ++i)
 		{
 			id arg = nil;
 			[invocation getArgument:&arg atIndex:i];

@@ -12,11 +12,11 @@
 "$DIALOG" tooltip --html '<h1>‘foobar’</h1>'
 */
 
-static float slow_in_out (float t)
+static CGFloat slow_in_out (CGFloat t)
 {
-	if(t < 1.0f)
-		t = 1.0f / (1.0f + exp((-t*12.0f)+6.0f));
-	return std::min(t, 1.0f);
+	if(t < 1.0)
+		t = 1.0 / (1.0 + exp((-t*12.0)+6.0));
+	return std::min(t, 1.0);
 }
 
 NSString* const TMDTooltipPreferencesIdentifier = @"TM Tooltip";
@@ -43,9 +43,9 @@ NSString* const TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 	if(self = [self initWithContentRect:NSMakeRect(0, 0, 1, 1) styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO])
 	{
 		[self setReleasedWhenClosed:YES];
-		[self setAlphaValue:0.97f];
+		[self setAlphaValue:0.97];
 		[self setOpaque:NO];
-		[self setBackgroundColor:[NSColor colorWithDeviceRed:1.0f green:0.96f blue:0.76f alpha:1.0f]];
+		[self setBackgroundColor:[NSColor colorWithDeviceRed:1.0 green:0.96 blue:0.76 alpha:1.0]];
 		[self setBackgroundColor:[NSColor clearColor]];
 		[self setHasShadow:YES];
 		[self setLevel:NSStatusWindowLevel];
@@ -126,7 +126,7 @@ NSString* const TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 	}
 
 	// The webview is set to a large initial size and then sized down to fit the content
-	[self setContentSize:NSMakeSize(screenFrame.size.width - screenFrame.size.width / 3.0f, screenFrame.size.height)];
+	[self setContentSize:NSMakeSize(screenFrame.size.width - screenFrame.size.width / 3.0, screenFrame.size.height)];
 
 	int height  = [[[webView windowScriptObject] evaluateWebScript:@"document.body.offsetHeight + document.body.offsetTop;"] intValue];
 	int width   = [[[webView windowScriptObject] evaluateWebScript:@"document.body.offsetWidth + document.body.offsetLeft;"] intValue];
@@ -161,7 +161,7 @@ NSString* const TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 // ==================
 - (BOOL)shouldCloseForMousePosition:(NSPoint)aPoint
 {
-	float ignorePeriod = [[NSUserDefaults standardUserDefaults] floatForKey:@"OakToolTipMouseMoveIgnorePeriod"];
+	CGFloat ignorePeriod = [[NSUserDefaults standardUserDefaults] floatForKey:@"OakToolTipMouseMoveIgnorePeriod"];
 	if(-[didOpenAtDate timeIntervalSinceNow] < ignorePeriod)
 		return NO;
 
@@ -172,11 +172,11 @@ NSString* const TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 	}
 
 	NSPoint const& p = mousePositionWhenOpened;
-	float deltaX = p.x - aPoint.x;
-	float deltaY = p.y - aPoint.y;
-	float dist = sqrtf(deltaX * deltaX + deltaY * deltaY);
+	CGFloat deltaX = p.x - aPoint.x;
+	CGFloat deltaY = p.y - aPoint.y;
+	CGFloat dist = sqrt(deltaX * deltaX + deltaY * deltaY);
 
-	float moveThreshold = [[NSUserDefaults standardUserDefaults] floatForKey:@"OakToolTipMouseDistanceThreshold"];
+	CGFloat moveThreshold = [[NSUserDefaults standardUserDefaults] floatForKey:@"OakToolTipMouseDistanceThreshold"];
 	return dist > moveThreshold;
 }
 
@@ -219,13 +219,13 @@ NSString* const TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 
 	[self stopAnimation:self];
 	[self setValue:[NSDate date] forKey:@"animationStart"];
-	[self setValue:[NSTimer scheduledTimerWithTimeInterval:0.02f target:self selector:@selector(animationTick:) userInfo:nil repeats:YES] forKey:@"animationTimer"];
+	[self setValue:[NSTimer scheduledTimerWithTimeInterval:0.02 target:self selector:@selector(animationTick:) userInfo:nil repeats:YES] forKey:@"animationTimer"];
 }
 
 - (void)animationTick:(id)sender
 {
-	float alpha = 0.97f * (1.0f - slow_in_out(-1.5 * [animationStart timeIntervalSinceNow]));
-	if(alpha > 0.0f)
+	CGFloat alpha = 0.97 * (1.0 - slow_in_out(-1.5 * [animationStart timeIntervalSinceNow]));
+	if(alpha > 0.0)
 	{
 		[self setAlphaValue:alpha];
 	}
@@ -245,7 +245,7 @@ NSString* const TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 		[animationTimer invalidate];
 		[self setValue:nil forKey:@"animationTimer"];
 		[self setValue:nil forKey:@"animationStart"];
-		[self setAlphaValue:0.97f];
+		[self setAlphaValue:0.97];
 	}
 }
 @end

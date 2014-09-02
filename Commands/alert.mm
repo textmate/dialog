@@ -43,12 +43,12 @@ NSAlertStyle alert_style_from_string (NSString* str)
 	if(NSString* txt = [args objectForKey:@"body"])
 		[alert setInformativeText:txt];
 
-	int i = 0;
-	while(NSString* button = [args objectForKey:[NSString stringWithFormat:@"button%d", ++i]])
+	NSInteger i = 0;
+	while(NSString* button = [args objectForKey:[NSString stringWithFormat:@"button%ld", ++i]])
 		[alert addButtonWithTitle:button];
 
-	int alertResult = ([alert runModal] - NSAlertFirstButtonReturn);
-	NSDictionary* resultDict = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:alertResult] forKey:@"buttonClicked"];
+	NSInteger alertResult = ([alert runModal] - NSAlertFirstButtonReturn);
+	NSDictionary* resultDict = [NSDictionary dictionaryWithObject:[NSNumber numberWithInteger:alertResult] forKey:@"buttonClicked"];
 
 	[TMDCommand writePropertyList:resultDict toFileHandle:[proxy outputHandle]];
 }

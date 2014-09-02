@@ -41,8 +41,8 @@
 
 - (NSString*)workingDirectory;
 
-- (NSString*)argumentAtIndex:(int)index;
-- (int)numberOfArguments;
+- (NSString*)argumentAtIndex:(NSUInteger)index;
+- (NSUInteger)numberOfArguments;
 
 - (id)valueForOption:(NSString*)option;
 - (void)setOptionTemplate:(option_t const*)options count:(size_t)count;

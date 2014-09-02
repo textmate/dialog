@@ -51,7 +51,7 @@ std::string find_nib (std::string nibName, std::string currentDirectory, NSDicti
 }
 
 static NSMutableDictionary* Nibs = [NSMutableDictionary new];
-static int NibTokenCount = 0;
+static NSInteger NibTokenCount = 0;
 
 @implementation TMDWindowCommand
 + (void)load
@@ -132,7 +132,7 @@ env|egrep 'DIALOG|TM_SUPPORT'|grep -v DIALOG_1|perl -pe 's/(.*?)=(.*)/export $1=
 
 		if(TMDNibController* nibController = [[[TMDNibController alloc] initWithNibPath:nib] autorelease])
 		{
-			NSString* token = [NSString stringWithFormat:@"%d", ++NibTokenCount];
+			NSString* token = [NSString stringWithFormat:@"%ld", ++NibTokenCount];
 			[Nibs setObject:nibController forKey:token];
 
 			[nibController updateParametersWith:model];
