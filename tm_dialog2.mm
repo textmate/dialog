@@ -72,95 +72,95 @@ int main (int argc, char const* argv[])
 	if(argc > 1 && *argv[1] == '-')
 		execv(getenv("DIALOG_1"), (char* const*)argv);
 
-	NSAutoreleasePool* pool = [NSAutoreleasePool new];
-	id<DialogServerProtocol> proxy = connect();
-	if(!proxy)
-	{
-		fprintf(stderr, "error reaching server\n");
-		exit(1);
-	}
-
-	char const* stdinName  = create_pipe("stdin");
-	char const* stdoutName = create_pipe("stdout");
-	char const* stderrName = create_pipe("stderr");
-
-	NSMutableArray* args = [NSMutableArray array];
-	for(size_t i = 0; i < argc; ++i)
-		[args addObject:[NSString stringWithUTF8String:argv[i]]];
-
-	NSDictionary* dict = @{
-		@"stdin"       : [NSString stringWithUTF8String:stdinName],
-		@"stdout"      : [NSString stringWithUTF8String:stdoutName],
-		@"stderr"      : [NSString stringWithUTF8String:stderrName],
-		@"cwd"         : [NSString stringWithUTF8String:getcwd(NULL, 0)],
-		@"environment" : [[NSProcessInfo processInfo] environment],
-		@"arguments"   : args,
-	};
-
-	[proxy connectFromClientWithOptions:dict];
-
-	int stdin_fd  = open_pipe(stdinName, O_WRONLY);
-	int stdout_fd = open_pipe(stdoutName, O_RDONLY);
-	int stderr_fd = open_pipe(stderrName, O_RDONLY);
-
-	std::map<int, int> fdMap;
-	fdMap[STDIN_FILENO] = stdin_fd;
-	fdMap[stdout_fd]    = STDOUT_FILENO;
-	fdMap[stderr_fd]    = STDERR_FILENO;
-
-	if(isatty(STDIN_FILENO) != 0)
-	{
-		fdMap.erase(fdMap.find(STDIN_FILENO));
-		close(stdin_fd);
-	}
-
-	while(fdMap.size() > 1 || (fdMap.size() == 1 && fdMap.find(STDIN_FILENO) == fdMap.end()))
-	{
-		fd_set readfds, writefds;
-		FD_ZERO(&readfds); FD_ZERO(&writefds);
-
-		int num_fds = 0;
-		for(auto const& pair : fdMap)
+	@autoreleasepool{
+		id<DialogServerProtocol> proxy = connect();
+		if(!proxy)
 		{
-			FD_SET(pair.first, &readfds);
-			num_fds = std::max(num_fds, pair.first + 1);
+			fprintf(stderr, "error reaching server\n");
+			exit(1);
 		}
 
-		int i = select(num_fds, &readfds, &writefds, NULL, NULL);
-		if(i == -1)
+		char const* stdinName  = create_pipe("stdin");
+		char const* stdoutName = create_pipe("stdout");
+		char const* stderrName = create_pipe("stderr");
+
+		NSMutableArray* args = [NSMutableArray array];
+		for(size_t i = 0; i < argc; ++i)
+			[args addObject:[NSString stringWithUTF8String:argv[i]]];
+
+		NSDictionary* dict = @{
+			@"stdin"       : [NSString stringWithUTF8String:stdinName],
+			@"stdout"      : [NSString stringWithUTF8String:stdoutName],
+			@"stderr"      : [NSString stringWithUTF8String:stderrName],
+			@"cwd"         : [NSString stringWithUTF8String:getcwd(NULL, 0)],
+			@"environment" : [[NSProcessInfo processInfo] environment],
+			@"arguments"   : args,
+		};
+
+		[proxy connectFromClientWithOptions:dict];
+
+		int stdin_fd  = open_pipe(stdinName, O_WRONLY);
+		int stdout_fd = open_pipe(stdoutName, O_RDONLY);
+		int stderr_fd = open_pipe(stderrName, O_RDONLY);
+
+		std::map<int, int> fdMap;
+		fdMap[STDIN_FILENO] = stdin_fd;
+		fdMap[stdout_fd]    = STDOUT_FILENO;
+		fdMap[stderr_fd]    = STDERR_FILENO;
+
+		if(isatty(STDIN_FILENO) != 0)
 		{
-			perror("Error from select");
-			continue;
+			fdMap.erase(fdMap.find(STDIN_FILENO));
+			close(stdin_fd);
 		}
 
-		std::vector<int> toRemove;
-		for(auto const& pair : fdMap)
+		while(fdMap.size() > 1 || (fdMap.size() == 1 && fdMap.find(STDIN_FILENO) == fdMap.end()))
 		{
-			if(FD_ISSET(pair.first, &readfds))
+			fd_set readfds, writefds;
+			FD_ZERO(&readfds); FD_ZERO(&writefds);
+
+			int num_fds = 0;
+			for(auto const& pair : fdMap)
 			{
-				char buf[1024];
-				ssize_t len = read(pair.first, buf, sizeof(buf));
+				FD_SET(pair.first, &readfds);
+				num_fds = std::max(num_fds, pair.first + 1);
+			}
 
-				if(len == 0)
-						toRemove.push_back(pair.first); // we can’t remove as long as we need the iterator for the ++
-				else	write(pair.second, buf, len);
+			int i = select(num_fds, &readfds, &writefds, NULL, NULL);
+			if(i == -1)
+			{
+				perror("Error from select");
+				continue;
+			}
+
+			std::vector<int> toRemove;
+			for(auto const& pair : fdMap)
+			{
+				if(FD_ISSET(pair.first, &readfds))
+				{
+					char buf[1024];
+					ssize_t len = read(pair.first, buf, sizeof(buf));
+
+					if(len == 0)
+							toRemove.push_back(pair.first); // we can’t remove as long as we need the iterator for the ++
+					else	write(pair.second, buf, len);
+				}
+			}
+
+			for(int key : toRemove)
+			{
+				if(fdMap[key] == stdin_fd)
+					close(stdin_fd);
+				fdMap.erase(key);
 			}
 		}
 
-		for(int key : toRemove)
-		{
-			if(fdMap[key] == stdin_fd)
-				close(stdin_fd);
-			fdMap.erase(key);
-		}
+		close(stdout_fd);
+		close(stderr_fd);
+		unlink(stdinName);
+		unlink(stdoutName);
+		unlink(stderrName);
 	}
 
-	close(stdout_fd);
-	close(stderr_fd);
-	unlink(stdinName);
-	unlink(stdoutName);
-	unlink(stderrName);
-
-	[pool release];
 	return 0;
 }
