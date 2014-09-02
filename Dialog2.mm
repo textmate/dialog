@@ -33,11 +33,11 @@
 			NSLog(@"couldn't setup dialog server."), NSBeep();
 		else if(NSString* path = [[NSBundle bundleForClass:[self class]] pathForResource:@"tm_dialog2" ofType:nil])
 		{
-			char* old_dialog = getenv("DIALOG");
-			if(old_dialog == NULL || not [[NSString stringWithUTF8String:old_dialog] isEqualToString:path])
+			char* oldDialog = getenv("DIALOG");
+			if(oldDialog == NULL || not [[NSString stringWithUTF8String:oldDialog] isEqualToString:path])
 			{
-				if(old_dialog)
-					setenv("DIALOG_1", old_dialog, 1);
+				if(oldDialog)
+					setenv("DIALOG_1", oldDialog, 1);
 				setenv("DIALOG", [path UTF8String], 1);
 			}
 

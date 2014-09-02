@@ -75,12 +75,12 @@ struct tokenizer_t
 			}
 			else if(word.size() > 2 && word.substr(0, 2) == "--")
 			{
-				string::iterator eq_pos = find(word.begin(), word.end(), '=');
-				current_token = token_t(token_t::option, string(word.begin() + 2, eq_pos));
+				string::iterator eqPos = find(word.begin(), word.end(), '=');
+				current_token = token_t(token_t::option, string(word.begin() + 2, eqPos));
 
-				if(eq_pos != word.end())
+				if(eqPos != word.end())
 				{
-					partial_word = string(eq_pos + 1, word.end());
+					partial_word = string(eqPos + 1, word.end());
 					state = in_long;
 				}
 				else
@@ -117,7 +117,7 @@ struct tokenizer_t
 	}
 };
 
-id create_type (std::string const& str, option_t::type_t const& type, NSString** err_out = NULL)
+id create_type (std::string const& str, option_t::type_t const& type, NSString** errOut = NULL)
 {
 	id res = nil;
 	switch(type)
@@ -142,7 +142,7 @@ id create_type (std::string const& str, option_t::type_t const& type, NSString**
 			{
 				res = [NSPropertyListSerialization propertyListWithData:[NSData dataWithBytes:str.data() length:str.size()] options:NSPropertyListMutableContainersAndLeaves format:NULL error:&error];
 				if(!res)
-					*err_out = [NSString stringWithFormat:@"%@\n%s\n", ([error localizedDescription] ?: @"unknown error parsing property list"), str.c_str()];
+					*errOut = [NSString stringWithFormat:@"%@\n%s\n", ([error localizedDescription] ?: @"unknown error parsing property list"), str.c_str()];
 			}
 			else
 			{
