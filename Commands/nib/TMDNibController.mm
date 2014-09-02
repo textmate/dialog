@@ -163,10 +163,7 @@
 	id model = [[parameters mutableCopy] autorelease];
 	[model removeObjectForKey:@"controller"];
 
-	NSDictionary* res = [NSDictionary dictionaryWithObjectsAndKeys:
-		model,     @"model",
-		eventInfo, @"eventInfo",
-		nil];
+	NSDictionary* res = @{ @"model" : model, @"eventInfo" : eventInfo };
 
 	for(NSFileHandle* fileHandle in clientFileHandles)
 		[TMDCommand writePropertyList:res toFileHandle:fileHandle];
@@ -179,7 +176,7 @@
 // ================================================
 - (void)windowWillClose:(NSNotification*)aNotification
 {
-	[self return:[NSDictionary dictionaryWithObject:@"closeWindow" forKey:@"type"]];
+	[self return:@{ @"type" : @"closeWindow" }];
 }
 
 // ================================================
@@ -238,12 +235,12 @@
 - (IBAction)performButtonClick:(id)sender
 {
 	NSMutableDictionary* res = [NSMutableDictionary dictionary];
-	[res setObject:@"buttonClick" forKey:@"type"];
+	res[@"type"] = @"buttonClick";
 
 	if([sender respondsToSelector:@selector(title)])
-		[res setObject:[sender title] forKey:@"title"];
+		res[@"title"] = [sender title];
 	if([sender respondsToSelector:@selector(tag)])
-		[res setObject:[NSNumber numberWithInt:[sender tag]] forKey:@"tag"];
+		res[@"tag"] = @([sender tag]);
 
 	[self return:res];
 }

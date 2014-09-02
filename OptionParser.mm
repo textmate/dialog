@@ -231,11 +231,7 @@ NSDictionary* ParseOptions (NSArray* arguments, option_t const* available, size_
 	NSString* errString = error ? [NSString stringWithUTF8String:error] : nil;
 	free(error);
 
-	return [NSDictionary dictionaryWithObjectsAndKeys:
-		options,   @"options",
-		literals,  @"literals",
-		errString, @"error",
-		nil];
+	return @{ @"options" : options, @"literals" : literals, @"error" : errString };
 }
 
 NSString* GetOptionList (option_t const* options, size_t optionCount)

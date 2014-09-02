@@ -88,15 +88,14 @@ int main (int argc, char const* argv[])
 	for(size_t i = 0; i < argc; ++i)
 		[args addObject:[NSString stringWithUTF8String:argv[i]]];
 
-	NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:
-		[NSString stringWithUTF8String:stdinName],       @"stdin",
-		[NSString stringWithUTF8String:stdoutName],      @"stdout",
-		[NSString stringWithUTF8String:stderrName],      @"stderr",
-		[NSString stringWithUTF8String:getcwd(NULL, 0)], @"cwd",
-		[[NSProcessInfo processInfo] environment],       @"environment",
-		args,                                            @"arguments",
-		nil
-	];
+	NSDictionary* dict = @{
+		@"stdin"       : [NSString stringWithUTF8String:stdinName],
+		@"stdout"      : [NSString stringWithUTF8String:stdoutName],
+		@"stderr"      : [NSString stringWithUTF8String:stderrName],
+		@"cwd"         : [NSString stringWithUTF8String:getcwd(NULL, 0)],
+		@"environment" : [[NSProcessInfo processInfo] environment],
+		@"arguments"   : args,
+	};
 
 	[proxy connectFromClientWithOptions:dict];
 
