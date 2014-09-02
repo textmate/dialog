@@ -62,7 +62,7 @@ echo '{ items = ({title = "foo"; header = 1;},{title = "bar";}); }' | "$DIALOG" 
 	DialogPopupMenuTarget* menuTarget = [[[DialogPopupMenuTarget alloc] init] autorelease];
 
 	NSInteger itemId = 0;
-	bool inSection = false;
+	BOOL inSection = NO;
 	for(NSDictionary* menuItem : menuItems)
 	{
 		if([[menuItem objectForKey:@"separator"] intValue])
@@ -72,7 +72,7 @@ echo '{ items = ({title = "foo"; header = 1;},{title = "bar";}); }' | "$DIALOG" 
 		else if([[menuItem objectForKey:@"header"] intValue])
 		{
 			[menu addItemWithTitle:[menuItem objectForKey:@"title"] action:NULL keyEquivalent:@""];
-			inSection = true;
+			inSection = YES;
 		}
 		else
 		{

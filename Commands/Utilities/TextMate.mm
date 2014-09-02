@@ -20,7 +20,7 @@ id frontMostTextViewForSelector(SEL selector, BOOL* isNew, NSWindow** winForText
 
 	// Return value if a new doc was created
 	if(isNew)
-		*isNew = false;
+		*isNew = NO;
 
 	// unique method for identifying a OakTextView
 	SEL checkSelector = @selector(insertSnippetWithOptions:);
@@ -62,7 +62,7 @@ id frontMostTextViewForSelector(SEL selector, BOOL* isNew, NSWindow** winForText
 			if(textView && [textView respondsToSelector:selector])
 			{
 				if(isNew)
-					*isNew = true;
+					*isNew = YES;
 				if(winForTextView)
 					*winForTextView = [[NSApp orderedWindows] objectAtIndex:0];
 				return textView;
@@ -79,7 +79,7 @@ id frontMostTextViewForSelector(SEL selector, BOOL* isNew, NSWindow** winForText
 */
 void insert_text (NSString* someText)
 {
-	BOOL isNewDocument = false;
+	BOOL isNewDocument = NO;
 	if(id textView = frontMostTextViewForSelector(@selector(insertText:), &isNewDocument, NULL))
 	{
 		if(isNewDocument) // delay the insertion to let TM finish the initialization of the new doc
@@ -94,7 +94,7 @@ void insert_text (NSString* someText)
 */
 void insert_snippet (NSString* aSnippet)
 {
-	BOOL isNewDocument = false;
+	BOOL isNewDocument = NO;
 	NSWindow* win = nil;
 	if(id textView = frontMostTextViewForSelector(@selector(insertSnippetWithOptions:), &isNewDocument, &win))
 	{
