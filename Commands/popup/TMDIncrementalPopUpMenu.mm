@@ -47,7 +47,7 @@
 }
 @end
 
-@interface TMDIncrementalPopUpMenu (Private)
+@interface TMDIncrementalPopUpMenu ()
 - (NSRect)rectOfMainScreen;
 - (NSString*)filterString;
 - (void)setupInterface;

@@ -21,7 +21,7 @@ static CGFloat slow_in_out (CGFloat t)
 
 NSString* const TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 
-@interface TMDHTMLTip (Private)
+@interface TMDHTMLTip ()
 - (void)setContent:(NSString*)content transparent:(BOOL)transparent;
 - (void)runUntilUserActivity:(id)sender;
 - (void)stopAnimation:(id)sender;

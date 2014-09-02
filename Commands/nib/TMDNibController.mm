@@ -9,7 +9,7 @@
 #import "../../TMDCommand.h"
 #import "TMDNibController.h"
 
-@interface TMDNibController (Private)
+@interface TMDNibController ()
 - (void)setParameters:(id)someParameters;
 @end
 

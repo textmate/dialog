@@ -8,7 +8,7 @@
 #import "CLIProxy.h"
 #import "TMDCommand.h"
 
-@interface CLIProxy (Private)
+@interface CLIProxy ()
 - (NSArray*)arguments;
 @end
 
