@@ -26,7 +26,7 @@ static size_t const AppRevision = APP_REVISION;
 
 id connect ()
 {
-	NSString* portName = DialogServerConnectionName;
+	NSString* portName = kDialogServerConnectionName;
 	if(char const* var = getenv("DIALOG_PORT_NAME"))
 		portName = [NSString stringWithUTF8String:var];
 

@@ -29,7 +29,7 @@
 		_connection = [NSConnection new];
 		[_connection setRootObject:self];
 
-		NSString* portName = [NSString stringWithFormat:@"%@.%d", DialogServerConnectionName, getpid()];
+		NSString* portName = [NSString stringWithFormat:@"%@.%d", kDialogServerConnectionName, getpid()];
 		if([_connection registerName:portName] == NO)
 			NSLog(@"couldn't setup dialog server."), NSBeep();
 		else if(NSString* path = [[NSBundle bundleForClass:[self class]] pathForResource:@"tm_dialog2" ofType:nil])
