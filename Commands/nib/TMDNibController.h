@@ -5,10 +5,8 @@
 
 @interface TMDNibController : NSObject <NSWindowDelegate>
 {
-	NSMutableDictionary* parameters;
 	NSMutableArray* clientFileHandles;
 
-	NSArray* topLevelObjects;
 	NSWindow* window;
 }
 - (id)initWithNibPath:(NSString*)aPath;

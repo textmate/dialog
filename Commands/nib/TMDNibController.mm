@@ -9,8 +9,36 @@
 #import "../../TMDCommand.h"
 #import "TMDNibController.h"
 
+// For historical reasons, instantiateNibWithOwner:topLevelObjects: adds an extra retain count to
+// each object in topLevelObjects. If we can, we use the new version instantiateWithOwner:topLevelObjects:
+// (i.e., 10.8 and later), else we fall back to emulating the newer method by manually reducing the
+// retain count. We can do this since we (now) ensure that we have a strong reference to the topLevelOjbects
+// array, so that the objects will not be deallocated or released.
+@interface NSNib (Lion)
+- (BOOL)lionInstantiateWithOwner:(id)owner topLevelObjects:(NSArray**)topLevelObjects;
+@end
+
+@implementation NSNib (Lion)
+- (BOOL)lionInstantiateWithOwner:(id)owner topLevelObjects:(NSArray**)topLevelObjects
+{
+	BOOL res = NO;
+	if([self respondsToSelector:@selector(instantiateWithOwner:topLevelObjects:)])
+	{
+		res = [self instantiateWithOwner:owner topLevelObjects:topLevelObjects];
+	}
+	else
+	{
+		res = [self instantiateNibWithOwner:owner topLevelObjects:topLevelObjects];
+		for(id object in *topLevelObjects)
+			CFRelease((__bridge CFTypeRef)object);
+	}
+	return res;
+}
+@end
+
 @interface TMDNibController ()
-- (void)setParameters:(id)someParameters;
+@property (nonatomic) NSArray* topLevelObjects;
+@property (nonatomic) NSMutableDictionary* parameters;
 @end
 
 @implementation TMDNibController
@@ -18,8 +46,8 @@
 {
 	if(self = [super init])
 	{
-		parameters = [NSMutableDictionary new];
-		[parameters setObject:self forKey:@"controller"];
+		_parameters = [NSMutableDictionary new];
+		[_parameters setObject:self forKey:@"controller"];
 
 		clientFileHandles = [NSMutableArray new];
 	}
@@ -30,11 +58,12 @@
 {
 	if(self = [self init])
 	{
-		if(NSNib* nib = [[[NSNib alloc] initWithContentsOfURL:[NSURL fileURLWithPath:aPath]] autorelease])
+		if(NSNib* nib = [[NSNib alloc] initWithContentsOfURL:[NSURL fileURLWithPath:aPath]])
 		{
 			BOOL didInstantiate = NO;
+			NSArray* objects;
 			@try {
-				didInstantiate = [nib instantiateNibWithOwner:self topLevelObjects:&topLevelObjects];
+				didInstantiate = [nib lionInstantiateWithOwner:self topLevelObjects:&objects];
 			}
 			@catch(NSException* e) {
 				// our retain count is too high if we reach this branch (<rdar://4803521>) so no RAII idioms for Cocoa, which is why we have the didLock variable, etc.
@@ -43,8 +72,8 @@
 
 			if(didInstantiate)
 			{
-				[topLevelObjects retain];
-				for(id object in topLevelObjects)
+				_topLevelObjects = objects;
+				for(id object in _topLevelObjects)
 				{
 					if([object isKindOfClass:[NSWindow class]])
 						[self setWindow:object];
@@ -60,7 +89,7 @@
 		{
 			NSLog(@"%s failed loading nib: %@", sel_getName(_cmd), aPath);
 		}
-		[self release];
+
 	}
 	return nil;
 }
@@ -68,44 +97,26 @@
 - (void)dealloc
 {
 	[self setWindow:nil];
-	[self setParameters:nil];
-
-	for(id object in topLevelObjects)
-		[object release];
-	[topLevelObjects release];
-
-	[clientFileHandles release];
-	[super dealloc];
 }
 
 - (NSWindow*)window    { return window; }
-- (id)parameters       { return parameters; }
 
 - (void)setWindow:(NSWindow*)aWindow
 {
 	if(window != aWindow)
 	{
 		[window setDelegate:nil];
-		[window release];
-		window = [aWindow retain];
+
+		window = aWindow;
 		[window setDelegate:self];
 		[window setReleasedWhenClosed:NO]; // incase this was set wrong in IB
-	}
-}
-
-- (void)setParameters:(id)someParameters
-{
-	if(parameters != someParameters)
-	{
-		[parameters release];
-		parameters = [someParameters retain];
 	}
 }
 
 - (void)updateParametersWith:(id)plist
 {
 	for(id key in [plist allKeys])
-		[parameters setValue:[plist valueForKey:key] forKey:key];
+		[self.parameters setValue:[plist valueForKey:key] forKey:key];
 }
 
 - (void)showWindowAndCenter:(BOOL)shouldCenter
@@ -127,7 +138,7 @@
 
 - (void)makeControllersCommitEditing
 {
-	for(id object in topLevelObjects)
+	for(id object in self.topLevelObjects)
 	{
 		if([object respondsToSelector:@selector(commitEditing)])
 			[object commitEditing];
@@ -138,10 +149,10 @@
 
 - (void)tearDown
 {
-	[parameters removeObjectForKey:@"controller"];
+	[self.parameters removeObjectForKey:@"controller"];
 
 	// if we do not manually unbind, the object in the nib will keep us retained, and thus we will never reach dealloc
-	for(id object in topLevelObjects)
+	for(id object in self.topLevelObjects)
 	{
 		if([object isKindOfClass:[NSObjectController class]])
 			[object unbind:@"contentObject"];
@@ -160,7 +171,7 @@
 {
 	[self makeControllersCommitEditing];
 
-	id model = [[parameters mutableCopy] autorelease];
+	id model = [self.parameters mutableCopy];
 	[model removeObjectForKey:@"controller"];
 
 	NSDictionary* res = @{ @"model" : model, @"eventInfo" : eventInfo };
@@ -216,7 +227,7 @@
 
 		for(NSUInteger i = 2; i < [[invocation methodSignature] numberOfArguments]; ++i)
 		{
-			id arg = nil;
+			__unsafe_unretained id arg = nil;
 			[invocation getArgument:&arg atIndex:i];
 			[res setObject:(arg ?: @"") forKey:[argNames objectAtIndex:i - 2]];
 		}

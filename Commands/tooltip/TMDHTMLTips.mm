@@ -42,6 +42,8 @@ NSString* const TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 {
 	if(self = [self initWithContentRect:NSMakeRect(0, 0, 1, 1) styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO])
 	{
+		// Since we are relying on `setReleaseWhenClosed:`, we need to ensure that we are over-retained.
+		CFBridgingRetain(self);
 		[self setReleasedWhenClosed:YES];
 		[self setAlphaValue:0.97];
 		[self setOpaque:NO];
@@ -73,14 +75,6 @@ NSString* const TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 		[self setContentView:webView];
 	}
 	return self;
-}
-
-- (void)dealloc
-{
-	[didOpenAtDate release];
-	[webView release];
-	[webPreferences release];
-	[super dealloc];
 }
 
 // ===========
@@ -185,7 +179,7 @@ NSString* const TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 	[self setValue:[NSDate date] forKey:@"didOpenAtDate"];
 	mousePositionWhenOpened = NSZeroPoint;
 
-	NSWindow* keyWindow = [[NSApp keyWindow] retain];
+	NSWindow* keyWindow = [NSApp keyWindow];
 	BOOL didAcceptMouseMovedEvents = [keyWindow acceptsMouseMovedEvents];
 	[keyWindow setAcceptsMouseMovedEvents:YES];
 
@@ -204,7 +198,7 @@ NSString* const TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 	}
 
 	[keyWindow setAcceptsMouseMovedEvents:didAcceptMouseMovedEvents];
-	[keyWindow release];
+
 
 	[self orderOut:self];
 }
@@ -241,7 +235,6 @@ NSString* const TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 {
 	if(animationTimer)
 	{
-		[[self retain] autorelease];
 		[animationTimer invalidate];
 		[self setValue:nil forKey:@"animationTimer"];
 		[self setValue:nil forKey:@"animationStart"];

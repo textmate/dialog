@@ -27,7 +27,7 @@
 
 	if(NSString* show = [args objectForKey:@"show"])
 	{
-		id obj = [[NSClassFromString(show) new] autorelease];
+		id obj = [NSClassFromString(show) new];
 		[proxy writeStringToOutput:[obj description] ?: [NSString stringWithFormat:@"error: no class named ‘%@’", show]];
 		[proxy writeStringToOutput:@"\n"];
 	}

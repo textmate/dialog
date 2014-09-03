@@ -12,7 +12,7 @@ static NSMutableDictionary* Commands = nil;
 
 + (NSDictionary*)registeredCommands
 {
-	return [[Commands copy] autorelease];
+	return [Commands copy];
 }
 
 + (id)objectForCommand:(NSString*)aCommand

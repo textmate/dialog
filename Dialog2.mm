@@ -14,6 +14,7 @@
 @end
 
 @interface Dialog2 : NSObject <DialogServerProtocol>
+@property (nonatomic) NSConnection* connection;
 - (id)initWithPlugInController:(id <TMPlugInController>)aController;
 @end
 
@@ -25,11 +26,11 @@
 	NSApp = [NSApplication sharedApplication];
 	if(self = [self init])
 	{
-		NSConnection* connection = [NSConnection new];
-		[connection setRootObject:self];
+		_connection = [NSConnection new];
+		[_connection setRootObject:self];
 
 		NSString* portName = [NSString stringWithFormat:@"%@.%d", DialogServerConnectionName, getpid()];
-		if([connection registerName:portName] == NO)
+		if([_connection registerName:portName] == NO)
 			NSLog(@"couldn't setup dialog server."), NSBeep();
 		else if(NSString* path = [[NSBundle bundleForClass:[self class]] pathForResource:@"tm_dialog2" ofType:nil])
 		{

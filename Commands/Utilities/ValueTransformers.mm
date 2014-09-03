@@ -13,12 +13,12 @@
 {
 	id transformer = [self new];
 	[NSValueTransformer setValueTransformer:transformer forName:@"OakIntArrayToIndexPathTransformer"];
-	[transformer release];
+
 }
 
 - (NSIndexPath*)arrayToIndexPath:(NSArray*)anArray
 {
-	NSIndexPath* indexPath = [[NSIndexPath new] autorelease];
+	NSIndexPath* indexPath = [NSIndexPath new];
 	for(id index in anArray)
 		indexPath = [indexPath indexPathByAddingIndex:[index intValue]];
 	return indexPath;
@@ -61,7 +61,7 @@
 {
 	id transformer = [self new];
 	[NSValueTransformer setValueTransformer:transformer forName:@"OakIntArrayToIndexSetTransformer"];
-	[transformer release];
+
 }
 
 - (id)transformedValue:(id)value
@@ -121,6 +121,6 @@ static NSString* NSStringFromColor (NSColor* aColor)
 {
 	id transformer = [self new];
 	[NSValueTransformer setValueTransformer:transformer forName:@"OakStringToColorTransformer"];
-	[transformer release];
+
 }
 @end

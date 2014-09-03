@@ -130,7 +130,7 @@ env|egrep 'DIALOG|TM_SUPPORT'|grep -v DIALOG_1|perl -pe 's/(.*?)=(.*)/export $1=
 		if(nib == nil || [nib length] == 0)
 			ErrorAndReturn(@"nib not found. The nib name must be the first argument given");
 
-		if(TMDNibController* nibController = [[[TMDNibController alloc] initWithNibPath:nib] autorelease])
+		if(TMDNibController* nibController = [[TMDNibController alloc] initWithNibPath:nib])
 		{
 			NSString* token = [NSString stringWithFormat:@"%ld", ++NibTokenCount];
 			[Nibs setObject:nibController forKey:token];

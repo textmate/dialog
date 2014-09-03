@@ -2,4 +2,4 @@ TARGET_NAME   = tm_dialog2
 SOURCES       = tm_dialog2.mm
 FRAMEWORKS    = Foundation
 FLAGS        += -D'APP_REVISION=$APP_REVISION' -DCOMPILE_DATE=\"`date +%Y-%m-%d`\"
-OBJCXX_FLAGS += -fno-objc-arc
+

@@ -36,7 +36,7 @@ NSAlertStyle alert_style_from_string (NSString* str)
 {
 	NSDictionary* args = [proxy parameters];
 
-	NSAlert* alert = [[[NSAlert alloc] init] autorelease];
+	NSAlert* alert = [NSAlert new];
 	[alert setAlertStyle:alert_style_from_string([args objectForKey:@"alertStyle"])];
 	if(NSString* msg = [args objectForKey:@"title"])
 		[alert setMessageText:msg];

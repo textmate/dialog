@@ -65,7 +65,7 @@
 	if(self = [super initWithContentRect:NSMakeRect(0, 0, 1, 1) styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO])
 	{
 		mutablePrefix = [NSMutableString new];
-		textualInputCharacters = [[NSMutableCharacterSet alphanumericCharacterSet] retain];
+		textualInputCharacters = [NSMutableCharacterSet alphanumericCharacterSet];
 		caseSensitive = YES;
 
 		[self setupInterface];
@@ -73,37 +73,23 @@
 	return self;
 }
 
-- (void)dealloc
-{
-	[staticPrefix release];
-	[mutablePrefix release];
-	[textualInputCharacters release];
-
-	[outputHandle release];
-	[suggestions release];
-
-	[filtered release];
-
-	[super dealloc];
-}
-
 - (id)initWithItems:(NSArray*)someSuggestions alreadyTyped:(NSString*)aUserString staticPrefix:(NSString*)aStaticPrefix additionalWordCharacters:(NSString*)someAdditionalWordCharacters caseSensitive:(BOOL)isCaseSensitive writeChoiceToFileDescriptor:(NSFileHandle*)aFileDescriptor
 {
 	if(self = [self init])
 	{
-		suggestions = [someSuggestions retain];
+		suggestions = someSuggestions;
 
 		if(aUserString)
 			[mutablePrefix appendString:aUserString];
 
 		if(aStaticPrefix)
-			staticPrefix = [aStaticPrefix retain];
+			staticPrefix = aStaticPrefix;
 
 		if(someAdditionalWordCharacters)
 			[textualInputCharacters addCharactersInString:someAdditionalWordCharacters];
 
 		caseSensitive = isCaseSensitive;
-		outputHandle = [aFileDescriptor retain];
+		outputHandle = aFileDescriptor;
 	}
 	return self;
 }
@@ -134,18 +120,20 @@
 
 - (void)setupInterface
 {
+	// Since we are relying on `setReleaseWhenClosed:`, we need to ensure that we are over-retained.
+	CFBridgingRetain(self);
 	[self setReleasedWhenClosed:YES];
 	[self setLevel:NSStatusWindowLevel];
 	[self setHidesOnDeactivate:YES];
 	[self setHasShadow:YES];
 
-	NSScrollView* scrollView = [[[NSScrollView alloc] initWithFrame:NSZeroRect] autorelease];
+	NSScrollView* scrollView = [[NSScrollView alloc] initWithFrame:NSZeroRect];
 	[scrollView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
 	[scrollView setAutohidesScrollers:YES];
 	[scrollView setHasVerticalScroller:YES];
 	[[scrollView verticalScroller] setControlSize:NSSmallControlSize];
 
-	theTableView = [[[NSTableView alloc] initWithFrame:NSZeroRect] autorelease];
+	theTableView = [[NSTableView alloc] initWithFrame:NSZeroRect];
 	[theTableView setFocusRingType:NSFocusRingTypeNone];
 	[theTableView setAllowsEmptySelection:NO];
 	[theTableView setHeaderView:nil];
@@ -153,7 +141,7 @@
 	[theTableView setDoubleAction:@selector(didDoubleClickRow:)];
 	[theTableView setTarget:self];
 
-	NSTableColumn* column = [[[NSTableColumn alloc] initWithIdentifier:@"foo"] autorelease];
+	NSTableColumn* column = [[NSTableColumn alloc] initWithIdentifier:@"foo"];
 	NSTextFieldCell* cell = [NSClassFromString(@"OakImageAndTextCell") new];
 	cell.lineBreakMode = NSLineBreakByTruncatingTail;
 	[column setDataCell:cell];
@@ -231,8 +219,8 @@
 		newFiltered = suggestions;
 	}
 
-	[filtered release];
-	filtered = [newFiltered retain];
+
+	filtered = newFiltered;
 	[theTableView reloadData];
 
 	NSPoint old = NSMakePoint([self frame].origin.x, [self frame].origin.y + [self frame].size.height);
@@ -442,7 +430,7 @@
 	if([theTableView selectedRow] == -1)
 		return;
 
-	NSMutableDictionary* selectedItem = [[[filtered objectAtIndex:[theTableView selectedRow]] mutableCopy] autorelease];
+	NSMutableDictionary* selectedItem = [[filtered objectAtIndex:[theTableView selectedRow]] mutableCopy];
 
 	NSString* candidateMatch = [selectedItem objectForKey:@"match"] ?: [selectedItem objectForKey:@"display"];
 	if([[self filterString] length] < [candidateMatch length])

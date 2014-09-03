@@ -29,7 +29,7 @@
 	NSDictionary* args = [proxy parameters];
 
 	NSString* html = nil;
-	if(NSMutableString* text = [[[args objectForKey:@"text"] mutableCopy] autorelease])
+	if(NSMutableString* text = [[args objectForKey:@"text"] mutableCopy])
 	{
 		[text replaceOccurrencesOfString:@"&" withString:@"&amp;" options:0 range:NSMakeRange(0, [text length])];
 		[text replaceOccurrencesOfString:@"<" withString:@"&lt;" options:0 range:NSMakeRange(0, [text length])];

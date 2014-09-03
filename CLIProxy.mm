@@ -15,33 +15,21 @@
 @implementation CLIProxy
 + (id)proxyWithOptions:(NSDictionary*)options;
 {
-	return [[(CLIProxy*)[[self class] alloc] initWithOptions:options] autorelease];
+	return [(CLIProxy*)[[self class] alloc] initWithOptions:options];
 }
 
 - (id)initWithOptions:(NSDictionary*)options
 {
 	if(self = [super init])
 	{
-		inputHandle      = [[NSFileHandle fileHandleForReadingAtPath:[options objectForKey:@"stdin"]] retain];
-		outputHandle     = [[NSFileHandle fileHandleForWritingAtPath:[options objectForKey:@"stdout"]] retain];
-		errorHandle      = [[NSFileHandle fileHandleForWritingAtPath:[options objectForKey:@"stderr"]] retain];
-		arguments        = [[options objectForKey:@"arguments"] retain];
-		environment      = [[options objectForKey:@"environment"] retain];
-		workingDirectory = [[options objectForKey:@"cwd"] retain];
+		inputHandle      = [NSFileHandle fileHandleForReadingAtPath:[options objectForKey:@"stdin"]];
+		outputHandle     = [NSFileHandle fileHandleForWritingAtPath:[options objectForKey:@"stdout"]];
+		errorHandle      = [NSFileHandle fileHandleForWritingAtPath:[options objectForKey:@"stderr"]];
+		arguments        = [options objectForKey:@"arguments"];
+		environment      = [options objectForKey:@"environment"];
+		workingDirectory = [options objectForKey:@"cwd"];
 	}
 	return self;
-}
-
-- (void)dealloc
-{
-	[inputHandle release];
-	[outputHandle release];
-	[errorHandle release];
-	[arguments release];
-	[environment release];
-	[workingDirectory release];
-	[parameters release];
-	[super dealloc];
 }
 
 - (NSDictionary*)parameters
@@ -68,7 +56,7 @@
 		if(lastKey)
 			[res setObject:[NSNull null] forKey:lastKey];
 
-		parameters = [res retain];
+		parameters = res;
 	}
 	return parameters;
 }
