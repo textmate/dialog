@@ -43,7 +43,7 @@ char const* create_pipe (char const* name)
 	if((res == -1) && (errno != EEXIST))
 	{
 		perror("Error creating the named pipe");
-		exit(1);
+		exit(EX_OSERR);
    }
 	return filename;
 }
@@ -54,7 +54,7 @@ int open_pipe (char const* name, int oflag)
 	if(fd == -1)
 	{
 		perror("Error opening the named pipe");
-		exit(1);
+		exit(EX_IOERR);
 	}
 	return fd;
 }
@@ -64,7 +64,7 @@ int main (int argc, char const* argv[])
 	if(argc == 2 && strcmp(argv[1], "--version") == 0)
 	{
 		fprintf(stderr, "%1$s %2$.1f (" COMPILE_DATE " revision %3$zu)\n", getprogname(), AppVersion, AppRevision);
-		return 0;
+		return EX_OK;
 	}
 
 	// If the argument list starts with a switch then assume it’s meant for trunk dialog
@@ -77,7 +77,7 @@ int main (int argc, char const* argv[])
 		if(!proxy)
 		{
 			fprintf(stderr, "error reaching server\n");
-			exit(1);
+			exit(EX_UNAVAILABLE);
 		}
 
 		char const* stdinName  = create_pipe("stdin");
@@ -162,5 +162,5 @@ int main (int argc, char const* argv[])
 		unlink(stderrName);
 	}
 
-	return 0;
+	return EX_OK;
 }
