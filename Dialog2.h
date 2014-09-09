@@ -1,6 +1,3 @@
-#ifndef _DIALOG_H_
-#define _DIALOG_H_
-
 static NSString* const kDialogServerConnectionName = @"com.macromates.dialog";
 
 @protocol DialogServerProtocol
@@ -12,5 +9,3 @@ static NSString* const kDialogServerConnectionName = @"com.macromates.dialog";
 #endif
 
 #define ErrorAndReturn(message) while(1){[proxy writeStringToError:@"Error: " message "\n"];return;};
-
-#endif /* _DIALOG_H_ */
