@@ -196,7 +196,6 @@
 // returnArgument: implementation. See <http://lists.macromates.com/textmate/2006-November/015321.html>
 - (NSMethodSignature*)methodSignatureForSelector:(SEL)aSelector
 {
-	NSLog(@"[%@ methodSignatureForSelector:%@]", [self class], NSStringFromSelector(aSelector));
 	NSString* str = NSStringFromSelector(aSelector);
 	if([str hasPrefix:@"returnArgument:"])
 	{
@@ -216,7 +215,6 @@
 
 - (void)forwardInvocation:(NSInvocation*)invocation
 {
-	NSLog(@"[%@ forwardInvocation:%@]", [self class], invocation);
 	NSString* str = NSStringFromSelector([invocation selector]);
 	if([str hasPrefix:@"returnArgument:"])
 	{
