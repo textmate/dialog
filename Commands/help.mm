@@ -20,31 +20,32 @@
 
 - (NSString*)usageForInvocation:(NSString*)invocation;
 {
-	return [NSString stringWithFormat:@"%@ help [command]", invocation];
+	return [NSString stringWithFormat:@"%@ <command>", invocation];
 }
 
 - (NSString*)commandSummaryText
 {
 	NSDictionary* commands = [TMDCommand registeredCommands];
 
-	NSMutableString* help = [NSMutableString stringWithCapacity:100];
+	NSMutableArray* help = [NSMutableArray arrayWithCapacity:100];
 
-	NSInteger commandCount = 0;
-	for(NSEnumerator* enumerator = [commands keyEnumerator]; NSString* commandName = [enumerator nextObject]; )
+	NSMutableArray* registeredCommands = [NSMutableArray arrayWithCapacity:100];
+	for(NSString* commandName in commands)
 	{
 		if(![commandName hasPrefix:@"x-"])
 		{
-			++commandCount;
 			TMDCommand* command = [commands objectForKey:commandName];
 			NSString* description = [command commandDescription];
-			[help appendFormat:@"\t%@: %@\n", commandName, description];
+			[registeredCommands addObject:[NSString stringWithFormat:@"\t%@: %@", commandName, description]];
 		}
 	}
-	[help insertString:[NSString stringWithFormat:@"%ld commands registered:\n", commandCount] atIndex:0];
 
-	[help appendString:@"Use `\"$DIALOG\" help command` for detailed help\n"];
+	[help addObject:@"usage: \"$DIALOG\" [--version] <command> [<args>]"];
+	[help addObject:[NSString stringWithFormat:@"%ld commands registered:", [registeredCommands count]]];
+	[help addObjectsFromArray:[registeredCommands sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)]];
+	[help addObject:@"Use `\"$DIALOG\" help <command>` for detailed help.\n"];
 
-	return help;
+	return [help componentsJoinedByString:@"\n"];
 }
 
 - (NSString*)helpForCommand:(NSString*)commandName
