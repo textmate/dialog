@@ -11,8 +11,6 @@
 {
 	WebView*	webView;
 	WebPreferences* webPreferences;
-	NSTimer* animationTimer;
-	NSDate* animationStart;
 
 	NSDate* didOpenAtDate; // ignore mouse moves for the next second
 	NSPoint mousePositionWhenOpened;

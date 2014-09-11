@@ -12,19 +12,11 @@
 "$DIALOG" tooltip --html '<h1>‘foobar’</h1>'
 */
 
-static CGFloat slow_in_out (CGFloat t)
-{
-	if(t < 1.0)
-		t = 1.0 / (1.0 + exp((-t*12.0)+6.0));
-	return std::min(t, 1.0);
-}
-
 NSString* const TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 
 @interface TMDHTMLTip ()
 - (void)setContent:(NSString*)content transparent:(BOOL)transparent;
 - (void)runUntilUserActivity:(id)sender;
-- (void)stopAnimation:(id)sender;
 @end
 
 @implementation TMDHTMLTip
@@ -200,45 +192,27 @@ NSString* const TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 	[keyWindow setAcceptsMouseMovedEvents:didAcceptMouseMovedEvents];
 
 
-	[self orderOut:self];
+	[self fadeOut:self];
 }
 
 // =============
 // = Animation =
 // =============
-- (void)orderOut:(id)sender
+- (void)fadeOut:(id)sender
 {
-	if(![self isVisible] || animationTimer)
-		return;
+	[NSAnimationContext beginGrouping];
 
-	[self stopAnimation:self];
-	[self setValue:[NSDate date] forKey:@"animationStart"];
-	[self setValue:[NSTimer scheduledTimerWithTimeInterval:0.02 target:self selector:@selector(animationTick:) userInfo:nil repeats:YES] forKey:@"animationTimer"];
-}
+	[NSAnimationContext currentContext].duration = 0.5;
+	[NSAnimationContext currentContext].completionHandler = ^{
+		[self orderOut:self];
+	};
 
-- (void)animationTick:(id)sender
-{
-	CGFloat alpha = 0.97 * (1.0 - slow_in_out(-1.5 * [animationStart timeIntervalSinceNow]));
-	if(alpha > 0.0)
-	{
-		[self setAlphaValue:alpha];
-	}
-	else
-	{
-		[super orderOut:self];
-		[self stopAnimation:self];
-		[self close];
-	}
-}
+	CABasicAnimation* anim = [CABasicAnimation animation];
+	anim.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn];
+	self.animations = @{ @"alphaValue" : anim };
 
-- (void)stopAnimation:(id)sender;
-{
-	if(animationTimer)
-	{
-		[animationTimer invalidate];
-		[self setValue:nil forKey:@"animationTimer"];
-		[self setValue:nil forKey:@"animationStart"];
-		[self setAlphaValue:0.97];
-	}
+	[self.animator setAlphaValue:0];
+
+	[NSAnimationContext endGrouping];
 }
 @end

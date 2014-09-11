@@ -8,4 +8,4 @@ PLIST_FLAGS        += -d'EXECUTABLE_NAME=Dialog2' -d'PRODUCT_NAME=Dialog2'
 BUNDLE_EXTENSION    = tmplugin
 LN_FLAGS           += -bundle
 
-FRAMEWORKS          = Cocoa Carbon WebKit
+FRAMEWORKS          = Cocoa Carbon WebKit Quartz
