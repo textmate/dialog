@@ -175,6 +175,7 @@ NSString* const TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 	BOOL didAcceptMouseMovedEvents = [keyWindow acceptsMouseMovedEvents];
 	[keyWindow setAcceptsMouseMovedEvents:YES];
 
+	BOOL slowFadeOut = NO;
 	while(NSEvent* event = [NSApp nextEventMatchingMask:NSAnyEventMask untilDate:[NSDate distantFuture] inMode:NSDefaultRunLoopMode dequeue:YES])
 	{
 		[NSApp sendEvent:event];
@@ -183,7 +184,10 @@ NSString* const TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 			break;
 
 		if([event type] == NSMouseMoved && [self shouldCloseForMousePosition:[NSEvent mouseLocation]])
+		{
+			slowFadeOut = YES;
 			break;
+		}
 
 		if(keyWindow != [NSApp keyWindow] || ![NSApp isActive])
 			break;
@@ -192,17 +196,17 @@ NSString* const TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 	[keyWindow setAcceptsMouseMovedEvents:didAcceptMouseMovedEvents];
 
 
-	[self fadeOut:self];
+	[self fadeOutSlowly:slowFadeOut];
 }
 
 // =============
 // = Animation =
 // =============
-- (void)fadeOut:(id)sender
+- (void)fadeOutSlowly:(BOOL)slowly
 {
 	[NSAnimationContext beginGrouping];
 
-	[NSAnimationContext currentContext].duration = 0.5;
+	[NSAnimationContext currentContext].duration = slowly ? 0.5 : 0.25;
 	[NSAnimationContext currentContext].completionHandler = ^{
 		[self orderOut:self];
 	};
