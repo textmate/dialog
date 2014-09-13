@@ -84,7 +84,7 @@ echo '{ items = ({title = "foo"; header = 1;},{title = "bar";}); }' | "$DIALOG" 
 				[theItem setKeyEquivalent:[NSString stringWithFormat:@"%ld", itemId % 10]];
 				[theItem setKeyEquivalentModifierMask:0];
 			}
-			if (inSection)
+			if(inSection)
 				[theItem setIndentationLevel:1];
 		}
 	}

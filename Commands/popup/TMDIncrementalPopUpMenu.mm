@@ -196,19 +196,19 @@
 		NSPredicate* hasChildren;
 
 		if(caseSensitive)
-			matchesFilter = [NSPredicate predicateWithFormat:@"match BEGINSWITH %@ OR (match == NULL AND display BEGINSWITH %@)", [self filterString], [self filterString]];
+				matchesFilter = [NSPredicate predicateWithFormat:@"match BEGINSWITH %@ OR (match == NULL AND display BEGINSWITH %@)", [self filterString], [self filterString]];
 		else	matchesFilter = [NSPredicate predicateWithFormat:@"match BEGINSWITH[c] %@ OR (match == NULL AND display BEGINSWITH[c] %@)", [self filterString], [self filterString]];
 
 		newFiltered = [suggestions filteredArrayUsingPredicate:matchesFilter];
-		if ([newFiltered count] == 1)
+		if([newFiltered count] == 1)
 		{
 			newFiltered = [newFiltered arrayByAddingObjectsFromArray:[[newFiltered lastObject] objectForKey:@"children"]];
 		}
-		else if ([newFiltered count] == 0)
+		else if([newFiltered count] == 0)
 		{
 			hasChildren =  [NSPredicate predicateWithFormat:@"children != NULL"];
 			itemsWithChildren = [suggestions filteredArrayUsingPredicate:hasChildren];
-			for (NSUInteger i = 0; i < [itemsWithChildren count]; i++)
+			for(NSUInteger i = 0; i < [itemsWithChildren count]; i++)
 			{
 				newFiltered=[newFiltered arrayByAddingObjectsFromArray:[[[itemsWithChildren objectAtIndex:i] objectForKey:@"children"] filteredArrayUsingPredicate:matchesFilter]];
 			}

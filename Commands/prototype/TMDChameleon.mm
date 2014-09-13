@@ -14,7 +14,7 @@ static NSMutableDictionary* DefaultValues = [NSMutableDictionary new];
 - (id)init
 {
 	id res = [DefaultValues objectForKey:NSStringFromClass([self class])];
-	return  [res mutableCopy];
+	return [res mutableCopy];
 }
 
 + (BOOL)createSubclassNamed:(NSString*)aName withValues:(NSDictionary*)values

@@ -138,7 +138,7 @@ id create_type (std::string const& str, option_t::type_t const& type, NSString**
 		{
 			NSError* error = nil;
 
-			if (str.size() > 0)
+			if(str.size() > 0)
 			{
 				res = [NSPropertyListSerialization propertyListWithData:[NSData dataWithBytes:str.data() length:str.size()] options:NSPropertyListMutableContainersAndLeaves format:NULL error:&error];
 				if(!res)
@@ -198,7 +198,10 @@ NSDictionary* ParseOptions (NSArray* arguments, option_t const* available, size_
 									[options setObject:value forKey:key];
 							else	error = strdup([err UTF8String]);
 						}
-						else	asprintf(&error, "no argument allowed after %s, found %s", t.word.c_str(), val.word.c_str());
+						else
+						{
+							asprintf(&error, "no argument allowed after %s, found %s", t.word.c_str(), val.word.c_str());
+						}
 					}
 					else if(it->second->argument == required_argument)
 					{

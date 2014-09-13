@@ -21,9 +21,9 @@ template <size_t N> NSDictionary* ParseOptions (NSArray* arguments, option_t con
 	return ParseOptions(arguments, available, N);
 }
 
-NSString* GetOptionList(option_t const* options, size_t optionCount);
+NSString* GetOptionList (option_t const* options, size_t optionCount);
 
-template <size_t optionCount> NSString* GetOptionList(option_t const (&options)[optionCount])
+template <size_t optionCount> NSString* GetOptionList (option_t const (&options)[optionCount])
 {
 	return GetOptionList(options, optionCount);
 }

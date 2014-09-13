@@ -48,7 +48,7 @@
 - (void)setOptionTemplate:(option_t const*)options count:(size_t)count;
 @end
 
-template <size_t optionCount> void SetOptionTemplate(CLIProxy* proxy, option_t const (&options)[optionCount])
+template <size_t optionCount> void SetOptionTemplate (CLIProxy* proxy, option_t const (&options)[optionCount])
 {
 	[proxy setOptionTemplate:options count:optionCount];
 }

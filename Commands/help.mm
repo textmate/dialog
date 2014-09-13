@@ -72,7 +72,7 @@
 	NSString* text = @"";
 
 	if([proxy numberOfArguments] < 3)
-		text = [self commandSummaryText];
+			text = [self commandSummaryText];
 	else	text = [self helpForCommand:[proxy argumentAtIndex:2]];
 
 	[proxy writeStringToError:text];

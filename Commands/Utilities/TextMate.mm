@@ -15,7 +15,7 @@ static CGFloat insertionDelayForNewDoc = 0.1;
  - “winForTextView” – the NSWindow which contains the the front most text view
  It returns “nil” if no text view could be found or created.
 */
-id frontMostTextViewForSelector(SEL selector, BOOL* isNew, NSWindow** winForTextView)
+id frontMostTextViewForSelector (SEL selector, BOOL* isNew, NSWindow** winForTextView)
 {
 
 	// Return value if a new doc was created
@@ -83,7 +83,7 @@ void insert_text (NSString* someText)
 	if(id textView = frontMostTextViewForSelector(@selector(insertText:), &isNewDocument, NULL))
 	{
 		if(isNewDocument) // delay the insertion to let TM finish the initialization of the new doc
-			[textView performSelector:@selector(insertText:) withObject:someText afterDelay:insertionDelayForNewDoc];
+				[textView performSelector:@selector(insertText:) withObject:someText afterDelay:insertionDelayForNewDoc];
 		else	[textView insertText:someText];
 	}
 }
@@ -99,7 +99,7 @@ void insert_snippet (NSString* aSnippet)
 	if(id textView = frontMostTextViewForSelector(@selector(insertSnippetWithOptions:), &isNewDocument, &win))
 	{
 		if(isNewDocument) // delay the insertion to let TM finish the initialization of the new doc
-			[textView performSelector:@selector(insertSnippetWithOptions:) withObject:[NSDictionary dictionaryWithObject:aSnippet forKey:@"content"] afterDelay:insertionDelayForNewDoc];
+				[textView performSelector:@selector(insertSnippetWithOptions:) withObject:[NSDictionary dictionaryWithObject:aSnippet forKey:@"content"] afterDelay:insertionDelayForNewDoc];
 		else	[textView insertSnippetWithOptions: [NSDictionary dictionaryWithObject:aSnippet forKey:@"content"]];
 
 		// Since after inserting a snippet the user should interact with the snippet
