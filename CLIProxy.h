@@ -24,8 +24,8 @@
 
 	NSDictionary* parameters;
 }
-+ (id)proxyWithOptions:(NSDictionary*)options;
-- (id)initWithOptions:(NSDictionary*)options;
++ (instancetype)proxyWithOptions:(NSDictionary*)options;
+- (instancetype)initWithOptions:(NSDictionary*)options;
 
 - (void)writeStringToOutput:(NSString*)text;
 - (void)writeStringToError:(NSString*)text;

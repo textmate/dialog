@@ -13,12 +13,12 @@
 @end
 
 @implementation CLIProxy
-+ (id)proxyWithOptions:(NSDictionary*)options;
++ (instancetype)proxyWithOptions:(NSDictionary*)options;
 {
-	return [(CLIProxy*)[[self class] alloc] initWithOptions:options];
+	return [[CLIProxy alloc] initWithOptions:options];
 }
 
-- (id)initWithOptions:(NSDictionary*)options
+- (instancetype)initWithOptions:(NSDictionary*)options
 {
 	if(self = [super init])
 	{
