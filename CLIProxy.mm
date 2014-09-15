@@ -9,7 +9,7 @@
 #import "TMDCommand.h"
 
 @interface CLIProxy ()
-- (NSArray*)arguments;
+@property (nonatomic, readonly) NSArray* arguments;
 @end
 
 @implementation CLIProxy
@@ -22,31 +22,31 @@
 {
 	if(self = [super init])
 	{
-		inputHandle      = [NSFileHandle fileHandleForReadingAtPath:[options objectForKey:@"stdin"]];
-		outputHandle     = [NSFileHandle fileHandleForWritingAtPath:[options objectForKey:@"stdout"]];
-		errorHandle      = [NSFileHandle fileHandleForWritingAtPath:[options objectForKey:@"stderr"]];
-		arguments        = [options objectForKey:@"arguments"];
-		environment      = [options objectForKey:@"environment"];
-		workingDirectory = [options objectForKey:@"cwd"];
+		_inputHandle      = [NSFileHandle fileHandleForReadingAtPath:[options objectForKey:@"stdin"]];
+		_outputHandle     = [NSFileHandle fileHandleForWritingAtPath:[options objectForKey:@"stdout"]];
+		_errorHandle      = [NSFileHandle fileHandleForWritingAtPath:[options objectForKey:@"stderr"]];
+		_arguments        = [options objectForKey:@"arguments"];
+		_environment      = [options objectForKey:@"environment"];
+		_workingDirectory = [options objectForKey:@"cwd"];
 	}
 	return self;
 }
 
 - (NSDictionary*)parameters
 {
-	if(!parameters)
+	if(!_parameters)
 	{
 		NSMutableDictionary* res = [NSMutableDictionary dictionary];
-		if(id plist = [TMDCommand readPropertyList:[self inputHandle] error:NULL])
+		if(id plist = [TMDCommand readPropertyList:self.inputHandle error:NULL])
 		{
 			if([plist isKindOfClass:[NSDictionary class]])
 				res = plist;
 		}
 
 		NSString* lastKey = nil;
-		for(NSUInteger i = 2; i < [arguments count]; ++i)
+		for(NSUInteger i = 2; i < [_arguments count]; ++i)
 		{
-			NSString* arg = [arguments objectAtIndex:i];
+			NSString* arg = [_arguments objectAtIndex:i];
 			BOOL isOption = [arg hasPrefix:@"--"];
 			if(lastKey)
 				[res setObject:(isOption ? [NSNull null] : arg) forKey:lastKey];
@@ -56,38 +56,28 @@
 		if(lastKey)
 			[res setObject:[NSNull null] forKey:lastKey];
 
-		parameters = res;
+		_parameters = res;
 	}
-	return parameters;
-}
-
-- (NSString*)workingDirectory
-{
-	return workingDirectory;
-}
-
-- (NSDictionary*)environment
-{
-	return environment;
+	return _parameters;
 }
 
 - (NSArray*)arguments
 {
 	if(!parsedOptions)
-		return arguments;
+		return _arguments;
 	return [parsedOptions objectForKey:@"literals"];
 }
 
 - (NSUInteger)numberOfArguments;
 {
-	return [[self arguments] count];
+	return [self.arguments count];
 }
 
 - (NSString*)argumentAtIndex:(NSUInteger)index;
 {
 	id argument = nil;
-	if([[self arguments] count] > index)
-		argument = [[self arguments] objectAtIndex:index];
+	if([self.arguments count] > index)
+		argument = [self.arguments objectAtIndex:index];
 	return argument;
 }
 
@@ -103,7 +93,7 @@
 
 - (void)parseOptions
 {
-	parsedOptions = ParseOptions([self arguments], optionTemplate, optionCount);
+	parsedOptions = ParseOptions(self.arguments, optionTemplate, optionCount);
 }
 
 - (void)setOptionTemplate:(option_t const*)options count:(size_t)count;
@@ -118,40 +108,22 @@
 // ===================
 - (void)writeStringToOutput:(NSString*)text;
 {
-	[[self outputHandle] writeString:text];
+	[self.outputHandle writeString:text];
 }
 
 - (void)writeStringToError:(NSString*)text;
 {
-	[[self errorHandle] writeString:text];
+	[self.errorHandle writeString:text]];
 }
 
 - (id)readPropertyListFromInput;
 {
 	NSError* error = nil;
-	id plist       = [TMDCommand readPropertyList:[self inputHandle] error:&error];
+	id plist       = [TMDCommand readPropertyList:self.inputHandle error:&error];
 
 	if(!plist)
 		[self writeStringToError:[error localizedDescription] ?: @"unknown error parsing property list\n"];
 
 	return plist;
-}
-
-// ================
-// = File handles =
-// ================
-- (NSFileHandle*)inputHandle;
-{
-	return inputHandle;
-}
-
-- (NSFileHandle*)outputHandle;
-{
-	return outputHandle;
-}
-
-- (NSFileHandle*)errorHandle;
-{
-	return errorHandle;
 }
 @end

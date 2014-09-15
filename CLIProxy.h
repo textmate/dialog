@@ -10,36 +10,26 @@
 
 @interface CLIProxy : NSObject
 {
-	NSDictionary* environment;
-	NSString* workingDirectory;
-
-	NSFileHandle* inputHandle;
-	NSFileHandle* outputHandle;
-	NSFileHandle* errorHandle;
+	NSArray* _arguments;
+	NSDictionary* _parameters;
 
 	option_t const* optionTemplate;
 	size_t optionCount;
-	NSArray* arguments;
 	NSDictionary* parsedOptions;
-
-	NSDictionary* parameters;
 }
+@property (nonatomic, readonly) NSFileHandle* inputHandle;
+@property (nonatomic, readonly) NSFileHandle* outputHandle;
+@property (nonatomic, readonly) NSFileHandle* errorHandle;
+@property (nonatomic, readonly) NSDictionary* parameters;
+@property (nonatomic, readonly) NSDictionary* environment;
+@property (nonatomic, readonly) NSString* workingDirectory;
+
 + (instancetype)proxyWithOptions:(NSDictionary*)options;
 - (instancetype)initWithOptions:(NSDictionary*)options;
 
 - (void)writeStringToOutput:(NSString*)text;
 - (void)writeStringToError:(NSString*)text;
 - (id)readPropertyListFromInput;
-
-- (NSDictionary*)parameters;
-
-- (NSFileHandle*)inputHandle;
-- (NSFileHandle*)outputHandle;
-- (NSFileHandle*)errorHandle;
-
-- (NSDictionary*)environment;
-
-- (NSString*)workingDirectory;
 
 - (NSString*)argumentAtIndex:(NSUInteger)index;
 - (NSUInteger)numberOfArguments;
