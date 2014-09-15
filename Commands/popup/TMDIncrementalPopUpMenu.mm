@@ -441,7 +441,7 @@
 		// We want to return the index of the selected item into the array which was passed in,
 		// but we can’t use the selected row index as the contents of the tablview is filtered down.
 		[selectedItem setObject:[NSNumber numberWithUnsignedInteger:[suggestions indexOfObject:[filtered objectAtIndex:[theTableView selectedRow]]]] forKey:@"index"];
-		[outputHandle writeString:[selectedItem description]];
+		[TMDCommand writePropertyList:selectedItem toFileHandle:outputHandle];
 	}
 	else if(NSString* toInsert = [selectedItem objectForKey:@"insert"])
 	{
