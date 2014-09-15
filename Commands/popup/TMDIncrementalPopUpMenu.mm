@@ -48,6 +48,20 @@
 @end
 
 @interface TMDIncrementalPopUpMenu ()
+{
+	NSFileHandle* outputHandle;
+	NSArray* suggestions;
+	NSMutableString* mutablePrefix;
+	NSString* staticPrefix;
+	NSArray* filtered;
+	NSTableView* theTableView;
+	NSPoint caretPos;
+	BOOL isAbove;
+	BOOL closeMe;
+	BOOL caseSensitive;
+
+	NSMutableCharacterSet* textualInputCharacters;
+}
 - (NSRect)rectOfMainScreen;
 - (NSString*)filterString;
 - (void)setupInterface;

@@ -15,6 +15,13 @@
 NSString* const TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 
 @interface TMDHTMLTip ()
+{
+	WebView*	webView;
+	WebPreferences* webPreferences;
+
+	NSDate* didOpenAtDate; // ignore mouse moves for the next second
+	NSPoint mousePositionWhenOpened;
+}
 - (void)setContent:(NSString*)content transparent:(BOOL)transparent;
 - (void)runUntilUserActivity:(id)sender;
 @end

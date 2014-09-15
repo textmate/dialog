@@ -8,12 +8,5 @@
 #import <WebKit/WebKit.h>
 
 @interface TMDHTMLTip : NSWindow
-{
-	WebView*	webView;
-	WebPreferences* webPreferences;
-
-	NSDate* didOpenAtDate; // ignore mouse moves for the next second
-	NSPoint mousePositionWhenOpened;
-}
 + (void)showWithContent:(NSString*)content atLocation:(NSPoint)point transparent:(BOOL)transparent;
 @end

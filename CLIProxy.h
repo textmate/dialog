@@ -9,14 +9,6 @@
 #import "OptionParser.h"
 
 @interface CLIProxy : NSObject
-{
-	NSArray* _arguments;
-	NSDictionary* _parameters;
-
-	option_t const* optionTemplate;
-	size_t optionCount;
-	NSDictionary* parsedOptions;
-}
 @property (nonatomic, readonly) NSFileHandle* inputHandle;
 @property (nonatomic, readonly) NSFileHandle* outputHandle;
 @property (nonatomic, readonly) NSFileHandle* errorHandle;

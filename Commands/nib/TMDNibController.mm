@@ -37,6 +37,10 @@
 @end
 
 @interface TMDNibController ()
+{
+	NSMutableArray* clientFileHandles;
+	NSWindow* window;
+}
 @property (nonatomic) NSArray* topLevelObjects;
 @property (nonatomic) NSMutableDictionary* parameters;
 @end

@@ -10,20 +10,6 @@
 static NSUInteger const MAX_ROWS = 15;
 
 @interface TMDIncrementalPopUpMenu : NSWindow<NSTableViewDataSource>
-{
-	NSFileHandle* outputHandle;
-	NSArray* suggestions;
-	NSMutableString* mutablePrefix;
-	NSString* staticPrefix;
-	NSArray* filtered;
-	NSTableView* theTableView;
-	NSPoint caretPos;
-	BOOL isAbove;
-	BOOL closeMe;
-	BOOL caseSensitive;
-
-	NSMutableCharacterSet* textualInputCharacters;
-}
 - (id)initWithItems:(NSArray*)someSuggestions alreadyTyped:(NSString*)aUserString staticPrefix:(NSString*)aStaticPrefix additionalWordCharacters:(NSString*)someAdditionalWordCharacters caseSensitive:(BOOL)isCaseSensitive writeChoiceToFileDescriptor:(NSFileHandle*)aFileDescriptor;
 - (void)setCaretPos:(NSPoint)aPos;
 @end

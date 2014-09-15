@@ -4,11 +4,6 @@
 //
 
 @interface TMDNibController : NSObject <NSWindowDelegate>
-{
-	NSMutableArray* clientFileHandles;
-
-	NSWindow* window;
-}
 - (id)initWithNibPath:(NSString*)aPath;
 - (void)showWindowAndCenter:(BOOL)shouldCenter;
 

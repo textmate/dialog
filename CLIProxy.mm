@@ -9,6 +9,14 @@
 #import "TMDCommand.h"
 
 @interface CLIProxy ()
+{
+	NSArray* _arguments;
+	NSDictionary* _parameters;
+
+	option_t const* optionTemplate;
+	size_t optionCount;
+	NSDictionary* parsedOptions;
+}
 @property (nonatomic, readonly) NSArray* arguments;
 @end
 
