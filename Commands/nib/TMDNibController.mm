@@ -39,7 +39,6 @@
 @interface TMDNibController ()
 {
 	NSMutableArray* clientFileHandles;
-	NSWindow* window;
 }
 @property (nonatomic) NSArray* topLevelObjects;
 @property (nonatomic) NSMutableDictionary* parameters;
@@ -83,7 +82,7 @@
 						[self setWindow:object];
 				}
 
-				if(window)
+				if(_window)
 					return self;
 
 				NSLog(@"%s failed to find window in nib: %@", sel_getName(_cmd), aPath);
@@ -103,17 +102,15 @@
 	[self setWindow:nil];
 }
 
-- (NSWindow*)window    { return window; }
-
 - (void)setWindow:(NSWindow*)aWindow
 {
-	if(window != aWindow)
+	if(_window != aWindow)
 	{
-		[window setDelegate:nil];
+		[_window setDelegate:nil];
 
-		window = aWindow;
-		[window setDelegate:self];
-		[window setReleasedWhenClosed:NO]; // incase this was set wrong in IB
+		_window = aWindow;
+		[_window setDelegate:self];
+		[_window setReleasedWhenClosed:NO]; // incase this was set wrong in IB
 	}
 }
 
@@ -129,15 +126,15 @@
 	{
 		if(NSWindow* keyWindow = [NSApp keyWindow])
 		{
-			NSRect frame = [window frame], parentFrame = [keyWindow frame];
-			[window setFrame:NSMakeRect(NSMidX(parentFrame) - 0.5 * NSWidth(frame), NSMidY(parentFrame) - 0.5 * NSHeight(frame), NSWidth(frame), NSHeight(frame)) display:NO];
+			NSRect frame = [_window frame], parentFrame = [keyWindow frame];
+			[_window setFrame:NSMakeRect(NSMidX(parentFrame) - 0.5 * NSWidth(frame), NSMidY(parentFrame) - 0.5 * NSHeight(frame), NSWidth(frame), NSHeight(frame)) display:NO];
 		}
 		else
 		{
-			[window center];
+			[_window center];
 		}
 	}
-	[window makeKeyAndOrderFront:self];
+	[_window makeKeyAndOrderFront:self];
 }
 
 - (void)makeControllersCommitEditing

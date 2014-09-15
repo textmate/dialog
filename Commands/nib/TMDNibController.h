@@ -4,13 +4,11 @@
 //
 
 @interface TMDNibController : NSObject <NSWindowDelegate>
+@property (nonatomic) NSWindow* window;
 - (id)initWithNibPath:(NSString*)aPath;
 - (void)showWindowAndCenter:(BOOL)shouldCenter;
 
 - (void)addClientFileHandle:(NSFileHandle*)aFileHandle;
 - (void)updateParametersWith:(id)plist;
 - (void)tearDown;
-
-- (NSWindow*)window;
-- (void)setWindow:(NSWindow*)aValue;
 @end
