@@ -99,19 +99,19 @@ int main (int argc, char const* argv[])
 
 		[proxy connectFromClientWithOptions:dict];
 
-		int stdin_fd  = open_pipe(stdinName, O_WRONLY);
-		int stdout_fd = open_pipe(stdoutName, O_RDONLY);
-		int stderr_fd = open_pipe(stderrName, O_RDONLY);
+		int inputFd  = open_pipe(stdinName, O_WRONLY);
+		int outputFd = open_pipe(stdoutName, O_RDONLY);
+		int errorFd = open_pipe(stderrName, O_RDONLY);
 
 		std::map<int, int> fdMap;
-		fdMap[STDIN_FILENO] = stdin_fd;
-		fdMap[stdout_fd]    = STDOUT_FILENO;
-		fdMap[stderr_fd]    = STDERR_FILENO;
+		fdMap[STDIN_FILENO] = inputFd;
+		fdMap[outputFd]     = STDOUT_FILENO;
+		fdMap[errorFd]      = STDERR_FILENO;
 
 		if(isatty(STDIN_FILENO) != 0)
 		{
 			fdMap.erase(fdMap.find(STDIN_FILENO));
-			close(stdin_fd);
+			close(inputFd);
 		}
 
 		while(fdMap.size() > 1 || (fdMap.size() == 1 && fdMap.find(STDIN_FILENO) == fdMap.end()))
@@ -119,14 +119,14 @@ int main (int argc, char const* argv[])
 			fd_set readfds, writefds;
 			FD_ZERO(&readfds); FD_ZERO(&writefds);
 
-			int num_fds = 0;
+			int fdCount = 0;
 			for(auto const& pair : fdMap)
 			{
 				FD_SET(pair.first, &readfds);
-				num_fds = std::max(num_fds, pair.first + 1);
+				fdCount = std::max(fdCount, pair.first + 1);
 			}
 
-			int i = select(num_fds, &readfds, &writefds, NULL, NULL);
+			int i = select(fdCount, &readfds, &writefds, NULL, NULL);
 			if(i == -1)
 			{
 				perror("Error from select");
@@ -149,14 +149,14 @@ int main (int argc, char const* argv[])
 
 			for(int key : toRemove)
 			{
-				if(fdMap[key] == stdin_fd)
-					close(stdin_fd);
+				if(fdMap[key] == inputFd)
+					close(inputFd);
 				fdMap.erase(key);
 			}
 		}
 
-		close(stdout_fd);
-		close(stderr_fd);
+		close(outputFd);
+		close(errorFd);
 		unlink(stdinName);
 		unlink(stdoutName);
 		unlink(stderrName);
