@@ -1,4 +1,3 @@
-#import <Carbon/Carbon.h>
 #import "../Dialog2.h"
 #import "../TMDCommand.h"
 #import "Utilities/TextMate.h" // -positionForWindowUnderCaret

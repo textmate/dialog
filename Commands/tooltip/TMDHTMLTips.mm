@@ -5,7 +5,6 @@
 //
 
 #import "TMDHTMLTips.h"
-#import <algorithm>
 
 /*
 "$DIALOG" tooltip --text '‘foobar’'

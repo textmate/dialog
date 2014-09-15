@@ -6,7 +6,6 @@
 //
 
 #import "TMDChameleon.h"
-#import <objc/runtime.h>
 
 static NSMutableDictionary* DefaultValues = [NSMutableDictionary new];
 

@@ -1,5 +1,3 @@
-#import <Cocoa/Cocoa.h>
-#import <Foundation/Foundation.h>
 #import "../../TMDCommand.h"
 #import "../../Dialog2.h"
 #import "TMDHTMLTips.h"

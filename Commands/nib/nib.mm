@@ -1,6 +1,3 @@
-#import <vector>
-#import <string>
-#import <sys/stat.h>
 #import "../../Dialog2.h"
 #import "../../TMDCommand.h"
 #import "../../OptionParser.h"

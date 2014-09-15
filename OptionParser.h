@@ -3,9 +3,6 @@
 //  Created by Allan Odgaard on 2007-09-24.
 //
 
-#import <Cocoa/Cocoa.h>
-#import <string>
-
 struct option_t
 {
 	std::string short_option, long_option;

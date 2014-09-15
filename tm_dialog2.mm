@@ -3,22 +3,6 @@
 //  Created by Allan Odgaard on 2007-09-22.
 //
 
-#include <sys/uio.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <sys/select.h>
-#include <stdarg.h>
-#include <sys/stat.h>
-#include <map>
-#include <vector>
-#include <string.h>
-#include <poll.h>
-#include <stdlib.h>
-
-#import <Foundation/Foundation.h>
 #import "Dialog2.h"
 
 static double const AppVersion  = 2.0;

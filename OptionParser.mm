@@ -3,9 +3,6 @@
 //  Created by Allan Odgaard on 2007-09-24.
 //
 
-#import <map>
-#import <string>
-#import <getopt.h>
 #import "OptionParser.h"
 #import "Dialog2.h"
 

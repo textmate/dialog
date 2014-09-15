@@ -5,7 +5,6 @@
 //  Created by Ciaran Walsh on 16/02/2008.
 //
 
-#import <Cocoa/Cocoa.h>
 #import "OptionParser.h"
 
 @interface CLIProxy : NSObject

@@ -4,7 +4,6 @@
 //  Created by Joachim Mårtensson on 2007-08-10.
 //
 
-#import <Cocoa/Cocoa.h>
 #import "../../CLIProxy.h"
 
 static NSUInteger const MAX_ROWS = 15;
