@@ -28,7 +28,7 @@ id connect ()
 {
 	NSString* portName = kDialogServerConnectionName;
 	if(char const* var = getenv("DIALOG_PORT_NAME"))
-		portName = [NSString stringWithUTF8String:var];
+		portName = @(var);
 
 	id proxy = [NSConnection rootProxyForConnectionWithRegisteredName:portName host:nil];
 	[proxy setProtocolForProxy:@protocol(DialogServerProtocol)];
@@ -86,13 +86,13 @@ int main (int argc, char const* argv[])
 
 		NSMutableArray* args = [NSMutableArray array];
 		for(size_t i = 0; i < argc; ++i)
-			[args addObject:[NSString stringWithUTF8String:argv[i]]];
+			[args addObject:@(argv[i])];
 
 		NSDictionary* dict = @{
-			@"stdin"       : [NSString stringWithUTF8String:stdinName],
-			@"stdout"      : [NSString stringWithUTF8String:stdoutName],
-			@"stderr"      : [NSString stringWithUTF8String:stderrName],
-			@"cwd"         : [NSString stringWithUTF8String:getcwd(NULL, 0)],
+			@"stdin"       : @(stdinName),
+			@"stdout"      : @(stdoutName),
+			@"stderr"      : @(stderrName),
+			@"cwd"         : @(getcwd(NULL, 0)),
 			@"environment" : [[NSProcessInfo processInfo] environment],
 			@"arguments"   : args,
 		};

@@ -126,7 +126,7 @@ env|egrep 'DIALOG|TM_SUPPORT'|grep -v DIALOG_1|perl -pe 's/(.*?)=(.*)/export $1=
 	if(NSString* nibName = [args objectForKey:@"load"])
 	{
 		// TODO we should let an option type be ‘filename’ and have CLIProxy resolve these (and error when file does not exist)
-		NSString* nib = [NSString stringWithUTF8String:find_nib([nibName UTF8String], [[proxy workingDirectory] UTF8String] ?: "", [proxy environment]).c_str()];
+		NSString* nib = @(find_nib([nibName UTF8String], [[proxy workingDirectory] UTF8String] ?: "", [proxy environment]).c_str());
 		if(nib == nil || [nib length] == 0)
 			ErrorAndReturn(@"nib not found. The nib name must be the first argument given");
 

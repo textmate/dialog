@@ -124,7 +124,7 @@ id create_type (std::string const& str, option_t::type_t const& type, NSString**
 	{
 		case option_t::string:
 		{
-			res = [NSString stringWithUTF8String:str.c_str()];
+			res = @(str.c_str());
 		}
 		break;
 
@@ -186,7 +186,7 @@ NSDictionary* ParseOptions (NSArray* arguments, option_t const* available, size_
 				}
 				else
 				{
-					NSString* key = [NSString stringWithUTF8String:it->second->long_option.c_str()];
+					NSString* key = @(it->second->long_option.c_str());
 
 					token_t const& val = tokenizer.get(it->second->argument != no_argument);
 					if(val.type == token_t::value)
@@ -218,7 +218,7 @@ NSDictionary* ParseOptions (NSArray* arguments, option_t const* available, size_
 
 			case token_t::literal:
 			{
-				[literals addObject:[NSString stringWithUTF8String:t.word.c_str()]];
+				[literals addObject:@(t.word.c_str())];
 			}
 			break;
 
@@ -231,7 +231,7 @@ NSDictionary* ParseOptions (NSArray* arguments, option_t const* available, size_
 
 	} while(!error && !done);
 
-	NSString* errString = error ? [NSString stringWithUTF8String:error] : nil;
+	NSString* errString = error ? @(error) : nil;
 	free(error);
 
 	return @{ @"options" : options, @"literals" : literals, @"error" : errString };
@@ -259,5 +259,5 @@ NSString* GetOptionList (option_t const* options, size_t optionCount)
 		res += "\n";
 	}
 
-	return [NSString stringWithUTF8String:res.c_str()];
+	return @(res.c_str());
 }
