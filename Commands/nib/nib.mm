@@ -128,17 +128,21 @@ env|egrep 'DIALOG|TM_SUPPORT'|grep -v DIALOG_1|perl -pe 's/(.*?)=(.*)/export $1=
 		// TODO we should let an option type be ‘filename’ and have CLIProxy resolve these (and error when file does not exist)
 		NSString* nib = @(find_nib([nibName UTF8String], [[proxy workingDirectory] UTF8String] ?: "", [proxy environment]).c_str());
 		if(nib == nil || [nib length] == 0)
-			ErrorAndReturn(@"nib not found. The nib name must be the first argument given");
-
-		if(TMDNibController* nibController = [[TMDNibController alloc] initWithNibPath:nib])
 		{
-			NSString* token = [NSString stringWithFormat:@"%ld", ++NibTokenCount];
-			[Nibs setObject:nibController forKey:token];
+			[proxy writeStringToError:@"nib not found. The nib name must be the first argument given"];
+		}
+		else
+		{
+			if(TMDNibController* nibController = [[TMDNibController alloc] initWithNibPath:nib])
+			{
+				NSString* token = [NSString stringWithFormat:@"%ld", ++NibTokenCount];
+				[Nibs setObject:nibController forKey:token];
 
-			[nibController updateParametersWith:model];
-			[nibController showWindowAndCenter:shouldCenter];
+				[nibController updateParametersWith:model];
+				[nibController showWindowAndCenter:shouldCenter];
 
-			[proxy writeStringToOutput:token];
+				[proxy writeStringToOutput:token];
+			}
 		}
 	}
 }
