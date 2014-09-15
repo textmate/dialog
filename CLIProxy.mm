@@ -106,14 +106,14 @@
 // ===================
 // = Reading/Writing =
 // ===================
-- (void)writeStringToOutput:(NSString*)text;
+- (void)writeStringToOutput:(NSString*)aString;
 {
-	[self.outputHandle writeString:text];
+	[self.outputHandle writeData:[aString dataUsingEncoding:NSUTF8StringEncoding]];
 }
 
-- (void)writeStringToError:(NSString*)text;
+- (void)writeStringToError:(NSString*)aString;
 {
-	[self.errorHandle writeString:text]];
+	[self.errorHandle writeData:[aString dataUsingEncoding:NSUTF8StringEncoding]];
 }
 
 - (id)readPropertyListFromInput;

@@ -12,7 +12,3 @@
 - (NSString*)commandDescription;
 - (NSString*)usageForInvocation:(NSString*)invocation;
 @end
-
-@interface NSFileHandle (WriteString)
-- (void)writeString:(NSString*)string;
-@end

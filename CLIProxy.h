@@ -27,8 +27,8 @@
 + (instancetype)proxyWithOptions:(NSDictionary*)options;
 - (instancetype)initWithOptions:(NSDictionary*)options;
 
-- (void)writeStringToOutput:(NSString*)text;
-- (void)writeStringToError:(NSString*)text;
+- (void)writeStringToOutput:(NSString*)aString;
+- (void)writeStringToError:(NSString*)aString;
 - (id)readPropertyListFromInput;
 
 - (NSString*)argumentAtIndex:(NSUInteger)index;
