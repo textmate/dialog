@@ -55,13 +55,13 @@
 	NSString* staticPrefix;
 	NSArray* filtered;
 	NSTableView* theTableView;
-	NSPoint caretPos;
 	BOOL isAbove;
 	BOOL closeMe;
 	BOOL caseSensitive;
 
 	NSMutableCharacterSet* textualInputCharacters;
 }
+
 - (NSRect)rectOfMainScreen;
 - (NSString*)filterString;
 - (void)setupInterface;
@@ -110,26 +110,26 @@
 
 - (void)setCaretPos:(NSPoint)aPos
 {
-	caretPos = aPos;
+	_caretPos = aPos;
 	isAbove = NO;
 
 	NSRect mainScreen = [self rectOfMainScreen];
 
-	CGFloat offx = (caretPos.x/mainScreen.size.width) + 1.0;
-	if((caretPos.x + [self frame].size.width) > (mainScreen.size.width*offx))
-		caretPos.x = caretPos.x - [self frame].size.width;
+	CGFloat offx = (_caretPos.x/mainScreen.size.width) + 1.0;
+	if((_caretPos.x + [self frame].size.width) > (mainScreen.size.width*offx))
+		_caretPos.x = _caretPos.x - [self frame].size.width;
 
-	if(caretPos.y>=0 && caretPos.y<[self frame].size.height)
+	if(_caretPos.y>=0 && _caretPos.y<[self frame].size.height)
 	{
-		caretPos.y = caretPos.y + ([self frame].size.height + [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"]*1.5);
+		_caretPos.y = _caretPos.y + ([self frame].size.height + [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"]*1.5);
 		isAbove = YES;
 	}
-	if(caretPos.y<0 && (mainScreen.size.height-[self frame].size.height)<(caretPos.y*-1.0))
+	if(_caretPos.y<0 && (mainScreen.size.height-[self frame].size.height)<(_caretPos.y*-1.0))
 	{
-		caretPos.y = caretPos.y + ([self frame].size.height + [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"]*1.5);
+		_caretPos.y = _caretPos.y + ([self frame].size.height + [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"]*1.5);
 		isAbove = YES;
 	}
-	[self setFrameTopLeftPoint:caretPos];
+	[self setFrameTopLeftPoint:_caretPos];
 }
 
 - (void)setupInterface
@@ -250,14 +250,14 @@
 			maxWidth = MAX(maxWidth, kTableViewPadding + [[theTableView preparedCellAtColumn:0 row:i] cellSizeForBounds:NSMakeRect(0, 0, CGFLOAT_MAX, theTableView.rowHeight)].width);
 		maxWidth = MIN(maxWidth, 600);
 	}
-	if(caretPos.y>=0 && (isAbove || caretPos.y<newHeight))
+	if(_caretPos.y>=0 && (isAbove || _caretPos.y<newHeight))
 	{
 		isAbove = YES;
-		old.y = caretPos.y + (newHeight + [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"]*1.5);
+		old.y = _caretPos.y + (newHeight + [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"]*1.5);
 	}
-	if(caretPos.y<0 && (isAbove || (mainScreen.size.height-newHeight)<(caretPos.y*-1.0)))
+	if(_caretPos.y<0 && (isAbove || (mainScreen.size.height-newHeight)<(_caretPos.y*-1.0)))
 	{
-		old.y = caretPos.y + (newHeight + [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"]*1.5);
+		old.y = _caretPos.y + (newHeight + [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"]*1.5);
 	}
 
 	// newHeight is currently the new height for theTableView, but we need to resize the whole window
