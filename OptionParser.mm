@@ -6,8 +6,6 @@
 #import "OptionParser.h"
 #import "Dialog2.h"
 
-using namespace std;
-
 struct tokenizer_t
 {
 	NSArray* array;
@@ -15,15 +13,15 @@ struct tokenizer_t
 
 	enum { between_words, in_short, in_long } state;
 	bool did_unget, disabled;
-	string partial_word;
+	std::string partial_word;
 
 	struct token_t
 	{
 		enum type_t { option, value, literal, end } type;
-		string word;
+		std::string word;
 
 		token_t (type_t type, NSString* word) : type(type), word([word UTF8String]) { }
-		token_t (type_t type = end, string word = "") : type(type), word(word) { }
+		token_t (type_t type = end, std::string word = "") : type(type), word(word) { }
 	};
 
 	token_t current_token;
@@ -63,7 +61,7 @@ struct tokenizer_t
 		}
 		else
 		{
-			string word([[array objectAtIndex:index] UTF8String]);
+			std::string word([[array objectAtIndex:index] UTF8String]);
 			if(word == "--")
 			{
 				disabled = true;
@@ -72,12 +70,12 @@ struct tokenizer_t
 			}
 			else if(word.size() > 2 && word.substr(0, 2) == "--")
 			{
-				string::iterator eqPos = find(word.begin(), word.end(), '=');
-				current_token = token_t(token_t::option, string(word.begin() + 2, eqPos));
+				std::string::iterator eqPos = find(word.begin(), word.end(), '=');
+				current_token = token_t(token_t::option, std::string(word.begin() + 2, eqPos));
 
 				if(eqPos != word.end())
 				{
-					partial_word = string(eqPos + 1, word.end());
+					partial_word = std::string(eqPos + 1, word.end());
 					state = in_long;
 				}
 				else
@@ -95,7 +93,7 @@ struct tokenizer_t
 				}
 				else
 				{
-					partial_word = word.substr(2, string::npos);
+					partial_word = word.substr(2, std::string::npos);
 					state = in_short;
 				}
 			}
@@ -155,7 +153,7 @@ NSDictionary* ParseOptions (NSArray* arguments, option_t const* available, size_
 {
 	typedef tokenizer_t::token_t token_t;
 
-	map<string, option_t const*> m;
+	std::map<std::string, option_t const*> m;
 	for(size_t i = 0; i < n; ++i)
 	{
 		m[available[i].long_option] = &available[i];
@@ -176,7 +174,7 @@ NSDictionary* ParseOptions (NSArray* arguments, option_t const* available, size_
 		{
 			case token_t::option:
 			{
-				map<string, option_t const*>::iterator it = m.find(t.word);
+				std::map<std::string, option_t const*>::iterator it = m.find(t.word);
 				if(it == m.end())
 				{
 					asprintf(&error, "no such option: %s", t.word.c_str());
