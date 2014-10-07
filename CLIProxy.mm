@@ -49,15 +49,22 @@
 		NSString* lastKey = nil;
 		for(NSUInteger i = 2; i < [_arguments count]; ++i)
 		{
-			NSString* arg = [_arguments objectAtIndex:i];
-			BOOL isOption = [arg hasPrefix:@"--"];
-			if(lastKey)
-				[res setObject:(isOption ? [NSNull null] : arg) forKey:lastKey];
-			lastKey = isOption ? [arg substringFromIndex:2] : nil;
+			NSString* arg = _arguments[i];
+			if([arg hasPrefix:@"--"] && ![arg isEqualToString:@"--"])
+			{
+				if(lastKey)
+					res[lastKey] = @""; // We use NSString because we may send mutableCopy to parameters
+				lastKey = [arg substringFromIndex:2];
+			}
+			else if(lastKey)
+			{
+				if([arg isEqualToString:@"--"])
+					res[lastKey] = i+1 < [_arguments count] ? _arguments[++i] : @"";
+				else
+					res[lastKey] = arg;
+				lastKey = nil;
+			}
 		}
-
-		if(lastKey)
-			[res setObject:[NSNull null] forKey:lastKey];
 
 		_parameters = res;
 	}
