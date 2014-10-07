@@ -13,7 +13,6 @@
 	NSArray* _arguments;
 	NSDictionary* _parameters;
 }
-@property (nonatomic, readonly) NSArray* arguments;
 @end
 
 @implementation CLIProxy
@@ -65,11 +64,6 @@
 	return _parameters;
 }
 
-- (NSArray*)arguments
-{
-	return _arguments;
-}
-
 - (NSUInteger)numberOfArguments;
 {
 	return [_arguments count];
@@ -77,10 +71,7 @@
 
 - (NSString*)argumentAtIndex:(NSUInteger)index;
 {
-	id argument = nil;
-	if([self.arguments count] > index)
-		argument = [self.arguments objectAtIndex:index];
-	return argument;
+	return index < [_arguments count] ? _arguments[index] : nil;
 }
 
 // ===================
