@@ -1,6 +1,5 @@
 #import "../Dialog2.h"
 #import "../TMDCommand.h"
-#import "../OptionParser.h"
 
 /*
 "$DIALOG" help filepanel

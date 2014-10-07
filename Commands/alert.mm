@@ -1,6 +1,5 @@
 #import "../Dialog2.h"
 #import "../TMDCommand.h"
-#import "../OptionParser.h"
 
 /*
 echo '{alertStyle = warning; button1 = 'OK'; title = 'test'; body = 'Testing';}' | "$DIALOG" alert

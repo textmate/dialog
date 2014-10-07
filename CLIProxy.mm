@@ -12,10 +12,6 @@
 {
 	NSArray* _arguments;
 	NSDictionary* _parameters;
-
-	option_t const* optionTemplate;
-	size_t optionCount;
-	NSDictionary* parsedOptions;
 }
 @property (nonatomic, readonly) NSArray* arguments;
 @end
@@ -71,14 +67,12 @@
 
 - (NSArray*)arguments
 {
-	if(!parsedOptions)
-		return _arguments;
-	return [parsedOptions objectForKey:@"literals"];
+	return _arguments;
 }
 
 - (NSUInteger)numberOfArguments;
 {
-	return [self.arguments count];
+	return [_arguments count];
 }
 
 - (NSString*)argumentAtIndex:(NSUInteger)index;
@@ -87,28 +81,6 @@
 	if([self.arguments count] > index)
 		argument = [self.arguments objectAtIndex:index];
 	return argument;
-}
-
-- (id)valueForOption:(NSString*)option;
-{
-	if(!parsedOptions)
-	{
-		NSLog(@"Error: -valueForOption: called without first setting an option template");
-		return nil;
-	}
-	return [[parsedOptions objectForKey:@"options"] objectForKey:option];
-}
-
-- (void)parseOptions
-{
-	parsedOptions = ParseOptions(self.arguments, optionTemplate, optionCount);
-}
-
-- (void)setOptionTemplate:(option_t const*)options count:(size_t)count;
-{
-	optionTemplate = options;
-	optionCount = count;
-	[self parseOptions];
 }
 
 // ===================
