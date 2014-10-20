@@ -4,7 +4,7 @@ static CGFloat insertionDelayForNewDoc = 0.1;
 
 // Declarations to avoid compiler warnings
 @interface NSObject (OakTextViewPrivate)
-- (id)insertSnippetWithOptions:(NSDictionary*)options;
+- (void)insertSnippetWithOptions:(NSDictionary*)options;
 - (void)makeTextViewFirstResponder:(id)sender;
 - (void)newDocument:(id)sender;
 @end
