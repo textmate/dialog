@@ -46,24 +46,26 @@
 				res = plist;
 		}
 
-		NSString* lastKey = nil;
-		for(NSUInteger i = 2; i < [_arguments count]; ++i)
+		for(NSUInteger i = 2; i < [_arguments count]; )
 		{
-			NSString* arg = _arguments[i];
-			if([arg hasPrefix:@"--"] && ![arg isEqualToString:@"--"])
+			NSString* key = _arguments[i++];
+			if(![key hasPrefix:@"--"])
+				continue; // TODO Report unexpected argument to user
+
+			key = [key substringFromIndex:2];
+			NSString* value = i < _arguments.count ? _arguments[i] : @"";
+
+			if([value hasPrefix:@"--"] && ![value isEqualToString:@"--"])
 			{
-				if(lastKey)
-					res[lastKey] = @""; // We use NSString because we may send mutableCopy to parameters
-				lastKey = [arg substringFromIndex:2];
+				value = @""; // We use NSString instead of NSNull because we may send mutableCopy to parameters
 			}
-			else if(lastKey)
+			else
 			{
-				if([arg isEqualToString:@"--"])
-					res[lastKey] = i+1 < [_arguments count] ? _arguments[++i] : @"";
-				else
-					res[lastKey] = arg;
-				lastKey = nil;
+				++i;
+				if([value isEqualToString:@"--"])
+					value = i < _arguments.count ? _arguments[i++] : @"";
 			}
+			res[key] = value;
 		}
 
 		_parameters = res;
