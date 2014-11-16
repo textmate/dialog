@@ -52,8 +52,6 @@
 			NSString* arg = _arguments[i];
 			if([arg hasPrefix:@"--"] && ![arg isEqualToString:@"--"])
 			{
-				if(lastKey)
-					res[lastKey] = @""; // We use NSString because we may send mutableCopy to parameters
 				lastKey = [arg substringFromIndex:2];
 			}
 			else if(lastKey)
@@ -65,6 +63,8 @@
 				lastKey = nil;
 			}
 		}
+		if(lastKey)
+			res[lastKey] = @""; // We use NSString because we may send mutableCopy to parameters
 
 		_parameters = res;
 	}
