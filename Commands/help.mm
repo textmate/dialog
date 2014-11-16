@@ -69,13 +69,9 @@
 
 - (void)handleCommand:(CLIProxy*)proxy
 {
-	NSString* text = @"";
-
 	if([proxy numberOfArguments] < 3)
-			text = [self commandSummaryText];
-	else	text = [self helpForCommand:[proxy argumentAtIndex:2]];
-
-	[proxy writeStringToError:text];
+			[proxy writeStringToError:[self commandSummaryText]];
+	else	[proxy writeStringToOutput:[self helpForCommand:[proxy argumentAtIndex:2]]];
 }
 @end
 /*
