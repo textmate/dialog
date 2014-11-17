@@ -85,7 +85,7 @@ env|egrep 'DIALOG|TM_SUPPORT'|grep -v DIALOG_1|perl -pe 's/(.*?)=(.*)/export $1=
 	{
 		if(TMDNibController* nibController = [Nibs objectForKey:updateToken])
 				[nibController updateParametersWith:model];
-		else	[proxy writeStringToOutput:@"There is no nib with that token"];
+		else	[proxy writeStringToError:@"There is no nib with that token"];
 	}
 
 	if(NSString* waitToken = [args objectForKey:@"wait"])
