@@ -176,7 +176,9 @@ static NSInteger NibTokenCount = 0;
 			[object unbind:@"contentObject"];
 	}
 
-	[NibControllers removeObjectForKey:_token];
+	// It isn’t always safe to release our window in windowWillClose: (at least on 10.9) which
+	// is why we schedule the (implicit) release to run after current event loop cycle.
+	[NibControllers performSelector:@selector(removeObjectForKey:) withObject:_token afterDelay:0];
 }
 
 // ==================================
@@ -207,7 +209,9 @@ static NSInteger NibTokenCount = 0;
 // ================================================
 - (void)windowWillClose:(NSNotification*)aNotification
 {
-	[self return:@{ @"type" : @"closeWindow" }];
+	if([clientFileHandles count])
+			[self return:@{ @"type" : @"closeWindow" }];
+	else	[self tearDown];
 }
 
 // ================================================
