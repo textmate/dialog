@@ -82,26 +82,21 @@ env|egrep 'DIALOG|TM_SUPPORT'|grep -v DIALOG_1|perl -pe 's/(.*?)=(.*)/export $1=
 	{
 		if(TMDNibController* nibController = [TMDNibController controllerForToken:updateToken])
 				[nibController updateParametersWith:model];
-		else	[proxy writeStringToError:@"There is no nib with that token"];
+		else	[proxy writeStringToError:[NSString stringWithFormat:@"No nib found for token: %@\n", updateToken]];
 	}
 
 	if(NSString* waitToken = [args objectForKey:@"wait"])
 	{
 		if(TMDNibController* nibController = [TMDNibController controllerForToken:waitToken])
 				[nibController addClientFileHandle:[proxy outputHandle]];
-		else	[proxy writeStringToError:@"There is no nib with that token"];
+		else	[proxy writeStringToError:[NSString stringWithFormat:@"No nib found for token: %@\n", waitToken]];
 	}
 
 	if(NSString* disposeToken = [args objectForKey:@"dispose"])
 	{
 		if(TMDNibController* nibController = [TMDNibController controllerForToken:disposeToken])
-		{
-			[nibController tearDown];
-		}
-		else
-		{
-			[proxy writeStringToError:@"There is no nib with that token"];
-		}
+				[nibController tearDown];
+		else	[proxy writeStringToError:[NSString stringWithFormat:@"No nib found for token: %@\n", disposeToken]];
 	}
 
 	if([args objectForKey:@"list"])
@@ -117,7 +112,7 @@ env|egrep 'DIALOG|TM_SUPPORT'|grep -v DIALOG_1|perl -pe 's/(.*?)=(.*)/export $1=
 		NSString* nib = @(find_nib([nibName UTF8String], [[proxy workingDirectory] UTF8String] ?: "", [proxy environment]).c_str());
 		if(nib == nil || [nib length] == 0)
 		{
-			[proxy writeStringToError:@"nib not found. The nib name must be the first argument given"];
+			[proxy writeStringToError:[NSString stringWithFormat:@"No nib found for name: ‘%@’\n", nibName]];
 		}
 		else
 		{
