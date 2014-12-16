@@ -36,15 +36,29 @@
 }
 @end
 
+static NSMutableDictionary* NibControllers = [NSMutableDictionary new];
+static NSInteger NibTokenCount = 0;
+
 @interface TMDNibController ()
 {
 	NSMutableArray* clientFileHandles;
 }
+@property (nonatomic, readwrite) NSString* token;
 @property (nonatomic) NSArray* topLevelObjects;
 @property (nonatomic) NSMutableDictionary* parameters;
 @end
 
 @implementation TMDNibController
++ (TMDNibController*)controllerForToken:(NSString*)aToken
+{
+	return [NibControllers objectForKey:aToken];
+}
+
++ (NSArray*)controllers
+{
+	return [NibControllers allValues];
+}
+
 - (id)init
 {
 	if(self = [super init])
@@ -53,6 +67,9 @@
 		[_parameters setObject:self forKey:@"controller"];
 
 		clientFileHandles = [NSMutableArray new];
+
+		_token = [NSString stringWithFormat:@"%ld", ++NibTokenCount];
+		[NibControllers setObject:self forKey:_token];
 	}
 	return self;
 }
@@ -158,6 +175,8 @@
 		if([object isKindOfClass:[NSObjectController class]])
 			[object unbind:@"contentObject"];
 	}
+
+	[NibControllers removeObjectForKey:_token];
 }
 
 // ==================================

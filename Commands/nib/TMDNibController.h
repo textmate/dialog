@@ -4,6 +4,10 @@
 //
 
 @interface TMDNibController : NSObject <NSWindowDelegate>
++ (TMDNibController*)controllerForToken:(NSString*)aToken;
++ (NSArray*)controllers;
+
+@property (nonatomic, readonly) NSString* token;
 @property (nonatomic) NSWindow* window;
 - (id)initWithNibPath:(NSString*)aPath;
 - (void)showWindowAndCenter:(BOOL)shouldCenter;

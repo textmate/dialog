@@ -46,9 +46,6 @@ std::string find_nib (std::string nibName, std::string currentDirectory, NSDicti
 	return "";
 }
 
-static NSMutableDictionary* Nibs = [NSMutableDictionary new];
-static NSInteger NibTokenCount = 0;
-
 @implementation TMDWindowCommand
 + (void)load
 {
@@ -83,24 +80,23 @@ env|egrep 'DIALOG|TM_SUPPORT'|grep -v DIALOG_1|perl -pe 's/(.*?)=(.*)/export $1=
 
 	if(NSString* updateToken = [args objectForKey:@"update"])
 	{
-		if(TMDNibController* nibController = [Nibs objectForKey:updateToken])
+		if(TMDNibController* nibController = [TMDNibController controllerForToken:updateToken])
 				[nibController updateParametersWith:model];
 		else	[proxy writeStringToError:@"There is no nib with that token"];
 	}
 
 	if(NSString* waitToken = [args objectForKey:@"wait"])
 	{
-		if(TMDNibController* nibController = [Nibs objectForKey:waitToken])
+		if(TMDNibController* nibController = [TMDNibController controllerForToken:waitToken])
 				[nibController addClientFileHandle:[proxy outputHandle]];
 		else	[proxy writeStringToError:@"There is no nib with that token"];
 	}
 
 	if(NSString* disposeToken = [args objectForKey:@"dispose"])
 	{
-		if(TMDNibController* nibController = [Nibs objectForKey:disposeToken])
+		if(TMDNibController* nibController = [TMDNibController controllerForToken:disposeToken])
 		{
 			[nibController tearDown];
-			[Nibs removeObjectForKey:disposeToken];
 		}
 		else
 		{
@@ -111,12 +107,8 @@ env|egrep 'DIALOG|TM_SUPPORT'|grep -v DIALOG_1|perl -pe 's/(.*?)=(.*)/export $1=
 	if([args objectForKey:@"list"])
 	{
 		[proxy writeStringToOutput:@"Loaded nibs:\n"];
-
-		for(NSString* token in [Nibs allKeys])
-		{
-			TMDNibController* nibController = [Nibs objectForKey:token];
-			[proxy writeStringToOutput:[NSString stringWithFormat:@"%@ (%@)\n", token, [[nibController window] title]]];
-		}
+		for(TMDNibController* nibController in [TMDNibController controllers])
+			[proxy writeStringToOutput:[NSString stringWithFormat:@"%@ (%@)\n", nibController.token, [[nibController window] title]]];
 	}
 
 	if(NSString* nibName = [args objectForKey:@"load"])
@@ -131,13 +123,10 @@ env|egrep 'DIALOG|TM_SUPPORT'|grep -v DIALOG_1|perl -pe 's/(.*?)=(.*)/export $1=
 		{
 			if(TMDNibController* nibController = [[TMDNibController alloc] initWithNibPath:nib])
 			{
-				NSString* token = [NSString stringWithFormat:@"%ld", ++NibTokenCount];
-				[Nibs setObject:nibController forKey:token];
-
 				[nibController updateParametersWith:model];
 				[nibController showWindowAndCenter:shouldCenter];
 
-				[proxy writeStringToOutput:token];
+				[proxy writeStringToOutput:nibController.token];
 			}
 		}
 	}
