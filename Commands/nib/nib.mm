@@ -140,6 +140,7 @@ env|egrep 'DIALOG|TM_SUPPORT'|grep -v DIALOG_1|perl -pe 's/(.*?)=(.*)/export $1=
 		@"%1$@ --wait «token»\n"
 		@"%1$@ --dispose «token»\n"
 		@"%1$@ --list\n"
+		@"\nThe nib will be disposed after user closes its window unless --wait is being used.\n"
 		@"\nOptions:\n"
 		@"\t--center\n"
 		@"\t--model «plist»\n",
