@@ -20,7 +20,7 @@
 		return NO;
 
 	int visibleRows = (int)floorf(NSHeight([self visibleRect]) / ([self rowHeight]+[self intercellSpacing].height)) - 1;
-	struct { unichar key; int rows; } const key_movements[] =
+	struct { unichar key; int rows; } const keyMovements[] =
 	{
 		{ NSUpArrowFunctionKey,              -1 },
 		{ NSDownArrowFunctionKey,            +1 },
@@ -31,11 +31,11 @@
 	};
 
 	unichar keyCode = [[anEvent characters] characterAtIndex:0];
-	for(size_t i = 0; i < sizeofA(key_movements); ++i)
+	for(auto const& keyMovement : keyMovements)
 	{
-		if(keyCode == key_movements[i].key)
+		if(keyCode == keyMovement.key)
 		{
-			int row = std::max<NSInteger>(0, std::min([self selectedRow] + key_movements[i].rows, [self numberOfRows]-1));
+			int row = std::max<NSInteger>(0, std::min([self selectedRow] + keyMovement.rows, [self numberOfRows]-1));
 			[self selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
 			[self scrollRowToVisible:row];
 
