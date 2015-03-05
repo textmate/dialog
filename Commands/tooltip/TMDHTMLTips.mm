@@ -217,10 +217,6 @@ NSString* const TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 		[self orderOut:self];
 	};
 
-	CABasicAnimation* anim = [CABasicAnimation animation];
-	anim.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn];
-	self.animations = @{ @"alphaValue" : anim };
-
 	[self.animator setAlphaValue:0];
 
 	[NSAnimationContext endGrouping];
