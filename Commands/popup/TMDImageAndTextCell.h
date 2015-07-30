@@ -1,0 +1,2 @@
+@interface TMDImageAndTextCell : NSTextFieldCell
+@end

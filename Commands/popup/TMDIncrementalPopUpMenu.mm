@@ -5,6 +5,7 @@
 //
 
 #import "TMDIncrementalPopUpMenu.h"
+#import "TMDImageAndTextCell.h"
 #import "../Utilities/TextMate.h" // -insertSnippetWithOptions
 #import "../../TMDCommand.h" // -writeString:
 #import "../../Dialog2.h"
@@ -156,7 +157,7 @@
 	[theTableView setTarget:self];
 
 	NSTableColumn* column = [[NSTableColumn alloc] initWithIdentifier:@"foo"];
-	NSTextFieldCell* cell = [NSClassFromString(@"OakImageAndTextCell") new];
+	NSTextFieldCell* cell = [TMDImageAndTextCell new];
 	cell.lineBreakMode = NSLineBreakByTruncatingTail;
 	[column setDataCell:cell];
 	[column setEditable:NO];
