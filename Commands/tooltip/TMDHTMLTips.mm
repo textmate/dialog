@@ -13,7 +13,11 @@
 
 NSString* const TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 
+#if !defined(MAC_OS_X_VERSION_10_11) || (MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_11)
 @interface TMDHTMLTip ()
+#else
+@interface TMDHTMLTip () <WebFrameLoadDelegate>
+#endif
 {
 	WebView*	webView;
 	WebPreferences* webPreferences;
