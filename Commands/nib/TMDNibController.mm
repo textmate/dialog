@@ -9,33 +9,6 @@
 #import "../../TMDCommand.h"
 #import "TMDNibController.h"
 
-// For historical reasons, instantiateNibWithOwner:topLevelObjects: adds an extra retain count to
-// each object in topLevelObjects. If we can, we use the new version instantiateWithOwner:topLevelObjects:
-// (i.e., 10.8 and later), else we fall back to emulating the newer method by manually reducing the
-// retain count. We can do this since we (now) ensure that we have a strong reference to the topLevelOjbects
-// array, so that the objects will not be deallocated or released.
-@interface NSNib (Lion)
-- (BOOL)lionInstantiateWithOwner:(id)owner topLevelObjects:(NSArray**)topLevelObjects;
-@end
-
-@implementation NSNib (Lion)
-- (BOOL)lionInstantiateWithOwner:(id)owner topLevelObjects:(NSArray**)topLevelObjects
-{
-	BOOL res = NO;
-	if([self respondsToSelector:@selector(instantiateWithOwner:topLevelObjects:)])
-	{
-		res = [self instantiateWithOwner:owner topLevelObjects:topLevelObjects];
-	}
-	else
-	{
-		res = [self instantiateNibWithOwner:owner topLevelObjects:topLevelObjects];
-		for(id object in *topLevelObjects)
-			CFRelease((__bridge CFTypeRef)object);
-	}
-	return res;
-}
-@end
-
 static NSMutableDictionary* NibControllers = [NSMutableDictionary new];
 static NSInteger NibTokenCount = 0;
 
@@ -82,13 +55,8 @@ static NSInteger NibTokenCount = 0;
 		{
 			BOOL didInstantiate = NO;
 			NSArray* objects;
-			@try {
-				didInstantiate = [nib lionInstantiateWithOwner:self topLevelObjects:&objects];
-			}
-			@catch(NSException* e) {
-				// our retain count is too high if we reach this branch (<rdar://4803521>) so no RAII idioms for Cocoa, which is why we have the didLock variable, etc.
-				NSLog(@"%s failed to instantiate nib (%@)", sel_getName(_cmd), [e reason]);
-			}
+
+			didInstantiate = [nib instantiateWithOwner:self topLevelObjects:&objects];
 
 			if(didInstantiate)
 			{
