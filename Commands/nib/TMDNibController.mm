@@ -51,6 +51,8 @@ static NSInteger NibTokenCount = 0;
 {
 	if(self = [self init])
 	{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 		if(NSNib* nib = [[NSNib alloc] initWithContentsOfURL:[NSURL fileURLWithPath:aPath]])
 		{
 			BOOL didInstantiate = NO;
@@ -77,7 +79,7 @@ static NSInteger NibTokenCount = 0;
 		{
 			NSLog(@"%s failed loading nib: %@", sel_getName(_cmd), aPath);
 		}
-
+#pragma clang diagnostic pop
 	}
 	return nil;
 }
