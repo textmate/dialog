@@ -51,9 +51,13 @@ static NSInteger NibTokenCount = 0;
 {
 	if(self = [self init])
 	{
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-		if(NSNib* nib = [[NSNib alloc] initWithContentsOfURL:[NSURL fileURLWithPath:aPath]])
+		NSData* nibData;
+		NSString* keyedObjectsNibPath = [aPath stringByAppendingPathComponent:@"keyedobjects.nib"];
+		if([[NSFileManager defaultManager] fileExistsAtPath:keyedObjectsNibPath])
+			nibData = [NSData dataWithContentsOfFile:keyedObjectsNibPath];
+		else	nibData = [NSData dataWithContentsOfFile:aPath];
+
+		if(NSNib* nib = [[NSNib alloc] initWithNibData:nibData bundle:nil])
 		{
 			BOOL didInstantiate = NO;
 			NSArray* objects;
@@ -79,7 +83,6 @@ static NSInteger NibTokenCount = 0;
 		{
 			NSLog(@"%s failed loading nib: %@", sel_getName(_cmd), aPath);
 		}
-#pragma clang diagnostic pop
 	}
 	return nil;
 }
