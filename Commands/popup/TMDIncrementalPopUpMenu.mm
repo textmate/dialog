@@ -248,7 +248,7 @@
 	{
 		CGFloat const kTableViewPadding = 16;
 		for(NSUInteger i = 0; i < theTableView.numberOfRows; ++i)
-			maxWidth = MAX(maxWidth, kTableViewPadding + [[theTableView preparedCellAtColumn:0 row:i] cellSizeForBounds:NSMakeRect(0, 0, CGFLOAT_MAX, theTableView.rowHeight)].width);
+			maxWidth = MAX(maxWidth, kTableViewPadding + [[theTableView preparedCellAtColumn:0 row:i] cellSize].width);
 		maxWidth = MIN(maxWidth, 600);
 	}
 	if(_caretPos.y>=0 && (isAbove || _caretPos.y<newHeight))
