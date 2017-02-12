@@ -211,6 +211,7 @@
 		cell.imageView.frame = NSMakeRect(0, 0, h, h);
 		cell.textField.frame = NSMakeRect(h + 3, 0, 1, 1);
 	}
+	cell.toolTip = [object objectForKey:@"tooltip"];
 	return cell;
 }
 
