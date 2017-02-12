@@ -5,7 +5,6 @@
 //
 
 #import "TMDIncrementalPopUpMenu.h"
-#import "TMDImageAndTextCell.h"
 #import "../Utilities/TextMate.h" // -insertSnippetWithOptions
 #import "../../TMDCommand.h" // -writeString:
 #import "../../Dialog2.h"
@@ -156,16 +155,11 @@
 	[theTableView setDoubleAction:@selector(didDoubleClickRow:)];
 	[theTableView setTarget:self];
 
-	NSTableColumn* column = [[NSTableColumn alloc] initWithIdentifier:@"foo"];
-	NSTextFieldCell* cell = [TMDImageAndTextCell new];
-	cell.lineBreakMode = NSLineBreakByTruncatingTail;
-	[column setDataCell:cell];
-	[column setEditable:NO];
+	NSTableColumn* column = [[NSTableColumn alloc] initWithIdentifier:@"display"];
 	[theTableView addTableColumn:column];
-	[column setWidth:[theTableView bounds].size.width];
 
 	[theTableView setDataSource:self];
-	//[theTableView setDelegate:self];
+	[theTableView setDelegate:self];
 	[scrollView setDocumentView:theTableView];
 
 	[self setContentView:scrollView];
@@ -185,14 +179,39 @@
 	return [filtered count];
 }
 
-- (id)tableView:(NSTableView*)aTableView objectValueForTableColumn:(NSTableColumn*)aTableColumn row:(NSInteger)rowIndex
-{
-	NSImage* image = nil;
-	if(NSString* imageName = [[filtered objectAtIndex:rowIndex] objectForKey:@"image"])
-		image = [NSImage imageNamed:imageName];
-	[[aTableColumn dataCell] setImage:image];
+// ======================
+// = TableView Delegate =
+// ======================
 
-	return [[filtered objectAtIndex:rowIndex] objectForKey:@"display"];
+- (NSView*)tableView:(NSTableView*)tableView viewForTableColumn:(NSTableColumn*)tableColumn row:(NSInteger)row
+{
+	id object = [filtered objectAtIndex:row];
+	NSString* identifier= [object objectForKey:@"display"];
+	NSTableCellView* cell = [tableView makeViewWithIdentifier:identifier owner:self];
+	if(!cell)
+	{
+		cell = [[NSTableCellView alloc] initWithFrame:NSZeroRect];
+		NSImageView* image = [[NSImageView alloc] initWithFrame:NSZeroRect];
+		cell.imageView = image;
+		[cell addSubview:image];
+		NSTextField* text = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 1, 1)];
+		text.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+		text.bordered = NO;
+		text.drawsBackground = NO;
+		text.editable = NO;
+		text.lineBreakMode = NSLineBreakByTruncatingTail;
+		cell.textField = text;
+		[cell addSubview:text];
+	}
+	cell.textField.stringValue = identifier;
+	cell.imageView.image = [NSImage imageNamed:[object objectForKey:@"image"]];
+	if(cell.imageView.image)
+	{
+		CGFloat h = tableView.rowHeight;
+		cell.imageView.frame = NSMakeRect(0, 0, h, h);
+		cell.textField.frame = NSMakeRect(h + 3, 0, 1, 1);
+	}
+	return cell;
 }
 
 // ====================
@@ -246,9 +265,8 @@
 	CGFloat maxWidth = 60;
 	if([newFiltered count]>0)
 	{
-		CGFloat const kTableViewPadding = 16;
 		for(NSUInteger i = 0; i < theTableView.numberOfRows; ++i)
-			maxWidth = MAX(maxWidth, kTableViewPadding + [[theTableView preparedCellAtColumn:0 row:i] cellSize].width);
+			maxWidth = MAX(maxWidth, [self widthAtColumn:0 row:i]);
 		maxWidth = MIN(maxWidth, 600);
 	}
 	if(_caretPos.y>=0 && (isAbove || _caretPos.y<newHeight))
@@ -285,6 +303,17 @@
 			mainScreen = [candidate frame];
 	}
 	return mainScreen;
+}
+
+- (CGFloat)widthAtColumn:(NSUInteger)column row:(NSUInteger)row
+{
+	CGFloat const kTableViewPadding = 6;
+	CGFloat const kTableCellPadding = 3;
+	NSTableCellView* cell = [theTableView viewAtColumn:column row:row makeIfNecessary:YES];
+	CGFloat width = kTableViewPadding + ceil(cell.textField.attributedStringValue.size.width);
+	if(cell.imageView.image)
+		width += kTableCellPadding + ceil(cell.imageView.image.size.width);
+	return width;
 }
 
 // =============================
