@@ -149,14 +149,23 @@
 
 	theTableView = [[NSTableView alloc] initWithFrame:NSZeroRect];
 	[theTableView setFocusRingType:NSFocusRingTypeNone];
+	[theTableView setAllowsColumnSelection:NO];
 	[theTableView setAllowsEmptySelection:NO];
+	[theTableView setAllowsMultipleSelection:NO];
 	[theTableView setHeaderView:nil];
 	//[theTableView setBackgroundColor:[NSColor blackColor]];
 	[theTableView setDoubleAction:@selector(didDoubleClickRow:)];
 	[theTableView setTarget:self];
 
-	NSTableColumn* column = [[NSTableColumn alloc] initWithIdentifier:@"display"];
-	[theTableView addTableColumn:column];
+	NSTableColumn* imageColumn = [[NSTableColumn alloc] initWithIdentifier:@"image"];
+	imageColumn.minWidth = 0;
+	[theTableView addTableColumn:imageColumn];
+	NSTableColumn* nameColumn = [[NSTableColumn alloc] initWithIdentifier:@"display"];
+	nameColumn.minWidth = 60;
+	[theTableView addTableColumn:nameColumn];
+	NSTableColumn* infoColumn = [[NSTableColumn alloc] initWithIdentifier:@"details"];
+	infoColumn.minWidth = 0;
+	[theTableView addTableColumn:infoColumn];
 
 	[theTableView setDataSource:self];
 	[theTableView setDelegate:self];
@@ -183,36 +192,47 @@
 // = TableView Delegate =
 // ======================
 
+- (NSTableRowView *)tableView:(NSTableView *)tableView rowViewForRow:(NSInteger)row
+{
+	id object = filtered[row];
+	NSTableRowView* view = [tableView makeViewWithIdentifier:@"row" owner:self];
+	if(!view)
+	{
+		view = [[NSTableRowView alloc] initWithFrame:NSMakeRect(0, 0, 1, 1)];
+		view.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+	}
+	view.toolTip = object[@"tooltip"];
+	return view;
+}
+
 - (NSView*)tableView:(NSTableView*)tableView viewForTableColumn:(NSTableColumn*)tableColumn row:(NSInteger)row
 {
-	id object = [filtered objectAtIndex:row];
-	NSString* identifier= [object objectForKey:@"display"];
-	NSTableCellView* cell = [tableView makeViewWithIdentifier:identifier owner:self];
-	if(!cell)
+	id object = filtered[row];
+	NSString* identifier = tableColumn.identifier;
+	if([identifier isEqualToString:@"image"])
 	{
-		cell = [[NSTableCellView alloc] initWithFrame:NSZeroRect];
-		NSImageView* image = [[NSImageView alloc] initWithFrame:NSZeroRect];
-		cell.imageView = image;
-		[cell addSubview:image];
-		NSTextField* text = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 1, 1)];
-		text.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
-		text.bordered = NO;
-		text.drawsBackground = NO;
-		text.editable = NO;
-		text.lineBreakMode = NSLineBreakByTruncatingTail;
-		cell.textField = text;
-		[cell addSubview:text];
+		NSImageView* imageView = [tableView makeViewWithIdentifier:identifier owner:self];
+		if(!imageView)
+		{
+			imageView = [[NSImageView alloc] initWithFrame:NSMakeRect(0, 0, 1, 1)];
+			imageView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+		}
+		imageView.image = [NSImage imageNamed:object[@"image"]];
+		return imageView;
 	}
-	cell.textField.stringValue = identifier;
-	cell.imageView.image = [NSImage imageNamed:[object objectForKey:@"image"]];
-	if(cell.imageView.image)
+	NSTextField* textField = [tableView makeViewWithIdentifier:identifier owner:self];
+	if(!textField)
 	{
-		CGFloat h = tableView.rowHeight;
-		cell.imageView.frame = NSMakeRect(0, 0, h, h);
-		cell.textField.frame = NSMakeRect(h + 3, 0, 1, 1);
+		textField = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 1, 1)];
+		textField.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+		textField.bordered = NO;
+		textField.drawsBackground = NO;
+		textField.editable = NO;
+		textField.lineBreakMode = NSLineBreakByTruncatingTail;
 	}
-	cell.toolTip = [object objectForKey:@"tooltip"];
-	return cell;
+	if(NSString* value = object[tableColumn.identifier])
+		textField.stringValue = value;
+	return textField;
 }
 
 // ====================
@@ -263,13 +283,7 @@
 	NSUInteger displayedRows = [newFiltered count] < MAX_ROWS ? [newFiltered count] : MAX_ROWS;
 	CGFloat newHeight   = ([theTableView rowHeight] + [theTableView intercellSpacing].height) * displayedRows;
 
-	CGFloat maxWidth = 60;
-	if([newFiltered count]>0)
-	{
-		for(NSUInteger i = 0; i < theTableView.numberOfRows; ++i)
-			maxWidth = MAX(maxWidth, [self widthAtColumn:0 row:i]);
-		maxWidth = MIN(maxWidth, 600);
-	}
+	CGFloat newWidth = [self widthAfterResizingTableView];
 	if(_caretPos.y>=0 && (isAbove || _caretPos.y<newHeight))
 	{
 		isAbove = YES;
@@ -283,7 +297,7 @@
 	// newHeight is currently the new height for theTableView, but we need to resize the whole window
 	// so here we use the difference in height to find the new height for the window
 	// newHeight = [[self contentView] frame].size.height + (newHeight - [theTableView frame].size.height);
-	[self setFrame:NSMakeRect(old.x,old.y-newHeight,maxWidth,newHeight) display:YES];
+	[self setFrame:NSMakeRect(old.x,old.y-newHeight,newWidth,newHeight) display:YES];
 }
 
 // =========================
@@ -306,15 +320,24 @@
 	return mainScreen;
 }
 
-- (CGFloat)widthAtColumn:(NSUInteger)column row:(NSUInteger)row
+- (CGFloat)widthAfterResizingTableView
 {
-	CGFloat const kTableViewPadding = 6;
-	CGFloat const kTableCellPadding = 3;
-	NSTableCellView* cell = [theTableView viewAtColumn:column row:row makeIfNecessary:YES];
-	CGFloat width = kTableViewPadding + ceil(cell.textField.attributedStringValue.size.width);
-	if(cell.imageView.image)
-		width += kTableCellPadding + ceil(cell.imageView.image.size.width);
-	return width;
+	if(!filtered.count)
+		return 0;
+	CGFloat width = 0;
+	for(NSUInteger i = 0; i < theTableView.numberOfColumns; ++i)
+	{
+		CGFloat colWidth = 0;
+		for(NSUInteger j = 0; j < theTableView.numberOfRows; ++j)
+		{
+			NSView* cell = [theTableView viewAtColumn:i row:j makeIfNecessary:YES];
+			colWidth = MAX(colWidth, cell.fittingSize.width);
+		}
+		theTableView.tableColumns[i].width = colWidth;
+		width += theTableView.tableColumns[i].width;
+	}
+	width += theTableView.intercellSpacing.width * (theTableView.numberOfColumns - 1);
+	return MIN(width, 600);
 }
 
 // =============================
