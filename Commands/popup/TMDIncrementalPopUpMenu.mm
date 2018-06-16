@@ -16,7 +16,7 @@
 @implementation NSTableView (MovingSelectedRow)
 - (BOOL)TMDcanHandleEvent:(NSEvent*)anEvent
 {
-	if([anEvent type] != NSKeyDown || [[anEvent characters] length] != 1)
+	if([anEvent type] != NSEventTypeKeyDown || [[anEvent characters] length] != 1)
 		return NO;
 
 	int visibleRows = (int)floorf(NSHeight([self visibleRect]) / ([self rowHeight]+[self intercellSpacing].height)) - 1;
@@ -76,7 +76,7 @@
 // =============================
 - (id)init
 {
-	if(self = [super initWithContentRect:NSMakeRect(0, 0, 1, 1) styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO])
+	if(self = [super initWithContentRect:NSMakeRect(0, 0, 1, 1) styleMask:NSWindowStyleMaskBorderless backing:NSBackingStoreBuffered defer:NO])
 	{
 		mutablePrefix = [NSMutableString new];
 		textualInputCharacters = [NSMutableCharacterSet alphanumericCharacterSet];
@@ -145,7 +145,7 @@
 	[scrollView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
 	[scrollView setAutohidesScrollers:YES];
 	[scrollView setHasVerticalScroller:YES];
-	[[scrollView verticalScroller] setControlSize:NSSmallControlSize];
+	[[scrollView verticalScroller] setControlSize:NSControlSizeSmall];
 
 	theTableView = [[NSTableView alloc] initWithFrame:NSZeroRect];
 	[theTableView setFocusRingType:NSFocusRingTypeNone];
@@ -333,7 +333,7 @@
 	closeMe = NO;
 	while(!closeMe)
 	{
-		NSEvent* event = [NSApp nextEventMatchingMask:NSAnyEventMask untilDate:[NSDate distantFuture] inMode:NSDefaultRunLoopMode dequeue:YES];
+		NSEvent* event = [NSApp nextEventMatchingMask:NSEventMaskAny untilDate:[NSDate distantFuture] inMode:NSDefaultRunLoopMode dequeue:YES];
 
 		if(!event)
 			continue;
@@ -343,11 +343,11 @@
 		{
 			// skip the rest
 		}
-		else if(t == NSKeyDown)
+		else if(t == NSEventTypeKeyDown)
 		{
 			unsigned int flags = [event modifierFlags];
 			unichar key        = [[event characters] length] == 1 ? [[event characters] characterAtIndex:0] : 0;
-			if((flags & NSControlKeyMask) || (flags & NSAlternateKeyMask) || (flags & NSCommandKeyMask))
+			if((flags & NSEventModifierFlagControl) || (flags & NSEventModifierFlagOption) || (flags & NSEventModifierFlagCommand))
 			{
 				[NSApp sendEvent:event];
 				break;
@@ -405,13 +405,13 @@
 				break;
 			}
 		}
-		else if(t == NSRightMouseDown || t == NSLeftMouseDown)
+		else if(t == NSEventTypeRightMouseDown || t == NSEventTypeLeftMouseDown)
 		{
 			[NSApp sendEvent:event];
 			if(!NSPointInRect([NSEvent mouseLocation], [self frame]))
 				break;
 		}
-		else if(t == NSScrollWheel)
+		else if(t == NSEventTypeScrollWheel)
 		{
 			[self sendEvent:event];
 		}

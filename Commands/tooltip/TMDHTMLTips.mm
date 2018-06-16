@@ -38,7 +38,7 @@ NSString* const TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 
 - (id)init;
 {
-	if(self = [self initWithContentRect:NSMakeRect(0, 0, 1, 1) styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO])
+	if(self = [self initWithContentRect:NSMakeRect(0, 0, 1, 1) styleMask:NSWindowStyleMaskBorderless backing:NSBackingStoreBuffered defer:NO])
 	{
 		// Since we are relying on `setReleaseWhenClosed:`, we need to ensure that we are over-retained.
 		CFBridgingRetain(self);
@@ -182,14 +182,14 @@ NSString* const TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 	[keyWindow setAcceptsMouseMovedEvents:YES];
 
 	BOOL slowFadeOut = NO;
-	while(NSEvent* event = [NSApp nextEventMatchingMask:NSAnyEventMask untilDate:[NSDate distantFuture] inMode:NSDefaultRunLoopMode dequeue:YES])
+	while(NSEvent* event = [NSApp nextEventMatchingMask:NSEventMaskAny untilDate:[NSDate distantFuture] inMode:NSDefaultRunLoopMode dequeue:YES])
 	{
 		[NSApp sendEvent:event];
 
-		if([event type] == NSLeftMouseDown || [event type] == NSRightMouseDown || [event type] == NSOtherMouseDown || [event type] == NSKeyDown || [event type] == NSScrollWheel)
+		if([event type] == NSEventTypeLeftMouseDown || [event type] == NSEventTypeRightMouseDown || [event type] == NSEventTypeOtherMouseDown || [event type] == NSEventTypeKeyDown || [event type] == NSEventTypeScrollWheel)
 			break;
 
-		if([event type] == NSMouseMoved && [self shouldCloseForMousePosition:[NSEvent mouseLocation]])
+		if([event type] == NSEventTypeMouseMoved && [self shouldCloseForMousePosition:[NSEvent mouseLocation]])
 		{
 			slowFadeOut = YES;
 			break;

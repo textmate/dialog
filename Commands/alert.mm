@@ -18,11 +18,11 @@ echo '{alertStyle = warning; button1 = 'OK'; title = 'test'; body = 'Testing';}'
 NSAlertStyle alert_style_from_string (NSString* str)
 {
 	if([str isEqualToString:@"warning"])
-		return NSWarningAlertStyle;
+		return NSAlertStyleWarning;
 	else if([str isEqualToString:@"critical"])
-		return NSCriticalAlertStyle;
+		return NSAlertStyleCritical;
 	else
-		return NSInformationalAlertStyle;
+		return NSAlertStyleInformational;
 }
 
 @implementation TMDAlertCommand
