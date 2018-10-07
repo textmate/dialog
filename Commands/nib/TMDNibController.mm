@@ -169,7 +169,7 @@ static NSInteger NibTokenCount = 0;
 	id model = [self.parameters mutableCopy];
 	[model removeObjectForKey:@"controller"];
 
-	NSDictionary* res = @{ @"model" : model, @"eventInfo" : eventInfo };
+	NSDictionary* res = @{ @"model": model, @"eventInfo": eventInfo };
 
 	for(NSFileHandle* fileHandle in clientFileHandles)
 		[TMDCommand writePropertyList:res toFileHandle:fileHandle];
@@ -183,7 +183,7 @@ static NSInteger NibTokenCount = 0;
 - (void)windowWillClose:(NSNotification*)aNotification
 {
 	if([clientFileHandles count])
-			[self return:@{ @"type" : @"closeWindow" }];
+			[self return:@{ @"type": @"closeWindow" }];
 	else	[self tearDown];
 }
 

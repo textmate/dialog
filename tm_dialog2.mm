@@ -72,12 +72,12 @@ int main (int argc, char const* argv[])
 			[args addObject:@(argv[i])];
 
 		NSDictionary* dict = @{
-			@"stdin"       : @(stdinName),
-			@"stdout"      : @(stdoutName),
-			@"stderr"      : @(stderrName),
-			@"cwd"         : @(getcwd(NULL, 0)),
-			@"environment" : [[NSProcessInfo processInfo] environment],
-			@"arguments"   : args,
+			@"stdin":       @(stdinName),
+			@"stdout":      @(stdoutName),
+			@"stderr":      @(stderrName),
+			@"cwd":         @(getcwd(NULL, 0)),
+			@"environment": [[NSProcessInfo processInfo] environment],
+			@"arguments":   args,
 		};
 
 		[proxy connectFromClientWithOptions:dict];

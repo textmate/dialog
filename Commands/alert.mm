@@ -47,7 +47,7 @@ NSAlertStyle alert_style_from_string (NSString* str)
 		[alert addButtonWithTitle:button];
 
 	NSInteger alertResult = ([alert runModal] - NSAlertFirstButtonReturn);
-	NSDictionary* resultDict = @{ @"buttonClicked" : @(alertResult) };
+	NSDictionary* resultDict = @{ @"buttonClicked": @(alertResult) };
 
 	[TMDCommand writePropertyList:resultDict toFileHandle:[proxy outputHandle]];
 }
