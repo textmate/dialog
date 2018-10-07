@@ -200,6 +200,7 @@
 		text.drawsBackground = NO;
 		text.editable = NO;
 		text.lineBreakMode = NSLineBreakByTruncatingTail;
+		text.textColor = NSColor.controlTextColor;
 		cell.textField = text;
 		[cell addSubview:text];
 	}
