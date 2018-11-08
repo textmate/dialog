@@ -162,7 +162,23 @@
 	[theTableView setDelegate:self];
 	[scrollView setDocumentView:theTableView];
 
-	[self setContentView:scrollView];
+	if(@available(macos 10.14, *))
+	{
+		theTableView.backgroundColor = NSColor.clearColor;
+		scrollView.drawsBackground   = NO;
+
+		NSVisualEffectView* effectView = [[NSVisualEffectView alloc] initWithFrame:NSZeroRect];
+		effectView.material         = NSVisualEffectMaterialMenu;
+		effectView.blendingMode     = NSVisualEffectBlendingModeBehindWindow;
+		effectView.autoresizingMask = NSViewWidthSizable|NSViewHeightSizable;
+		[effectView addSubview:scrollView positioned:NSWindowBelow relativeTo:nil];
+
+		[self setContentView:effectView];
+	}
+	else
+	{
+		[self setContentView:scrollView];
+	}
 }
 
 //- (void)tableView:(NSTableView*)aTableView willDisplayCell:(id)aCell forTableColumn:(NSTableColumn*)aTableColumn row:(NSInteger)rowIndex {
