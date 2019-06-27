@@ -46,7 +46,7 @@ int main (int argc, char const* argv[])
 {
 	if(argc == 2 && strcmp(argv[1], "--version") == 0)
 	{
-		fprintf(stderr, "%1$s %2$.1f (" COMPILE_DATE ")\n", getprogname(), AppVersion);
+		fprintf(stderr, "%1$s %2$.1f (" __DATE__ ")\n", getprogname(), AppVersion);
 		return EX_OK;
 	}
 
