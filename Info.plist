@@ -5,9 +5,9 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>${EXECUTABLE_NAME}</string>
+	<string>${TARGET_NAME}</string>
 	<key>CFBundleName</key>
-	<string>${PRODUCT_NAME}</string>
+	<string>${TARGET_NAME}</string>
 	<key>TMPlugInAPIVersion</key>
 	<integer>2</integer>
 	<key>CFBundleIconFile</key>
