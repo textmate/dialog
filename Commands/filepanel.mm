@@ -87,13 +87,13 @@
 	if(args[@"isSavePanel"])
 	{
 		NSSavePanel* panel = [self setupSavePanel:[NSSavePanel savePanel] usingParameters:args];
-		if([panel runModal] == NSFileHandlingPanelOKButton)
+		if([panel runModal] == NSModalResponseOK)
 			resultDict[@"path"] = [[panel URL] path];
 	}
 	else
 	{
 		NSOpenPanel* panel = [self setupOpenPanel:[NSOpenPanel openPanel] usingParameters:args];
-		if([panel runModal] == NSFileHandlingPanelOKButton)
+		if([panel runModal] == NSModalResponseOK)
 		{
 			NSMutableArray* paths = [NSMutableArray arrayWithCapacity:[[panel URLs] count]];
 			for(NSURL* url in [panel URLs])
