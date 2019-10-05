@@ -97,6 +97,7 @@ static NSInteger NibTokenCount = 0;
 	if(_window != aWindow)
 	{
 		[_window setDelegate:nil];
+		[_window orderOut:self];
 
 		_window = aWindow;
 		[_window setDelegate:self];
