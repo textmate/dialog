@@ -19,12 +19,12 @@
 		if([defaults isKindOfClass:[NSString class]])
 			defaults = [NSPropertyListSerialization propertyListWithData:[(NSString*)defaults dataUsingEncoding:NSUTF8StringEncoding] options:NSPropertyListImmutable format:NULL error:NULL];
 
-		[[NSUserDefaults standardUserDefaults] registerDefaults:defaults];
+		[NSUserDefaults.standardUserDefaults registerDefaults:defaults];
 	}
 
 	if(NSString* key = [args objectForKey:@"read"])
 	{
-		if(id obj = [[NSUserDefaults standardUserDefaults] objectForKey:key])
+		if(id obj = [NSUserDefaults.standardUserDefaults objectForKey:key])
 			[TMDCommand writePropertyList:obj toFileHandle:[proxy outputHandle]];
 	}
 }

@@ -41,7 +41,7 @@
 
 	if(filter)
 	{
-		NSFont* font = [NSFont fontWithName:[[NSUserDefaults standardUserDefaults] stringForKey:@"OakTextViewNormalFontName"] ?: [[NSFont userFixedPitchFontOfSize:12.0] fontName] size:[[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"] ?: 12];
+		NSFont* font = [NSFont fontWithName:[NSUserDefaults.standardUserDefaults stringForKey:@"OakTextViewNormalFontName"] ?: [[NSFont userFixedPitchFontOfSize:12.0] fontName] size:[NSUserDefaults.standardUserDefaults integerForKey:@"OakTextViewNormalFontSize"] ?: 12];
 		pos.x -= [filter sizeWithAttributes:[NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName]].width;
 	}
 

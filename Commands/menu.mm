@@ -57,7 +57,7 @@ echo '{ items = ({title = "foo"; header = 1;},{title = "bar";}); }' | "$DIALOG" 
 		menuItems = [NSPropertyListSerialization propertyListWithData:[(NSString*)menuItems dataUsingEncoding:NSUTF8StringEncoding] options:NSPropertyListImmutable format:NULL error:NULL];
 
 	NSMenu* menu = [NSMenu new];
-	[menu setFont:[NSFont menuFontOfSize:([[NSUserDefaults standardUserDefaults] integerForKey:@"OakBundleManagerDisambiguateMenuFontSize"] ?: 11)]];
+	[menu setFont:[NSFont menuFontOfSize:([NSUserDefaults.standardUserDefaults integerForKey:@"OakBundleManagerDisambiguateMenuFontSize"] ?: 11)]];
 	DialogPopupMenuTarget* menuTarget = [[DialogPopupMenuTarget alloc] init];
 
 	NSInteger itemId = 0;

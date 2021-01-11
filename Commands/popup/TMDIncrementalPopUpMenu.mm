@@ -121,12 +121,12 @@
 
 	if(_caretPos.y>=0 && _caretPos.y<[self frame].size.height)
 	{
-		_caretPos.y = _caretPos.y + ([self frame].size.height + [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"]*1.5);
+		_caretPos.y = _caretPos.y + ([self frame].size.height + [NSUserDefaults.standardUserDefaults integerForKey:@"OakTextViewNormalFontSize"]*1.5);
 		isAbove = YES;
 	}
 	if(_caretPos.y<0 && (mainScreen.size.height-[self frame].size.height)<(_caretPos.y*-1.0))
 	{
-		_caretPos.y = _caretPos.y + ([self frame].size.height + [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"]*1.5);
+		_caretPos.y = _caretPos.y + ([self frame].size.height + [NSUserDefaults.standardUserDefaults integerForKey:@"OakTextViewNormalFontSize"]*1.5);
 		isAbove = YES;
 	}
 	[self setFrameTopLeftPoint:_caretPos];
@@ -290,11 +290,11 @@
 	if(_caretPos.y>=0 && (isAbove || _caretPos.y<newHeight))
 	{
 		isAbove = YES;
-		old.y = _caretPos.y + (newHeight + [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"]*1.5);
+		old.y = _caretPos.y + (newHeight + [NSUserDefaults.standardUserDefaults integerForKey:@"OakTextViewNormalFontSize"]*1.5);
 	}
 	if(_caretPos.y<0 && (isAbove || (mainScreen.size.height-newHeight)<(_caretPos.y*-1.0)))
 	{
-		old.y = _caretPos.y + (newHeight + [[NSUserDefaults standardUserDefaults] integerForKey:@"OakTextViewNormalFontSize"]*1.5);
+		old.y = _caretPos.y + (newHeight + [NSUserDefaults.standardUserDefaults integerForKey:@"OakTextViewNormalFontSize"]*1.5);
 	}
 
 	// newHeight is currently the new height for theTableView, but we need to resize the whole window

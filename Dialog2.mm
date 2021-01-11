@@ -23,7 +23,7 @@
 
 - (id)initWithPlugInController:(id <TMPlugInController>)aController
 {
-	NSApp = [NSApplication sharedApplication];
+	NSApp = NSApplication.sharedApplication;
 	if(self = [self init])
 	{
 		_connection = [NSConnection new];

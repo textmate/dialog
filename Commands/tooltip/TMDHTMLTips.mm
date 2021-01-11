@@ -57,8 +57,8 @@ NSString* const TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 		[webPreferences setPlugInsEnabled:NO];
 		[webPreferences setUsesPageCache:NO];
 		[webPreferences setCacheModel:WebCacheModelDocumentViewer];
-		NSString* fontName = [[NSUserDefaults standardUserDefaults] stringForKey:@"fontName"];
-		int fontSize = [[NSUserDefaults standardUserDefaults] integerForKey:@"fontSize"] ?: 11;
+		NSString* fontName = [NSUserDefaults.standardUserDefaults stringForKey:@"fontName"];
+		int fontSize = [NSUserDefaults.standardUserDefaults integerForKey:@"fontSize"] ?: 11;
 		NSFont* font = fontName ? [NSFont fontWithName:fontName size:fontSize] : [NSFont userFixedPitchFontOfSize:fontSize];
 		[webPreferences setStandardFontFamily:[font familyName]];
 		[webPreferences setDefaultFontSize:fontSize];
@@ -153,7 +153,7 @@ NSString* const TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 // ==================
 - (BOOL)shouldCloseForMousePosition:(NSPoint)aPoint
 {
-	CGFloat ignorePeriod = [[NSUserDefaults standardUserDefaults] floatForKey:@"OakToolTipMouseMoveIgnorePeriod"];
+	CGFloat ignorePeriod = [NSUserDefaults.standardUserDefaults floatForKey:@"OakToolTipMouseMoveIgnorePeriod"];
 	if(-[didOpenAtDate timeIntervalSinceNow] < ignorePeriod)
 		return NO;
 
@@ -168,7 +168,7 @@ NSString* const TMDTooltipPreferencesIdentifier = @"TM Tooltip";
 	CGFloat deltaY = p.y - aPoint.y;
 	CGFloat dist = sqrt(deltaX * deltaX + deltaY * deltaY);
 
-	CGFloat moveThreshold = [[NSUserDefaults standardUserDefaults] floatForKey:@"OakToolTipMouseDistanceThreshold"];
+	CGFloat moveThreshold = [NSUserDefaults.standardUserDefaults floatForKey:@"OakToolTipMouseDistanceThreshold"];
 	return dist > moveThreshold;
 }
 

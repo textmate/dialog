@@ -53,7 +53,7 @@ static NSInteger NibTokenCount = 0;
 	{
 		NSData* nibData;
 		NSString* keyedObjectsNibPath = [aPath stringByAppendingPathComponent:@"keyedobjects.nib"];
-		if([[NSFileManager defaultManager] fileExistsAtPath:keyedObjectsNibPath])
+		if([NSFileManager.defaultManager fileExistsAtPath:keyedObjectsNibPath])
 			nibData = [NSData dataWithContentsOfFile:keyedObjectsNibPath];
 		else	nibData = [NSData dataWithContentsOfFile:aPath];
 
@@ -136,7 +136,7 @@ static NSInteger NibTokenCount = 0;
 			[object commitEditing];
 	}
 
-	[[NSUserDefaults standardUserDefaults] synchronize];
+	[NSUserDefaults.standardUserDefaults synchronize];
 }
 
 - (void)tearDown
