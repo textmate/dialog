@@ -73,6 +73,7 @@ env|egrep 'DIALOG|TM_SUPPORT'|grep -v DIALOG_1|perl -pe 's/(.*?)=(.*)/export $1=
 
 	NSDictionary* model = [args objectForKey:@"model"];
 	BOOL shouldCenter   = [args objectForKey:@"center"] ? YES : NO;
+	BOOL shouldRunModal = [args objectForKey:@"modal"]  ? YES : NO;
 
 	// FIXME this is needed only because we presently can’t express argument constraints (CLIProxy would otherwise correctly validate/convert CLI arguments)
 	if([model isKindOfClass:[NSString class]])
@@ -88,7 +89,7 @@ env|egrep 'DIALOG|TM_SUPPORT'|grep -v DIALOG_1|perl -pe 's/(.*?)=(.*)/export $1=
 	if(NSString* waitToken = [args objectForKey:@"wait"])
 	{
 		if(TMDNibController* nibController = [TMDNibController controllerForToken:waitToken])
-				[nibController addClientFileHandle:[proxy outputHandle]];
+				[nibController addClientFileHandle:[proxy outputHandle] modal:shouldRunModal];
 		else	[proxy writeStringToError:[NSString stringWithFormat:@"No nib found for token: %@\n", waitToken]];
 	}
 
@@ -143,6 +144,7 @@ env|egrep 'DIALOG|TM_SUPPORT'|grep -v DIALOG_1|perl -pe 's/(.*?)=(.*)/export $1=
 		@"\nThe nib will be disposed after user closes its window unless --wait is being used.\n"
 		@"\nOptions:\n"
 		@"\t--center\n"
+		@"\t--modal\n"
 		@"\t--model «plist»\n",
 		invocation];
 }

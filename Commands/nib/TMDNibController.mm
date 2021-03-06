@@ -15,6 +15,7 @@ static NSInteger NibTokenCount = 0;
 @interface TMDNibController ()
 {
 	NSMutableArray* clientFileHandles;
+	BOOL runningModal;
 }
 @property (nonatomic, readwrite) NSString* token;
 @property (nonatomic) NSArray* topLevelObjects;
@@ -158,9 +159,11 @@ static NSInteger NibTokenCount = 0;
 // ==================================
 // = Getting stuff from this window =
 // ==================================
-- (void)addClientFileHandle:(NSFileHandle*)aFileHandle
+- (void)addClientFileHandle:(NSFileHandle*)aFileHandle modal:(BOOL)flag
 {
 	[clientFileHandles addObject:aFileHandle];
+	if(!runningModal && (runningModal = flag))
+		[NSApp runModalForWindow:_window];
 }
 
 - (void)return:(NSDictionary*)eventInfo
@@ -176,6 +179,12 @@ static NSInteger NibTokenCount = 0;
 		[TMDCommand writePropertyList:res toFileHandle:fileHandle];
 
 	[clientFileHandles removeAllObjects];
+
+	if(runningModal)
+	{
+		[NSApp stopModal];
+		runningModal = NO;
+	}
 }
 
 // ================================================

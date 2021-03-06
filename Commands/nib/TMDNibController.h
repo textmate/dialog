@@ -12,7 +12,7 @@
 - (id)initWithNibPath:(NSString*)aPath;
 - (void)showWindowAndCenter:(BOOL)shouldCenter;
 
-- (void)addClientFileHandle:(NSFileHandle*)aFileHandle;
+- (void)addClientFileHandle:(NSFileHandle*)aFileHandle modal:(BOOL)flag;
 - (void)updateParametersWith:(id)plist;
 - (void)tearDown;
 @end
