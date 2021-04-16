@@ -155,6 +155,9 @@
 	[theTableView setDoubleAction:@selector(didDoubleClickRow:)];
 	[theTableView setTarget:self];
 
+	if(@available(macos 11.0, *))
+		theTableView.style = NSTableViewStylePlain;
+
 	NSTableColumn* column = [[NSTableColumn alloc] initWithIdentifier:@"display"];
 	[theTableView addTableColumn:column];
 
